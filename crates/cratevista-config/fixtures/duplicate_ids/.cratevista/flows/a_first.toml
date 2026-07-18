@@ -1,0 +1,11 @@
+# Loaded FIRST (sorted by file name). Its declarations win.
+
+[[entity]]
+id = "redis"
+kind = "infrastructure"
+label = "Redis (first)"
+
+[[flow]]
+id = "dup"
+title = "Dup (first)"
+members = ["manual:redis"]

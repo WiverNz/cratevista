@@ -1,0 +1,665 @@
+{
+  "build_directory": "/w/ws/target",
+  "metadata": null,
+  "packages": [
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [
+        {
+          "features": [],
+          "kind": null,
+          "name": "core",
+          "optional": false,
+          "path": "/w/ws/core",
+          "registry": null,
+          "rename": null,
+          "req": "*",
+          "source": null,
+          "target": null,
+          "uses_default_features": true
+        },
+        {
+          "features": [],
+          "kind": null,
+          "name": "mac",
+          "optional": false,
+          "path": "/w/ws/mac",
+          "registry": null,
+          "rename": null,
+          "req": "*",
+          "source": null,
+          "target": null,
+          "uses_default_features": true
+        },
+        {
+          "features": [],
+          "kind": null,
+          "name": "optdep",
+          "optional": true,
+          "path": "/w/ws/optdep",
+          "registry": null,
+          "rename": null,
+          "req": "*",
+          "source": null,
+          "target": null,
+          "uses_default_features": true
+        },
+        {
+          "features": [],
+          "kind": null,
+          "name": "core2",
+          "optional": false,
+          "path": "/w/ws/core2",
+          "registry": null,
+          "rename": "ren",
+          "req": "*",
+          "source": null,
+          "target": null,
+          "uses_default_features": true
+        },
+        {
+          "features": [],
+          "kind": "dev",
+          "name": "devdep",
+          "optional": false,
+          "path": "/w/ws/devdep",
+          "registry": null,
+          "rename": null,
+          "req": "*",
+          "source": null,
+          "target": null,
+          "uses_default_features": true
+        },
+        {
+          "features": [],
+          "kind": "build",
+          "name": "builddep",
+          "optional": false,
+          "path": "/w/ws/builddep",
+          "registry": null,
+          "rename": null,
+          "req": "*",
+          "source": null,
+          "target": null,
+          "uses_default_features": true
+        },
+        {
+          "features": [],
+          "kind": null,
+          "name": "plat",
+          "optional": false,
+          "path": "/w/ws/plat",
+          "registry": null,
+          "rename": null,
+          "req": "*",
+          "source": null,
+          "target": "cfg(windows)",
+          "uses_default_features": true
+        }
+      ],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {
+        "default": [
+          "extra"
+        ],
+        "extra": [
+          "optdep"
+        ],
+        "optdep": [
+          "dep:optdep"
+        ]
+      },
+      "homepage": null,
+      "id": "path+file:////w/ws/app#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/app/Cargo.toml",
+      "metadata": null,
+      "name": "app",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "app",
+          "src_path": "/w/ws/app/src/lib.rs",
+          "test": true
+        },
+        {
+          "crate_types": [
+            "bin"
+          ],
+          "doc": true,
+          "doctest": false,
+          "edition": "2021",
+          "kind": [
+            "bin"
+          ],
+          "name": "app",
+          "src_path": "/w/ws/app/src/main.rs",
+          "test": true
+        },
+        {
+          "crate_types": [
+            "bin"
+          ],
+          "doc": false,
+          "doctest": false,
+          "edition": "2021",
+          "kind": [
+            "example"
+          ],
+          "name": "demo",
+          "src_path": "/w/ws/app/examples/demo.rs",
+          "test": false
+        },
+        {
+          "crate_types": [
+            "bin"
+          ],
+          "doc": false,
+          "doctest": false,
+          "edition": "2021",
+          "kind": [
+            "test"
+          ],
+          "name": "it",
+          "src_path": "/w/ws/app/tests/it.rs",
+          "test": true
+        },
+        {
+          "crate_types": [
+            "bin"
+          ],
+          "doc": false,
+          "doctest": false,
+          "edition": "2021",
+          "kind": [
+            "bench"
+          ],
+          "name": "b",
+          "src_path": "/w/ws/app/benches/b.rs",
+          "test": false
+        },
+        {
+          "crate_types": [
+            "bin"
+          ],
+          "doc": false,
+          "doctest": false,
+          "edition": "2021",
+          "kind": [
+            "custom-build"
+          ],
+          "name": "build-script-build",
+          "src_path": "/w/ws/app/build.rs",
+          "test": false
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/builddep#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/builddep/Cargo.toml",
+      "metadata": null,
+      "name": "builddep",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "builddep",
+          "src_path": "/w/ws/builddep/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/core#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/core/Cargo.toml",
+      "metadata": null,
+      "name": "core",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "core",
+          "src_path": "/w/ws/core/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/core2#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/core2/Cargo.toml",
+      "metadata": null,
+      "name": "core2",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "core2",
+          "src_path": "/w/ws/core2/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/devdep#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/devdep/Cargo.toml",
+      "metadata": null,
+      "name": "devdep",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "devdep",
+          "src_path": "/w/ws/devdep/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/mac#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/mac/Cargo.toml",
+      "metadata": null,
+      "name": "mac",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "proc-macro"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "proc-macro"
+          ],
+          "name": "mac",
+          "src_path": "/w/ws/mac/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/optdep#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/optdep/Cargo.toml",
+      "metadata": null,
+      "name": "optdep",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "optdep",
+          "src_path": "/w/ws/optdep/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    },
+    {
+      "authors": [],
+      "categories": [],
+      "default_run": null,
+      "dependencies": [],
+      "description": null,
+      "documentation": null,
+      "edition": "2021",
+      "features": {},
+      "homepage": null,
+      "id": "path+file:////w/ws/plat#0.1.0",
+      "keywords": [],
+      "license": null,
+      "license_file": null,
+      "links": null,
+      "manifest_path": "/w/ws/plat/Cargo.toml",
+      "metadata": null,
+      "name": "plat",
+      "publish": null,
+      "readme": null,
+      "repository": null,
+      "rust_version": null,
+      "source": null,
+      "targets": [
+        {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "plat",
+          "src_path": "/w/ws/plat/src/lib.rs",
+          "test": true
+        }
+      ],
+      "version": "0.1.0"
+    }
+  ],
+  "resolve": {
+    "nodes": [
+      {
+        "dependencies": [
+          "path+file:////w/ws/builddep#0.1.0",
+          "path+file:////w/ws/core#0.1.0",
+          "path+file:////w/ws/core2#0.1.0",
+          "path+file:////w/ws/devdep#0.1.0",
+          "path+file:////w/ws/mac#0.1.0",
+          "path+file:////w/ws/optdep#0.1.0",
+          "path+file:////w/ws/plat#0.1.0"
+        ],
+        "deps": [
+          {
+            "dep_kinds": [
+              {
+                "kind": "build",
+                "target": null
+              }
+            ],
+            "name": "builddep",
+            "pkg": "path+file:////w/ws/builddep#0.1.0"
+          },
+          {
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ],
+            "name": "core",
+            "pkg": "path+file:////w/ws/core#0.1.0"
+          },
+          {
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ],
+            "name": "ren",
+            "pkg": "path+file:////w/ws/core2#0.1.0"
+          },
+          {
+            "dep_kinds": [
+              {
+                "kind": "dev",
+                "target": null
+              }
+            ],
+            "name": "devdep",
+            "pkg": "path+file:////w/ws/devdep#0.1.0"
+          },
+          {
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ],
+            "name": "mac",
+            "pkg": "path+file:////w/ws/mac#0.1.0"
+          },
+          {
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": null
+              }
+            ],
+            "name": "optdep",
+            "pkg": "path+file:////w/ws/optdep#0.1.0"
+          },
+          {
+            "dep_kinds": [
+              {
+                "kind": null,
+                "target": "cfg(windows)"
+              }
+            ],
+            "name": "plat",
+            "pkg": "path+file:////w/ws/plat#0.1.0"
+          }
+        ],
+        "features": [
+          "default",
+          "extra",
+          "optdep"
+        ],
+        "id": "path+file:////w/ws/app#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/builddep#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/core#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/core2#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/devdep#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/mac#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/optdep#0.1.0"
+      },
+      {
+        "dependencies": [],
+        "deps": [],
+        "features": [],
+        "id": "path+file:////w/ws/plat#0.1.0"
+      }
+    ],
+    "root": null
+  },
+  "target_directory": "/w/ws/target",
+  "version": 1,
+  "workspace_default_members": [
+    "path+file:////w/ws/app#0.1.0",
+    "path+file:////w/ws/core#0.1.0",
+    "path+file:////w/ws/mac#0.1.0",
+    "path+file:////w/ws/optdep#0.1.0",
+    "path+file:////w/ws/core2#0.1.0",
+    "path+file:////w/ws/devdep#0.1.0",
+    "path+file:////w/ws/builddep#0.1.0",
+    "path+file:////w/ws/plat#0.1.0"
+  ],
+  "workspace_members": [
+    "path+file:////w/ws/app#0.1.0",
+    "path+file:////w/ws/core#0.1.0",
+    "path+file:////w/ws/mac#0.1.0",
+    "path+file:////w/ws/optdep#0.1.0",
+    "path+file:////w/ws/core2#0.1.0",
+    "path+file:////w/ws/devdep#0.1.0",
+    "path+file:////w/ws/builddep#0.1.0",
+    "path+file:////w/ws/plat#0.1.0"
+  ],
+  "workspace_root": "/w/ws"
+}

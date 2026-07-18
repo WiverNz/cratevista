@@ -1,0 +1,12 @@
+[package]
+name = "sample_lib"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+# Standalone so the fixture is documented in isolation from the CrateVista
+# workspace (see ADR-0004 / the fixture regeneration example).
+[workspace]

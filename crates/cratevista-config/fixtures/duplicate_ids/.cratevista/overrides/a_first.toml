@@ -1,0 +1,8 @@
+# Overrides of the same target across sorted files: last loaded wins per field.
+
+[[override]]
+target = "package:demo"
+label = "First label"
+description = "Only the first sets this"
+tags = ["from-first"]
+category = "first"

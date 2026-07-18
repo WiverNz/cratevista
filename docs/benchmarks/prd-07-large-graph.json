@@ -1,0 +1,414 @@
+{
+  "generatedAt": "2026-07-16",
+  "environment": {
+    "os": "win32 10.0.22631 (x64)",
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900K",
+    "logicalCores": 32,
+    "systemMemoryBytes": 34028154880,
+    "node": "v24.13.0",
+    "npm": "11.17.0",
+    "playwright": "Version 1.61.1",
+    "chromium": "149.0.7827.55",
+    "rust": "cargo 1.97.0 (c980f4866 2026-06-30)"
+  },
+  "notes": [
+    "All timings are milliseconds, measured in the pinned Playwright Chromium",
+    "against the real embedded production bundle served by the real binary.",
+    "`cold` is a fresh context with an empty HTTP cache; `warm` reuses a primed",
+    "context. They are reported separately and never averaged together.",
+    "jsHeapBytes comes from Chromium's non-standard, quantised performance.memory;",
+    "null means the browser did not expose it and no value was estimated."
+  ],
+  "cases": [
+    {
+      "case": "sample-101",
+      "description": "the existing 101-entity sample",
+      "snapshot": "normal",
+      "view": "view:traits-and-impls",
+      "renderFull": false,
+      "repeats": 3,
+      "counts": {
+        "projectedFullNodes": 64,
+        "visibleNodes": 64,
+        "visibleEdges": 119,
+        "reducedMode": false
+      },
+      "cold": {
+        "runs": 1,
+        "firstUsableGraphMs": {
+          "median": 233,
+          "min": 233,
+          "max": 233,
+          "samples": 1
+        },
+        "artifactsLoadMs": {
+          "median": 8.6,
+          "min": 8.6,
+          "max": 8.6,
+          "samples": 1
+        }
+      },
+      "warm": {
+        "runs": 3,
+        "modelBuildMs": {
+          "median": 0.2,
+          "min": 0.1,
+          "max": 0.3,
+          "samples": 3
+        },
+        "adapterMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0.1,
+          "samples": 3
+        },
+        "reduceMs": null,
+        "workerMs": {
+          "median": 133.2,
+          "min": 132.7,
+          "max": 134.2,
+          "samples": 3
+        },
+        "firstUsableGraphMs": {
+          "median": 165,
+          "min": 164.9,
+          "max": 169.6,
+          "samples": 3
+        },
+        "selectionToInspectorMs": {
+          "median": 16,
+          "min": 15,
+          "max": 20,
+          "samples": 3
+        },
+        "panZoomMs": {
+          "median": 186,
+          "min": 179,
+          "max": 192,
+          "samples": 3
+        }
+      },
+      "jsHeapBytes": {
+        "median": 29400000,
+        "min": 11900000,
+        "max": 29400000,
+        "samples": 4
+      }
+    },
+    {
+      "case": "near-1212",
+      "description": "below but near the budget",
+      "snapshot": "bench-near",
+      "view": "view:traits-and-impls",
+      "renderFull": false,
+      "repeats": 3,
+      "counts": {
+        "projectedFullNodes": 1212,
+        "visibleNodes": 1212,
+        "visibleEdges": 2292,
+        "reducedMode": false
+      },
+      "cold": {
+        "runs": 1,
+        "firstUsableGraphMs": {
+          "median": 1116.3,
+          "min": 1116.3,
+          "max": 1116.3,
+          "samples": 1
+        },
+        "artifactsLoadMs": {
+          "median": 12.5,
+          "min": 12.5,
+          "max": 12.5,
+          "samples": 1
+        }
+      },
+      "warm": {
+        "runs": 3,
+        "modelBuildMs": {
+          "median": 1.7,
+          "min": 1.5,
+          "max": 1.8,
+          "samples": 3
+        },
+        "adapterMs": {
+          "median": 0.6,
+          "min": 0.5,
+          "max": 0.6,
+          "samples": 3
+        },
+        "reduceMs": null,
+        "workerMs": {
+          "median": 858.8,
+          "min": 856.1,
+          "max": 871.1,
+          "samples": 3
+        },
+        "firstUsableGraphMs": {
+          "median": 1018.8,
+          "min": 1005.6,
+          "max": 1028.4,
+          "samples": 3
+        },
+        "selectionToInspectorMs": {
+          "median": 206,
+          "min": 194,
+          "max": 214,
+          "samples": 3
+        },
+        "panZoomMs": {
+          "median": 264,
+          "min": 251,
+          "max": 334,
+          "samples": 3
+        }
+      },
+      "jsHeapBytes": {
+        "median": 212000000,
+        "min": 86400000,
+        "max": 212000000,
+        "samples": 4
+      }
+    },
+    {
+      "case": "at-1616",
+      "description": "at approximately 1,500 visible entities",
+      "snapshot": "bench-at",
+      "view": "view:traits-and-impls",
+      "renderFull": false,
+      "repeats": 3,
+      "counts": {
+        "projectedFullNodes": 1616,
+        "visibleNodes": 69,
+        "visibleEdges": 132,
+        "reducedMode": true
+      },
+      "cold": {
+        "runs": 1,
+        "firstUsableGraphMs": {
+          "median": 370.8,
+          "min": 370.8,
+          "max": 370.8,
+          "samples": 1
+        },
+        "artifactsLoadMs": {
+          "median": 20.6,
+          "min": 20.6,
+          "max": 20.6,
+          "samples": 1
+        }
+      },
+      "warm": {
+        "runs": 3,
+        "modelBuildMs": {
+          "median": 1.7,
+          "min": 1.6,
+          "max": 2,
+          "samples": 3
+        },
+        "adapterMs": {
+          "median": 0.5,
+          "min": 0.5,
+          "max": 0.5,
+          "samples": 3
+        },
+        "reduceMs": {
+          "median": 0.4,
+          "min": 0.4,
+          "max": 0.4,
+          "samples": 3
+        },
+        "workerMs": {
+          "median": 210.7,
+          "min": 168.9,
+          "max": 217.8,
+          "samples": 3
+        },
+        "firstUsableGraphMs": {
+          "median": 336.4,
+          "min": 285,
+          "max": 345.7,
+          "samples": 3
+        },
+        "selectionToInspectorMs": {
+          "median": 225,
+          "min": 174,
+          "max": 237,
+          "samples": 3
+        },
+        "panZoomMs": {
+          "median": 177,
+          "min": 171,
+          "max": 178,
+          "samples": 3
+        }
+      },
+      "jsHeapBytes": {
+        "median": 53500000,
+        "min": 53500000,
+        "max": 53500000,
+        "samples": 4
+      }
+    },
+    {
+      "case": "large-3232",
+      "description": "above the budget, reduced mode",
+      "snapshot": "bench-large",
+      "view": "view:traits-and-impls",
+      "renderFull": false,
+      "repeats": 3,
+      "counts": {
+        "projectedFullNodes": 3232,
+        "visibleNodes": 69,
+        "visibleEdges": 132,
+        "reducedMode": true
+      },
+      "cold": {
+        "runs": 1,
+        "firstUsableGraphMs": {
+          "median": 548.2,
+          "min": 548.2,
+          "max": 548.2,
+          "samples": 1
+        },
+        "artifactsLoadMs": {
+          "median": 31.7,
+          "min": 31.7,
+          "max": 31.7,
+          "samples": 1
+        }
+      },
+      "warm": {
+        "runs": 3,
+        "modelBuildMs": {
+          "median": 3.2,
+          "min": 3,
+          "max": 3.3,
+          "samples": 3
+        },
+        "adapterMs": {
+          "median": 0.9,
+          "min": 0.9,
+          "max": 7.5,
+          "samples": 3
+        },
+        "reduceMs": {
+          "median": 0.7,
+          "min": 0.6,
+          "max": 0.7,
+          "samples": 3
+        },
+        "workerMs": {
+          "median": 282.5,
+          "min": 231.8,
+          "max": 303.7,
+          "samples": 3
+        },
+        "firstUsableGraphMs": {
+          "median": 504.6,
+          "min": 475.3,
+          "max": 522.8,
+          "samples": 3
+        },
+        "selectionToInspectorMs": {
+          "median": 802,
+          "min": 800,
+          "max": 1081,
+          "samples": 3
+        },
+        "panZoomMs": {
+          "median": 174,
+          "min": 170,
+          "max": 175,
+          "samples": 3
+        }
+      },
+      "jsHeapBytes": {
+        "median": 29400000,
+        "min": 29400000,
+        "max": 76600000,
+        "samples": 4
+      }
+    },
+    {
+      "case": "large-3232-full",
+      "description": "above the budget, Render full graph",
+      "snapshot": "bench-large",
+      "view": "view:traits-and-impls",
+      "renderFull": true,
+      "repeats": 3,
+      "counts": {
+        "projectedFullNodes": 3232,
+        "visibleNodes": 3232,
+        "visibleEdges": 6112,
+        "reducedMode": false
+      },
+      "cold": {
+        "runs": 1,
+        "firstUsableGraphMs": {
+          "median": 3565.5,
+          "min": 3565.5,
+          "max": 3565.5,
+          "samples": 1
+        },
+        "artifactsLoadMs": {
+          "median": 30,
+          "min": 30,
+          "max": 30,
+          "samples": 1
+        }
+      },
+      "warm": {
+        "runs": 3,
+        "modelBuildMs": {
+          "median": 4.3,
+          "min": 3.2,
+          "max": 4.4,
+          "samples": 3
+        },
+        "adapterMs": {
+          "median": 0.7,
+          "min": 0.7,
+          "max": 1,
+          "samples": 3
+        },
+        "reduceMs": {
+          "median": 0.7,
+          "min": 0.6,
+          "max": 0.7,
+          "samples": 3
+        },
+        "workerMs": {
+          "median": 1595,
+          "min": 1584.3,
+          "max": 1638.6,
+          "samples": 3
+        },
+        "firstUsableGraphMs": {
+          "median": 3662.2,
+          "min": 3545.9,
+          "max": 3788.9,
+          "samples": 3
+        },
+        "selectionToInspectorMs": {
+          "median": 3414,
+          "min": 3212,
+          "max": 3613,
+          "samples": 3
+        },
+        "panZoomMs": {
+          "median": 660,
+          "min": 623,
+          "max": 756,
+          "samples": 3
+        }
+      },
+      "jsHeapBytes": {
+        "median": 491000000,
+        "min": 491000000,
+        "max": 491000000,
+        "samples": 4
+      }
+    }
+  ]
+}

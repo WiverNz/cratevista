@@ -1,0 +1,347 @@
+{
+  "entities": [
+    {
+      "id": "impl:demo:Greet:Thing:1655a7025e7eb7cd54872062f1ec2a3c",
+      "kind": "impl",
+      "label": {
+        "default": "impl Greet for Thing"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app"
+    },
+    {
+      "id": "item:constant:demo::app::MAX",
+      "kind": "constant",
+      "label": {
+        "default": "MAX"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::MAX"
+    },
+    {
+      "id": "item:enum:demo::app::Color",
+      "kind": "enum",
+      "label": {
+        "default": "Color"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::Color"
+    },
+    {
+      "id": "item:function:demo::app::run",
+      "kind": "function",
+      "label": {
+        "default": "run"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::run"
+    },
+    {
+      "id": "item:macro:demo::app::make",
+      "kind": "macro",
+      "label": {
+        "default": "make"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::make"
+    },
+    {
+      "id": "item:method:demo::app::Thing::name",
+      "kind": "method",
+      "label": {
+        "default": "name"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::Thing::name"
+    },
+    {
+      "id": "item:static:demo::app::GLOBAL",
+      "kind": "static",
+      "label": {
+        "default": "GLOBAL"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::GLOBAL"
+    },
+    {
+      "attributes": {
+        "visibility": "pub"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "A thing.",
+        "summary": "A thing."
+      },
+      "id": "item:struct:demo::app::Thing",
+      "kind": "struct",
+      "label": {
+        "default": "Thing"
+      },
+      "parent": "module:demo::app",
+      "provenance": "discovered",
+      "qualified_name": "demo::app::Thing",
+      "source": {
+        "path": "src/app.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 20,
+          "start_col": 1,
+          "start_line": 10
+        }
+      },
+      "tags": [
+        "public"
+      ]
+    },
+    {
+      "id": "item:trait:demo::app::Greet",
+      "kind": "trait",
+      "label": {
+        "default": "Greet"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::Greet"
+    },
+    {
+      "id": "item:type_alias:demo::app::Result",
+      "kind": "type_alias",
+      "label": {
+        "default": "Result"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::Result"
+    },
+    {
+      "id": "item:union:demo::app::Bits",
+      "kind": "union",
+      "label": {
+        "default": "Bits"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app::Bits"
+    },
+    {
+      "id": "manual:ingest",
+      "kind": "stage",
+      "label": {
+        "default": "Ingest"
+      },
+      "provenance": "manual",
+      "qualified_name": "ingest"
+    },
+    {
+      "id": "manual:notes",
+      "kind": "manual_block",
+      "label": {
+        "default": "Notes"
+      },
+      "provenance": "manual",
+      "qualified_name": "notes"
+    },
+    {
+      "id": "manual:postgres",
+      "kind": "external_system",
+      "label": {
+        "default": "PostgreSQL"
+      },
+      "provenance": "manual",
+      "qualified_name": "postgres"
+    },
+    {
+      "id": "manual:redis",
+      "kind": "infrastructure",
+      "label": {
+        "default": "Redis"
+      },
+      "provenance": "manual",
+      "qualified_name": "redis"
+    },
+    {
+      "id": "module:demo::app",
+      "kind": "module",
+      "label": {
+        "default": "app"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo::app"
+    },
+    {
+      "id": "package:demo",
+      "kind": "package",
+      "label": {
+        "default": "demo"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo"
+    },
+    {
+      "id": "package:serde@1.0.0",
+      "kind": "package",
+      "label": {
+        "default": "serde"
+      },
+      "provenance": "discovered",
+      "qualified_name": "serde"
+    },
+    {
+      "id": "target:demo:lib:demo",
+      "kind": "target",
+      "label": {
+        "default": "demo (lib)"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo"
+    },
+    {
+      "id": "workspace",
+      "kind": "workspace",
+      "label": {
+        "default": "Demo"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo"
+    }
+  ],
+  "project": {
+    "default_branch": "main",
+    "description": "A sample CrateVista workspace.",
+    "id": "demo",
+    "name": "Demo Workspace",
+    "repository_url": "https://example.com/demo"
+  },
+  "relations": [
+    {
+      "from": "item:function:demo::app::run",
+      "id": "rel:accepts_type:item:function:demo::app::run->item:struct:demo::app::Thing",
+      "kind": "accepts_type",
+      "provenance": "discovered",
+      "to": "item:struct:demo::app::Thing"
+    },
+    {
+      "from": "workspace",
+      "id": "rel:contains:workspace->package:demo",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "package:demo"
+    },
+    {
+      "from": "package:demo",
+      "id": "rel:depends_on:package:demo->package:serde@1.0.0",
+      "kind": "depends_on",
+      "provenance": "discovered",
+      "to": "package:serde@1.0.0"
+    },
+    {
+      "from": "item:function:demo::app::run",
+      "id": "rel:error_type:item:function:demo::app::run->item:union:demo::app::Bits",
+      "kind": "error_type",
+      "provenance": "discovered",
+      "to": "item:union:demo::app::Bits"
+    },
+    {
+      "from": "item:struct:demo::app::Thing",
+      "id": "rel:has_field_type:item:struct:demo::app::Thing->item:enum:demo::app::Color",
+      "kind": "has_field_type",
+      "provenance": "discovered",
+      "to": "item:enum:demo::app::Color"
+    },
+    {
+      "from": "impl:demo:Greet:Thing:1655a7025e7eb7cd54872062f1ec2a3c",
+      "id": "rel:implemented_for:impl:demo:Greet:Thing:1655a7025e7eb7cd54872062f1ec2a3c->item:struct:demo::app::Thing",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "to": "item:struct:demo::app::Thing"
+    },
+    {
+      "from": "impl:demo:Greet:Thing:1655a7025e7eb7cd54872062f1ec2a3c",
+      "id": "rel:implements:impl:demo:Greet:Thing:1655a7025e7eb7cd54872062f1ec2a3c->item:trait:demo::app::Greet",
+      "kind": "implements",
+      "provenance": "discovered",
+      "to": "item:trait:demo::app::Greet"
+    },
+    {
+      "from": "module:demo::app",
+      "id": "rel:imports:module:demo::app->item:struct:demo::app::Thing",
+      "kind": "imports",
+      "provenance": "discovered",
+      "to": "item:struct:demo::app::Thing"
+    },
+    {
+      "from": "manual:postgres",
+      "id": "rel:manual:manual:postgres->manual:redis",
+      "kind": "manual",
+      "provenance": "discovered",
+      "to": "manual:redis"
+    },
+    {
+      "from": "module:demo::app",
+      "id": "rel:re_exports:module:demo::app->item:enum:demo::app::Color",
+      "kind": "re_exports",
+      "provenance": "discovered",
+      "to": "item:enum:demo::app::Color"
+    },
+    {
+      "from": "item:method:demo::app::Thing::name",
+      "id": "rel:references_type:item:method:demo::app::Thing::name->item:trait:demo::app::Greet",
+      "kind": "references_type",
+      "provenance": "discovered",
+      "to": "item:trait:demo::app::Greet"
+    },
+    {
+      "from": "item:function:demo::app::run",
+      "id": "rel:returns_type:item:function:demo::app::run->item:enum:demo::app::Color",
+      "kind": "returns_type",
+      "provenance": "discovered",
+      "to": "item:enum:demo::app::Color"
+    }
+  ],
+  "schema_version": "1.0",
+  "views": [
+    {
+      "default_focus": "workspace",
+      "description": {
+        "default": "Top-level structure."
+      },
+      "id": "view:overview",
+      "stages": [
+        {
+          "id": "stage:ingest",
+          "order": 1,
+          "title": {
+            "default": "Ingest"
+          }
+        },
+        {
+          "id": "stage:store",
+          "order": 2,
+          "title": {
+            "default": "Store"
+          }
+        }
+      ],
+      "title": {
+        "default": "Workspace overview"
+      }
+    },
+    {
+      "default_focus": "item:struct:demo::app::Thing",
+      "entity_ids": [
+        "item:struct:demo::app::Thing",
+        "item:enum:demo::app::Color",
+        "item:union:demo::app::Bits"
+      ],
+      "entity_kinds": [
+        "struct",
+        "enum",
+        "union"
+      ],
+      "id": "view:types",
+      "relation_kinds": [
+        "has_field_type"
+      ],
+      "title": {
+        "default": "Types"
+      }
+    }
+  ]
+}

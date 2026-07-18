@@ -1,0 +1,291 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --panel: #111a2b;
+  --border: #223047;
+  --fg: #e6ecf5;
+  --muted: #93a1b8;
+  --accent: #f74c00;
+  --focus: #4c8bf7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.cv-muted {
+  color: var(--muted);
+}
+
+.cv-generic {
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* Four-region shell. */
+.cv-shell {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  height: 100%;
+}
+
+.cv-region-toolbar,
+.cv-region-tabs,
+.cv-region-stage {
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.cv-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  flex-wrap: wrap;
+}
+
+.cv-region-body {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  min-height: 0;
+}
+
+.cv-canvas {
+  /* A column, not a positioning context with an absolutely-filled child: banners
+     (reduced-mode, generation status) must sit ABOVE the graph and stay
+     clickable. When the graph was `position: absolute; inset: 0` it covered the
+     whole canvas, so the banner's own buttons could not be hit-tested. */
+  display: flex;
+  flex-direction: column;
+  /* A stable minimum: the graph is a real region, never squeezed to nothing by
+     the fixed-width inspector. `min-width: 0` alone lets a grid item collapse. */
+  min-width: 320px;
+  min-height: 320px;
+  /* The graph never paints outside its own region, so the inspector can never
+     overlay graph content (and vice versa). */
+  overflow: hidden;
+}
+
+.cv-inspector {
+  border-left: 1px solid var(--border);
+  background: var(--panel);
+  overflow: auto;
+  padding: 12px;
+}
+
+.cv-tabs,
+.cv-stages {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px;
+  overflow-x: auto;
+}
+
+.cv-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.cv-tab-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.cv-graph {
+  /* Fills what the canvas has left after any banner, rather than covering it.
+     `min-height: 0` lets a flex child actually shrink, and `position: relative`
+     keeps React Flow's floating panels anchored inside the graph region. */
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.cv-node {
+  width: 180px;
+  min-height: 56px;
+  background: #0f1a2c;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.cv-node-selected {
+  box-shadow: 0 0 0 2px var(--focus);
+}
+
+.cv-node-title {
+  font-weight: 600;
+}
+
+.cv-node-kind {
+  font-size: 12px;
+}
+
+.cv-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.cv-kind-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.cv-banner {
+  padding: 6px 12px;
+}
+
+.cv-partial {
+  background: #3a2a10;
+}
+
+.cv-warn {
+  background: #33240f;
+}
+
+/* Watch mode. Distinct from `.cv-warn` so "a rebuild is running" and "something
+   is wrong" never look alike. */
+.cv-regenerating {
+  background: #10283a;
+}
+
+.cv-error-banner {
+  background: #3a1414;
+}
+
+.cv-state {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  gap: 8px;
+  text-align: center;
+}
+
+.cv-error {
+  color: #ff9b8a;
+}
+
+.cv-legend,
+.cv-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.cv-panel-title {
+  font-size: 13px;
+  margin: 0 0 4px;
+}
+
+.cv-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-right: 6px;
+}
+
+.cv-canvas-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.cv-fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+}
+
+.cv-fields dt {
+  color: var(--muted);
+}
+
+.cv-graph-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Flow documentation + worked examples for the active view (schema 1.1).
+   Absent on the eight generated views, so this never affects their layout. */
+.cv-viewdocs-description {
+  margin: 0 0 8px;
+  color: var(--fg);
+}
+
+.cv-example {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  background: var(--panel);
+}
+
+.cv-example > summary {
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.cv-example-lang {
+  color: var(--muted);
+}
+
+/* Long example lines scroll inside the block rather than widening the page. */
+.cv-example .cv-code {
+  overflow-x: auto;
+  max-height: 320px;
+  overflow-y: auto;
+}

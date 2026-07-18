@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "id": "demo",
+    "name": "Unknown Kinds Demo",
+    "description": "Fixture exercising the open-kind generic fallback."
+  },
+  "entities": [
+    {
+      "id": "package:demo",
+      "kind": "package",
+      "label": { "default": "demo" },
+      "qualified_name": "demo",
+      "provenance": "discovered"
+    },
+    {
+      "id": "item:widget:demo::app::Widget",
+      "kind": "widget",
+      "label": { "default": "Widget" },
+      "qualified_name": "demo::app::Widget",
+      "provenance": "discovered",
+      "tags": ["experimental"]
+    },
+    {
+      "id": "manual:gizmo",
+      "kind": "quantum_gizmo",
+      "label": { "default": "Gizmo" },
+      "qualified_name": "gizmo",
+      "provenance": "manual"
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:contains:package:demo->item:widget:demo::app::Widget",
+      "kind": "contains",
+      "from": "package:demo",
+      "to": "item:widget:demo::app::Widget",
+      "provenance": "discovered"
+    },
+    {
+      "id": "rel:teleports_to:item:widget:demo::app::Widget->manual:gizmo",
+      "kind": "teleports_to",
+      "from": "item:widget:demo::app::Widget",
+      "to": "manual:gizmo",
+      "provenance": "manual"
+    }
+  ],
+  "views": [
+    {
+      "id": "view:workspace-overview",
+      "title": { "default": "Workspace overview" },
+      "entity_kinds": [],
+      "relation_kinds": [],
+      "stages": [],
+      "presentation": {}
+    }
+  ]
+}

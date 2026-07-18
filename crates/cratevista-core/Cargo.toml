@@ -1,0 +1,46 @@
+[package]
+name = "cratevista-core"
+description = "CrateVista orchestration / use-case layer and application runtime scaffolding."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+cratevista-schema = { workspace = true }
+cratevista-metadata = { workspace = true }
+cratevista-rustdoc = { workspace = true }
+cratevista-graph = { workspace = true }
+# Project-local configuration (issue 08): TOML -> GraphOverlay. Core orchestrates
+# it; the graph itself stays pure and never depends on config.
+cratevista-config = { workspace = true }
+cratevista-server = { workspace = true }
+# Watch mode (issue 09): core builds the WatchPlan and owns the regeneration
+# transaction. The arrow is core -> watch and never the reverse: watch knows
+# nothing of cargo, config or the server.
+cratevista-watch = { workspace = true }
+blake3 = { workspace = true }
+# Static build (issue 10): per-output OS advisory lock. Core is the only taker.
+fs4 = { workspace = true }
+# Static build (issue 10, Phase 2B): OS-random 32-hex nonces for staging/backup/
+# marker-temp names (collision-resistant across processes). Core is the only taker.
+getrandom = { workspace = true }
+# Reads the ROOT Cargo.toml directly for recovery coverage. Required because
+# `cargo metadata` fails in exactly the case recovery exists for: a declared
+# member whose manifest is missing or malformed.
+toml = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+time = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "net", "io-util", "time", "signal", "macros"] }
+opener = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "net", "io-util", "time", "macros"] }

@@ -1,0 +1,6 @@
+[[override]]
+target = "package:demo"
+label = "Last label"
+tags = ["from-last"]
+category = "last"
+hidden = true

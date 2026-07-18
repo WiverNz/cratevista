@@ -1,0 +1,12 @@
+# Loaded SECOND. Both declarations duplicate `a_first.toml` and are reported,
+# naming the first location. Ids are global across the WHOLE config set, not
+# per file.
+
+[[entity]]
+id = "redis"
+kind = "infrastructure"
+label = "Redis (second)"
+
+[[flow]]
+id = "dup"
+title = "Dup (second)"

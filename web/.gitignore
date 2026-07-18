@@ -1,0 +1,15 @@
+node_modules/
+coverage/
+playwright-report/
+test-results/
+.vite/
+# Throwaway Cargo workspaces the E2E harness materialises to hold a snapshot.
+e2e/.tmp/
+
+# dist/ is intentionally committed (embedded by cratevista-server). See PRD 07.
+# Because it is committed, ANY stray file there would be picked up by `git add -A`.
+# check:embed-rebuild writes this transient probe into dist and removes it in a
+# `finally` block — but a force-killed run cannot run that block, so belt and
+# braces. This never masks real drift: check:dist compares the filesystem, not
+# git, so a leftover probe still fails it.
+dist/assets/embed-probe.*

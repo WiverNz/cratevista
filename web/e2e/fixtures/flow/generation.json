@@ -1,0 +1,18 @@
+{
+  "artifact_hashes": {
+    "diagnostics_blake3": "f610d5585c7cabdb200f354df7c815ac7b0a0732e8dadb1e19a0b13cbbfd70bf",
+    "document_blake3": "c4ef84c18b4c287ded3409682455c501c14573ac042c1978f0a20ce80ec610ae"
+  },
+  "counts": {
+    "diagnostics": 0,
+    "entities": 4,
+    "relations": 3,
+    "views": 1
+  },
+  "generated_at": "2026-07-16T00:00:00Z",
+  "generator": {
+    "name": "gen_flow_fixture",
+    "version": "0.1.0"
+  },
+  "partial": false
+}

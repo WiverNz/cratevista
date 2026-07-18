@@ -1,0 +1,27 @@
+{
+  "artifact_hashes": {
+    "diagnostics_blake3": "2222222222222222222222222222222222222222222222222222222222222222",
+    "document_blake3": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "counts": {
+    "diagnostics": 1,
+    "entities": 20,
+    "relations": 12,
+    "views": 2
+  },
+  "durations_ms": {
+    "metadata": 12,
+    "rustdoc": 3400
+  },
+  "generated_at": "2026-07-12T00:00:00Z",
+  "generator": {
+    "name": "cargo-cratevista",
+    "version": "0.1.0"
+  },
+  "input_hashes": {
+    "Cargo.lock": "abc123"
+  },
+  "partial": false,
+  "rustdoc_format_version": 45,
+  "toolchain": "nightly-2026-01-01"
+}

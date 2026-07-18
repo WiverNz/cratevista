@@ -1,0 +1,121 @@
+# The issue-08 reference pattern: Clients → Gateway → Services → Infrastructure.
+#
+# It mixes MANUAL entities (which rustdoc cannot know about) with a DISCOVERED
+# one (`package:demo`, which came from cargo metadata), which is the whole point
+# of a flow.
+
+# --- manual entities -------------------------------------------------------
+# Declared here, in the flow file, and referenceable from any other flow file.
+
+[[entity]]
+id = "web-client"
+kind = "external_system"
+label = { default = "Web client", de = "Web-Client" }
+description = "The browser SPA."
+tags = ["client"]
+
+[[entity]]
+id = "api-gateway"
+kind = "manual_block"
+label = "API gateway"
+description = "Authenticates and fans out."
+
+  [entity.attributes]
+  tier = "edge"
+  replicas = 3
+
+[[entity]]
+id = "postgres"
+kind = "infrastructure"
+label = "PostgreSQL"
+tags = ["storage", "storage"]  # deduped on the way in
+
+[[entity]]
+id = "redis"
+kind = "infrastructure"
+label = "Redis"
+
+# --- the flow --------------------------------------------------------------
+
+[[flow]]
+id = "clients-to-infra"
+title = "Clients → Gateway → Services → Infrastructure"
+description = "How a checkout request reaches storage."
+# Explicit membership: manual entities AND a discovered package coexist.
+members = [
+  "manual:web-client",
+  "manual:api-gateway",
+  "package:demo",
+  "manual:postgres",
+  "manual:redis",
+]
+default_focus = "manual:api-gateway"
+docs = [".cratevista/docs/checkout.md", ".cratevista/docs/scaling.md"]
+
+  # Declared out of order on purpose: `order` is authoritative, not position.
+  [[flow.stage]]
+  id = "infrastructure"
+  title = "Infrastructure"
+  order = 4
+
+  [[flow.stage]]
+  id = "clients"
+  title = "Clients"
+  order = 1
+
+  [[flow.stage]]
+  id = "services"
+  title = "Services"
+  order = 3
+
+  [[flow.stage]]
+  id = "gateway"
+  title = "Gateway"
+  order = 2
+
+  # Two edges between the SAME pair, kept distinct by `role`.
+  [[flow.relation]]
+  from = "manual:web-client"
+  to = "manual:api-gateway"
+  role = "http"
+  label = "HTTPS"
+
+  [[flow.relation]]
+  from = "manual:web-client"
+  to = "manual:api-gateway"
+  role = "ws"
+  label = { default = "WebSocket", de = "WebSocket" }
+
+  # Manual → discovered.
+  [[flow.relation]]
+  from = "manual:api-gateway"
+  to = "package:demo"
+  role = "grpc"
+  label = "gRPC"
+
+  # Discovered → manual.
+  [[flow.relation]]
+  from = "package:demo"
+  to = "manual:postgres"
+  role = "sql"
+  label = "SQL"
+
+  [[flow.relation]]
+  from = "package:demo"
+  to = "manual:redis"
+  role = "cache"
+  label = "Redis protocol"
+
+  # Narrative order: request, then response.
+  [[flow.example]]
+  id = "request"
+  title = "Example request"
+  path = ".cratevista/examples/request.http"
+  language = "http"
+  description = "What the web client sends."
+
+  [[flow.example]]
+  id = "response"
+  title = "Example response"
+  path = ".cratevista/examples/response.json"
+  language = "json"

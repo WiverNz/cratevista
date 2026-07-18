@@ -1,0 +1,121 @@
+{
+  "entities": [
+    {
+      "id": "manual:gateway",
+      "kind": "manual_block",
+      "label": {
+        "default": "API gateway"
+      },
+      "provenance": "manual",
+      "qualified_name": "API gateway"
+    },
+    {
+      "id": "manual:orders",
+      "kind": "manual_block",
+      "label": {
+        "default": "Orders service"
+      },
+      "provenance": "manual",
+      "qualified_name": "Orders service"
+    },
+    {
+      "id": "manual:postgres",
+      "kind": "infrastructure",
+      "label": {
+        "default": "PostgreSQL"
+      },
+      "provenance": "manual",
+      "qualified_name": "PostgreSQL"
+    },
+    {
+      "id": "manual:web",
+      "kind": "external_system",
+      "label": {
+        "default": "Web client"
+      },
+      "provenance": "manual",
+      "qualified_name": "Web client"
+    }
+  ],
+  "project": {
+    "description": "Fixture exercising schema-1.1 view docs and examples.",
+    "id": "flow-demo",
+    "name": "Flow demo"
+  },
+  "relations": [
+    {
+      "from": "manual:gateway",
+      "id": "rel:manual:manual:gateway->manual:orders",
+      "kind": "manual",
+      "label": {
+        "default": "gRPC"
+      },
+      "provenance": "manual",
+      "to": "manual:orders"
+    },
+    {
+      "from": "manual:orders",
+      "id": "rel:manual:manual:orders->manual:postgres",
+      "kind": "manual",
+      "label": {
+        "default": "SQL"
+      },
+      "provenance": "manual",
+      "to": "manual:postgres"
+    },
+    {
+      "from": "manual:web",
+      "id": "rel:manual:manual:web->manual:gateway",
+      "kind": "manual",
+      "label": {
+        "default": "HTTPS"
+      },
+      "provenance": "manual",
+      "to": "manual:gateway"
+    }
+  ],
+  "schema_version": "1.1",
+  "views": [
+    {
+      "default_focus": "manual:gateway",
+      "description": {
+        "default": "How an order travels from the browser to storage."
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "## Checkout\n\nClients → Gateway → Services → Infrastructure.\n\nThe gateway authenticates, then fans out to the orders service.",
+        "summary": "Clients → Gateway → Services → Infrastructure."
+      },
+      "entity_ids": [
+        "manual:web",
+        "manual:gateway",
+        "manual:orders",
+        "manual:postgres"
+      ],
+      "examples": [
+        {
+          "content": "POST /checkout HTTP/1.1\nContent-Type: application/json\n\n{\"cart\": 42}",
+          "description": {
+            "default": "What the web client sends."
+          },
+          "id": "request",
+          "language": "http",
+          "title": {
+            "default": "Example request"
+          }
+        },
+        {
+          "content": "{\"order_id\": 1001, \"status\": \"accepted\"}",
+          "id": "response",
+          "title": {
+            "default": "Example response"
+          }
+        }
+      ],
+      "id": "view:flow-checkout",
+      "title": {
+        "default": "Checkout flow"
+      }
+    }
+  ]
+}

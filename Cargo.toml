@@ -1,0 +1,92 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/cratevista-core",
+    "crates/cargo-cratevista",
+    "crates/cratevista-schema",
+    "crates/cratevista-metadata",
+    "crates/cratevista-rustdoc",
+    "crates/cratevista-graph",
+    "crates/cratevista-server",
+    "crates/cratevista-config",
+    "crates/cratevista-watch",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+# CrateVista tracks the latest stable Rust release during pre-1.0 development.
+# See docs/adr/0010-rust-version-policy.md.
+rust-version = "1.97.1"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/cratevista/cratevista"
+homepage = "https://github.com/cratevista/cratevista"
+authors = ["Aleksandr Skibin"]
+
+[workspace.dependencies]
+# Internal crates. Each edge carries BOTH `path` (authoritative in-workspace) and
+# `version` (used by Cargo when packaging, so a packaged manifest requires the
+# registry crate and never a workspace-relative path). All nine stay at 0.1.0.
+cratevista-core = { path = "crates/cratevista-core", version = "0.1.0" }
+cratevista-schema = { path = "crates/cratevista-schema", version = "0.1.0" }
+cratevista-metadata = { path = "crates/cratevista-metadata", version = "0.1.0" }
+cratevista-rustdoc = { path = "crates/cratevista-rustdoc", version = "0.1.0" }
+cratevista-graph = { path = "crates/cratevista-graph", version = "0.1.0" }
+cratevista-server = { path = "crates/cratevista-server", version = "0.1.0" }
+cratevista-watch = { path = "crates/cratevista-watch", version = "0.1.0" }
+cratevista-config = { path = "crates/cratevista-config", version = "0.1.0" }
+
+# External dependencies
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+schemars = { version = "1", features = ["derive"] }
+blake3 = "1"
+cargo_metadata = "0.23"
+rustdoc-types = "0.60"
+time = { version = "0.3", features = ["formatting"] }
+
+# Config (issue 08). `toml` parses; `serde_spanned` carries byte spans through
+# serde so a diagnostic can point at the exact key. `toml_edit` is NOT a direct
+# dependency: it is a format-preserving EDITOR, and this crate only reads — see
+# PRD/issue_08_manual_flows_and_overrides.md.
+toml = { version = "1", features = ["serde"] }
+serde_spanned = "1"
+
+# Watch (issue 09)
+notify = "8"
+
+# Static build (issue 10, Phase 2A): a minimal cross-platform OS advisory file
+# lock (flock / LockFileEx) for the per-output build lock. Released on Drop and on
+# process termination; NOT a create_new lock file. MIT OR Apache-2.0. Reuses the
+# `rustix`/`windows-sys` already in the tree. Only `cratevista-core` takes it.
+fs4 = { version = "1", default-features = false, features = ["sync"] }
+# Static build (issue 10, Phase 2B): a minimal OS-random facility for the 32-hex
+# staging/backup/marker-temp nonces. Cross-process temporary names must be
+# collision-resistant, so timestamp/PID alone is not acceptable; this is the
+# smallest cross-platform CSPRNG-backed source. MIT OR Apache-2.0. Already resolved
+# in the tree (via `ahash`), so it adds no new transitive crates. Core-only.
+getrandom = "0.3"
+
+# Server (issue 06)
+axum = "0.8"
+# Only to NAME the `Stream` trait: `broadcast::Receiver` has no poll-based API,
+# so `/api/events` hand-writes an adapter. Already in the tree via axum, so this
+# adds no build cost.
+futures-core = "0.3"
+tokio = { version = "1" }
+tower = "0.5"
+tower-http = "0.6"
+rust-embed = "8"
+mime_guess = "2"
+arc-swap = "1"
+opener = "0.7"
+
+# Dev dependencies
+assert_cmd = "2"
+predicates = "3"
+tempfile = "3"
+jsonschema = "0.30"

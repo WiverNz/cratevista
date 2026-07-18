@@ -1,0 +1,541 @@
+{
+  "diagnostics": [
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "item:field:cvcore::model::Widget::name"
+      ],
+      "message": "unresolved cross-crate field reference `String`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Any`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Any:Color:01cbcb64eb73fd96174884c089be0254"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Any`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Any:Marker:efd0b8a06d84048fb9f4d747d90ed2e8"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Any`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Any`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `BorrowMut`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:BorrowMut:Color:a9e82bdfa149edeba7d9636883f18b40"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `BorrowMut`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:BorrowMut:Marker:0f9782d3095c09badda1ac81d676a5a0"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `BorrowMut`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `BorrowMut`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Borrow`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Borrow:Color:0e0684d4a1258050f1f70cf1014cdf54"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Borrow`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Borrow:Marker:211d9355a481d06264244bd47f469afc"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Borrow`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Borrow`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Freeze:Service:0b05166853cf61ad0979aeb8ad25b8bc"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Freeze`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Freeze:Color:ed27b83fda69b7765b14cf78cb6259df"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Freeze`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Freeze:Marker:54df9b7cdd919231ffb513c274ede6e8"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Freeze`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Freeze:Widget:379b39cfd126c9a27486bc9c90dbf4a9"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Freeze`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `From`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:From:Color:6fc8ce8925a27b60127b6ac35003893c"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `From`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:From:Marker:0b43f74dca943839999728fdf048f7b2"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `From`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `From`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Into`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Into:Color:b7a9f527e43f39f2c0a584cb723ffcea"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Into`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Into:Marker:e12369e948e51ef4385e7cd79e9f8155"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Into`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Into`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:RefUnwindSafe:Service:51d906cc42c316066d44525ae4482473"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `RefUnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:RefUnwindSafe:Color:31fe270fa6785f687c0582b53747bec2"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `RefUnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:RefUnwindSafe:Marker:565f1f0081ec7d5c06c5c2b3bff42467"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `RefUnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:RefUnwindSafe:Widget:2ed89b224fa9dac551118e03304a4981"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `RefUnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Send:Service:86a832a84956e74fde33ecfbcb47aa9b"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Send`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Send:Color:3760d291fa9c01cd86a3f480b61a9418"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Send`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Send:Marker:1986d4ef743b9f62c0868412160298d9"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Send`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Send:Widget:c1d0e0d8a5cf35584d41c5b12a9d19ec"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Send`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Sync:Service:8a0db8e2314c63e6872ef5b45ea8b6a2"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Sync`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Sync:Color:df807d3a9d163a68b719f80d20f426dd"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Sync`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Sync:Marker:aa612b439ecef068e07db02996247855"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Sync`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Sync:Widget:12f7f9aa968d72c12e818aa7abdba9bb"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Sync`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryFrom`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryFrom:Color:ce19bf3ca1c7f019c5ea751e4cc75295"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryFrom`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryFrom:Marker:821520809bd74b34394abbcdfe108117"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryFrom`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryFrom`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryInto`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryInto:Color:2b5c33797e1a2c1104f999ba6d3cff5e"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryInto`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryInto:Marker:d7a769595dad31b11453ee4a1565148c"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryInto`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `TryInto`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Unpin:Service:12cbfac3e61461a265c001fe41cf6b79"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Unpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Unpin:Color:4836f0d26d999578693900a05ec5e05a"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Unpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Unpin:Marker:221b2c2753666b04b5e744707095c72f"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Unpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Unpin:Widget:edbb883dc9e714f8b45dc39e732415de"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `Unpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:UnsafeUnpin:Service:460af85b068443a23f490789b815f53b"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnsafeUnpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:UnsafeUnpin:Color:060c247589d44a71d926c52bb12a1a6e"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnsafeUnpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:UnsafeUnpin:Marker:50cd3e0b45c4fc678c506f41d7401d15"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnsafeUnpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:UnsafeUnpin:Widget:3127d3540bb5b9e4e2602be2ffad0d2b"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnsafeUnpin`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:UnwindSafe:Service:c24fed784abed543b7df9c3efe5e43eb"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:UnwindSafe:Color:a9e5650ad7fd242395156d75470da2aa"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:UnwindSafe:Marker:e95c059aab570af9d5611aa18bbc7981"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:UnwindSafe:Widget:334ff50e911234a9900efa5172abf7e4"
+      ],
+      "message": "unresolved cross-crate impl_trait reference `UnwindSafe`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::new"
+      ],
+      "message": "unresolved cross-crate param reference `String`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::try_from"
+      ],
+      "message": "unresolved cross-crate return reference `Result<T, T::Error>`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::try_from"
+      ],
+      "message": "unresolved cross-crate return reference `Result<T, T::Error>`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::try_into"
+      ],
+      "message": "unresolved cross-crate return reference `Result<U, U::Error>`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::try_into"
+      ],
+      "message": "unresolved cross-crate return reference `Result<U, U::Error>`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::describe"
+      ],
+      "message": "unresolved cross-crate return reference `String`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a::render"
+      ],
+      "message": "unresolved cross-crate return reference `String`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "item:method:cvcore::model::Render::render"
+      ],
+      "message": "unresolved cross-crate return reference `String`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e::type_id"
+      ],
+      "message": "unresolved cross-crate return reference `TypeId`",
+      "severity": "warning"
+    },
+    {
+      "code": "unresolved_cross_crate_reference",
+      "entities": [
+        "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb::type_id"
+      ],
+      "message": "unresolved cross-crate return reference `TypeId`",
+      "severity": "warning"
+    }
+  ],
+  "schema_version": "1.0"
+}

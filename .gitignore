@@ -1,0 +1,28 @@
+# Rust build output
+/target/
+**/target/
+
+# CrateVista generated output
+target/cratevista/
+
+# Frontend
+web/node_modules/
+node_modules/
+# NOTE: the prebuilt web bundle is checked in and embedded into the binary (end
+# users need no Node.js). Since issue 10 Phase 5A it lives INSIDE the server crate
+# at crates/cratevista-server/embedded/ (moved from the old web/dist), and is
+# intentionally NOT ignored. See PRD/issue_10_static_build_and_release.md.
+
+# Editor / OS
+# CrateVista is developed on Linux, macOS, Windows and WSL, so cover all of them
+# rather than macOS alone.
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+# Merge/patch leftovers, which are easy to `git add -A` by accident.
+*.orig
+*.rej

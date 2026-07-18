@@ -1,0 +1,48 @@
+{
+  "entities": [
+    {
+      "id": "package:demo",
+      "kind": "package",
+      "label": {
+        "default": "demo"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo"
+    },
+    {
+      "id": "workspace",
+      "kind": "workspace",
+      "label": {
+        "default": "Demo"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo"
+    }
+  ],
+  "project": {
+    "default_branch": "main",
+    "description": "A sample CrateVista workspace.",
+    "id": "demo",
+    "name": "Demo Workspace",
+    "repository_url": "https://example.com/demo"
+  },
+  "relations": [
+    {
+      "from": "workspace",
+      "id": "rel:contains:workspace->package:demo",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "package:demo"
+    }
+  ],
+  "schema_version": "1.0",
+  "views": [
+    {
+      "default_focus": "workspace",
+      "id": "view:overview",
+      "title": {
+        "default": "Workspace overview"
+      }
+    }
+  ]
+}

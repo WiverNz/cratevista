@@ -1,0 +1,59 @@
+[package]
+name = "cratevista-watch"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Filesystem-change classification and debouncing for CrateVista watch mode."
+
+# `tokio` and nothing else.
+#
+# The engine owns one task and one state machine, so it needs exactly three
+# features and no more:
+#
+#   rt     — `tokio::spawn` for the single engine task.
+#   sync   — the command and event channels (`mpsc`), and `oneshot` in the tests.
+#   macros — `select!`, which is how the running state folds in new requests
+#            while awaiting the regeneration operation, and `#[tokio::test]`.
+#
+# NOT taken: `time` (nothing here sleeps or reads a clock — the debouncer is
+# driven by caller-supplied timestamps), `net`, `io-util`, `fs`, `process`,
+# `signal`, `rt-multi-thread` (one task, and the tests are deterministic on a
+# current-thread runtime).
+#
+# `notify` is still absent: the real watcher adapter arrives in a later step,
+# with the code that uses it.
+#
+# This crate must never depend on `cratevista-{core,server,config,graph,metadata,
+# rustdoc,schema}`: the arrow runs `core → watch`, and watch knowing about the
+# schema or the config would make it un-testable without them. Its data model is
+# `PathBuf`, `Duration` and plain Rust values. Enforced by
+# `tests/dependency_boundary.rs`.
+[dependencies]
+# The recommended NATIVE backend (inotify/FSEvents/ReadDirectoryChangesW).
+# `PollWatcher` is deliberately neither enabled nor used: degrading to polling is
+# a product decision with its own costs, and this PRD does not make it.
+notify = { workspace = true }
+# `time` is now earned by the production adapter: the real debouncer needs a real
+# timer (`sleep_until`). The `Debouncer` itself still takes caller-supplied
+# timestamps and reads no clock — the adapter converts one `Instant` epoch into
+# the elapsed `Duration`s it wants.
+tokio = { workspace = true, features = ["rt", "sync", "macros", "time"] }
+
+# `time` and `rt-multi-thread` are DEV-ONLY and never ship.
+#
+# `time`: the tests use `tokio::time::timeout` purely as a watchdog, so a
+# scheduling bug fails in seconds with a named message instead of hanging CI. It
+# never fires in a correct run — a failure bound, not a timing tolerance.
+#
+# `rt-multi-thread`: one test keeps the command channel *continuously* refilled
+# from another thread while a regeneration completes. That is the only way to
+# exhibit completion starvation at all: on a current-thread runtime the engine
+# never yields while commands are ready, so the channel always drains and the
+# scenario cannot occur. The engine itself is still one task and takes only `rt`.
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "sync", "macros", "time"] }
+# Real-filesystem integration tests need a real, disposable workspace.
+tempfile = { workspace = true }

@@ -1,0 +1,94 @@
+name: Publish to crates.io
+
+# MANUAL ONLY. This workflow is never triggered by a tag or a push — it runs only on
+# an explicit `workflow_dispatch` with a human confirmation input, inside the
+# protected `release` GitHub environment. PRD 10 delivers this workflow but never
+# executes it. crates.io-side validation (a real dry-run publish, a name-availability
+# recheck) is a MANUAL launch-checklist step performed immediately before this
+# workflow — see docs/launch-checklist.md. This workflow adds no automated dry-run.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (must equal the workspace version, e.g. 0.1.0)"
+        required: true
+        type: string
+      confirm:
+        description: 'Type PUBLISH to confirm real crates.io publication'
+        required: true
+        type: string
+
+# No GitHub write permission is needed to publish to crates.io.
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_STABLE: "1.97.1"
+
+jobs:
+  publish:
+    name: cargo publish (dependency order)
+    runs-on: ubuntu-latest
+    # The protected environment gates this job behind the repository's configured
+    # reviewers/secrets. CARGO_REGISTRY_TOKEN is an environment secret and is never
+    # echoed.
+    environment: release
+    steps:
+      - name: Require explicit confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.confirm }}" != "PUBLISH" ]; then
+            echo "confirmation input was not 'PUBLISH'; aborting." >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+
+      - name: Requested version ⇔ workspace/package versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ inputs.version }}"
+          meta="$(cargo +${RUST_STABLE} metadata --no-deps --format-version 1 --locked)"
+          mismatch="$(printf '%s' "$meta" | python3 -c 'import json,sys; v=sys.argv[1]; m=json.load(sys.stdin); print("\n".join(p["name"]+"="+p["version"] for p in m["packages"] if p["version"]!=v))' "$version")"
+          if [ -n "$mismatch" ]; then
+            echo "requested version $version does not match:" >&2
+            echo "$mismatch" >&2
+            exit 1
+          fi
+          echo "requested version $version matches all workspace packages"
+
+      # Publish the nine crates strictly in dependency order (Decision 8). Stop on
+      # the FIRST failure (default `set -e`) — no `continue-on-error`, no retry loop.
+      #
+      # crates.io index propagation: after each `cargo publish` the new version must
+      # appear in the sparse index before a dependent crate can resolve it. `cargo
+      # publish` waits for the crate to be available before returning on modern Cargo;
+      # if a dependent publish ever races the index, the run fails loudly and the
+      # operator re-runs from the failed crate (the earlier crates are already live).
+      # We do NOT paper over propagation with `--no-verify` or a blind sleep-retry.
+      - name: Publish crates in dependency order
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for crate in \
+            cratevista-schema \
+            cratevista-metadata \
+            cratevista-rustdoc \
+            cratevista-graph \
+            cratevista-config \
+            cratevista-server \
+            cratevista-watch \
+            cratevista-core \
+            cargo-cratevista; do
+            echo "::group::cargo publish -p $crate"
+            cargo publish -p "$crate" --locked
+            echo "::endgroup::"
+          done

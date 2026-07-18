@@ -1,0 +1,42 @@
+[package]
+name = "cargo-cratevista"
+description = "Turn any Rust workspace into an interactive architecture and documentation explorer."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+readme = "README.md"
+keywords = ["cargo", "rustdoc", "architecture", "documentation", "visualization"]
+categories = ["development-tools", "visualization", "command-line-utilities"]
+
+[[bin]]
+name = "cargo-cratevista"
+path = "src/main.rs"
+
+[dependencies]
+cratevista-core = { workspace = true }
+clap = { workspace = true }
+
+[dev-dependencies]
+assert_cmd = { workspace = true }
+predicates = { workspace = true }
+tempfile = { workspace = true }
+# Phase 5B local-registry harness only (tests/local_registry.rs). `serde_json`
+# reads the `cargo metadata` cross-check; `toml` parses the Cargo-normalized
+# packaged manifest that is the authoritative source of every index row;
+# `flate2` + `tar` extract that manifest (and the embedded asset set) from the
+# exact `.crate` archive deterministically on all three OSes; `sha2` computes the
+# archive checksum each index entry carries. `zip` assembles the Windows release
+# archive in the shared release-archive helper (tests/release_archive.rs); `flate2`
+# + `tar` assemble the Unix `.tar.gz`. Harness-only — none enters the installed
+# binary.
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+sha2 = "0.11"
+flate2 = "1"
+tar = "0.4"
+zip = { version = "2", default-features = false, features = ["deflate"] }

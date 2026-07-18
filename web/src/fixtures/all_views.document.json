@@ -1,0 +1,3342 @@
+{
+  "entities": [
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Any",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e",
+      "kind": "impl",
+      "label": {
+        "default": "impl Any for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Any for Service"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "TypeId",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e::type_id",
+      "kind": "method",
+      "label": {
+        "default": "type_id"
+      },
+      "parent": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e::type_id"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Borrow",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d",
+      "kind": "impl",
+      "label": {
+        "default": "impl Borrow for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Borrow for Service"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "&T",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d::borrow",
+      "kind": "method",
+      "label": {
+        "default": "borrow"
+      },
+      "parent": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d::borrow"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "BorrowMut",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d",
+      "kind": "impl",
+      "label": {
+        "default": "impl BorrowMut for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl BorrowMut for Service"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &mut Self"
+        ],
+        "is_result": false,
+        "output": "&mut T",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d::borrow_mut",
+      "kind": "method",
+      "label": {
+        "default": "borrow_mut"
+      },
+      "parent": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d::borrow_mut"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Freeze",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Freeze:Service:0b05166853cf61ad0979aeb8ad25b8bc",
+      "kind": "impl",
+      "label": {
+        "default": "impl Freeze for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Freeze for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "From",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd",
+      "kind": "impl",
+      "label": {
+        "default": "impl From for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl From for Service"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "t: T"
+        ],
+        "is_result": false,
+        "output": "T",
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Returns the argument unchanged.",
+        "summary": "Returns the argument unchanged."
+      },
+      "id": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd::from",
+      "kind": "method",
+      "label": {
+        "default": "from"
+      },
+      "parent": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd::from"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Into",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7",
+      "kind": "impl",
+      "label": {
+        "default": "impl Into for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Into for Service"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: Self"
+        ],
+        "is_result": false,
+        "output": "U",
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Calls `U::from(self)`.\n\nThat is, this conversion is whatever the implementation of\n<code>[From]&lt;T&gt; for U</code> chooses to do.",
+        "summary": "Calls `U::from(self)`."
+      },
+      "id": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7::into",
+      "kind": "method",
+      "label": {
+        "default": "into"
+      },
+      "parent": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7::into"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "RefUnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:RefUnwindSafe:Service:51d906cc42c316066d44525ae4482473",
+      "kind": "impl",
+      "label": {
+        "default": "impl RefUnwindSafe for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl RefUnwindSafe for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Send",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Send:Service:86a832a84956e74fde33ecfbcb47aa9b",
+      "kind": "impl",
+      "label": {
+        "default": "impl Send for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Send for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Sync",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Sync:Service:8a0db8e2314c63e6872ef5b45ea8b6a2",
+      "kind": "impl",
+      "label": {
+        "default": "impl Sync for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Sync for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "TryFrom",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryFrom for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl TryFrom for Service"
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::Error",
+      "kind": "assoc_type",
+      "label": {
+        "default": "Error"
+      },
+      "parent": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::Error"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "value: U"
+        ],
+        "is_result": true,
+        "output": "Result<T, T::Error>",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::try_from",
+      "kind": "method",
+      "label": {
+        "default": "try_from"
+      },
+      "parent": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::try_from"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "TryInto",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryInto for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl TryInto for Service"
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::Error",
+      "kind": "assoc_type",
+      "label": {
+        "default": "Error"
+      },
+      "parent": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::Error"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: Self"
+        ],
+        "is_result": true,
+        "output": "Result<U, U::Error>",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::try_into",
+      "kind": "method",
+      "label": {
+        "default": "try_into"
+      },
+      "parent": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::try_into"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "Unpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:Unpin:Service:12cbfac3e61461a265c001fe41cf6b79",
+      "kind": "impl",
+      "label": {
+        "default": "impl Unpin for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Unpin for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "UnsafeUnpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:UnsafeUnpin:Service:460af85b068443a23f490789b815f53b",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnsafeUnpin for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl UnsafeUnpin for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "UnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:UnwindSafe:Service:c24fed784abed543b7df9c3efe5e43eb",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnwindSafe for Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl UnwindSafe for Service"
+    },
+    {
+      "attributes": {
+        "impl_for": "Service",
+        "impl_trait": "inherent",
+        "visibility": "default"
+      },
+      "id": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "kind": "impl",
+      "label": {
+        "default": "impl Service"
+      },
+      "parent": "item:struct:cvapp::Service",
+      "provenance": "discovered",
+      "qualified_name": "impl Service",
+      "source": {
+        "path": "crates/cvapp/crates/cvapp/src/lib.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 21,
+          "start_col": 1,
+          "start_line": 11
+        }
+      }
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "String",
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Describes the wrapped widget (returns a `String`).",
+        "summary": "Describes the wrapped widget (returns a `String`)."
+      },
+      "id": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::describe",
+      "kind": "method",
+      "label": {
+        "default": "describe"
+      },
+      "parent": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::describe",
+      "source": {
+        "path": "crates/cvapp/crates/cvapp/src/lib.rs",
+        "span": {
+          "end_col": 6,
+          "end_line": 20,
+          "start_col": 5,
+          "start_line": 18
+        }
+      }
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "widget: Widget"
+        ],
+        "is_result": false,
+        "output": "Self",
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Builds a service from a `Widget` (accepts the cross-crate type).",
+        "summary": "Builds a service from a `Widget` (accepts the cross-crate type)."
+      },
+      "id": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::new",
+      "kind": "method",
+      "label": {
+        "default": "new"
+      },
+      "parent": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::new",
+      "source": {
+        "path": "crates/cvapp/crates/cvapp/src/lib.rs",
+        "span": {
+          "end_col": 6,
+          "end_line": 15,
+          "start_col": 5,
+          "start_line": 13
+        }
+      }
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Any",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Any:Color:01cbcb64eb73fd96174884c089be0254",
+      "kind": "impl",
+      "label": {
+        "default": "impl Any for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Any for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Any",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Any:Marker:efd0b8a06d84048fb9f4d747d90ed2e8",
+      "kind": "impl",
+      "label": {
+        "default": "impl Any for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Any for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Any",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb",
+      "kind": "impl",
+      "label": {
+        "default": "impl Any for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Any for Widget"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "TypeId",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb::type_id",
+      "kind": "method",
+      "label": {
+        "default": "type_id"
+      },
+      "parent": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb::type_id"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Borrow",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Borrow:Color:0e0684d4a1258050f1f70cf1014cdf54",
+      "kind": "impl",
+      "label": {
+        "default": "impl Borrow for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Borrow for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Borrow",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Borrow:Marker:211d9355a481d06264244bd47f469afc",
+      "kind": "impl",
+      "label": {
+        "default": "impl Borrow for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Borrow for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Borrow",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676",
+      "kind": "impl",
+      "label": {
+        "default": "impl Borrow for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Borrow for Widget"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "&T",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676::borrow",
+      "kind": "method",
+      "label": {
+        "default": "borrow"
+      },
+      "parent": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676::borrow"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "BorrowMut",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:BorrowMut:Color:a9e82bdfa149edeba7d9636883f18b40",
+      "kind": "impl",
+      "label": {
+        "default": "impl BorrowMut for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl BorrowMut for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "BorrowMut",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:BorrowMut:Marker:0f9782d3095c09badda1ac81d676a5a0",
+      "kind": "impl",
+      "label": {
+        "default": "impl BorrowMut for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl BorrowMut for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "BorrowMut",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef",
+      "kind": "impl",
+      "label": {
+        "default": "impl BorrowMut for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl BorrowMut for Widget"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &mut Self"
+        ],
+        "is_result": false,
+        "output": "&mut T",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef::borrow_mut",
+      "kind": "method",
+      "label": {
+        "default": "borrow_mut"
+      },
+      "parent": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef::borrow_mut"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Freeze",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Freeze:Color:ed27b83fda69b7765b14cf78cb6259df",
+      "kind": "impl",
+      "label": {
+        "default": "impl Freeze for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Freeze for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Freeze",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Freeze:Marker:54df9b7cdd919231ffb513c274ede6e8",
+      "kind": "impl",
+      "label": {
+        "default": "impl Freeze for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Freeze for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Freeze",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Freeze:Widget:379b39cfd126c9a27486bc9c90dbf4a9",
+      "kind": "impl",
+      "label": {
+        "default": "impl Freeze for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Freeze for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "From",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:From:Color:6fc8ce8925a27b60127b6ac35003893c",
+      "kind": "impl",
+      "label": {
+        "default": "impl From for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl From for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "From",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:From:Marker:0b43f74dca943839999728fdf048f7b2",
+      "kind": "impl",
+      "label": {
+        "default": "impl From for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl From for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "From",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601",
+      "kind": "impl",
+      "label": {
+        "default": "impl From for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl From for Widget"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "t: T"
+        ],
+        "is_result": false,
+        "output": "T",
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Returns the argument unchanged.",
+        "summary": "Returns the argument unchanged."
+      },
+      "id": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601::from",
+      "kind": "method",
+      "label": {
+        "default": "from"
+      },
+      "parent": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601::from"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Into",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Into:Color:b7a9f527e43f39f2c0a584cb723ffcea",
+      "kind": "impl",
+      "label": {
+        "default": "impl Into for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Into for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Into",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Into:Marker:e12369e948e51ef4385e7cd79e9f8155",
+      "kind": "impl",
+      "label": {
+        "default": "impl Into for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Into for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Into",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e",
+      "kind": "impl",
+      "label": {
+        "default": "impl Into for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Into for Widget"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: Self"
+        ],
+        "is_result": false,
+        "output": "U",
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Calls `U::from(self)`.\n\nThat is, this conversion is whatever the implementation of\n<code>[From]&lt;T&gt; for U</code> chooses to do.",
+        "summary": "Calls `U::from(self)`."
+      },
+      "id": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e::into",
+      "kind": "method",
+      "label": {
+        "default": "into"
+      },
+      "parent": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e::into"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "RefUnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:RefUnwindSafe:Color:31fe270fa6785f687c0582b53747bec2",
+      "kind": "impl",
+      "label": {
+        "default": "impl RefUnwindSafe for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl RefUnwindSafe for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "RefUnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:RefUnwindSafe:Marker:565f1f0081ec7d5c06c5c2b3bff42467",
+      "kind": "impl",
+      "label": {
+        "default": "impl RefUnwindSafe for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl RefUnwindSafe for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "RefUnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:RefUnwindSafe:Widget:2ed89b224fa9dac551118e03304a4981",
+      "kind": "impl",
+      "label": {
+        "default": "impl RefUnwindSafe for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl RefUnwindSafe for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Render",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a",
+      "kind": "impl",
+      "label": {
+        "default": "impl Render for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Render for Widget",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 34,
+          "start_col": 1,
+          "start_line": 30
+        }
+      }
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "String",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a::render",
+      "kind": "method",
+      "label": {
+        "default": "render"
+      },
+      "parent": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a::render",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 6,
+          "end_line": 33,
+          "start_col": 5,
+          "start_line": 31
+        }
+      }
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Send",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Send:Color:3760d291fa9c01cd86a3f480b61a9418",
+      "kind": "impl",
+      "label": {
+        "default": "impl Send for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Send for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Send",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Send:Marker:1986d4ef743b9f62c0868412160298d9",
+      "kind": "impl",
+      "label": {
+        "default": "impl Send for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Send for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Send",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Send:Widget:c1d0e0d8a5cf35584d41c5b12a9d19ec",
+      "kind": "impl",
+      "label": {
+        "default": "impl Send for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Send for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Sync",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Sync:Color:df807d3a9d163a68b719f80d20f426dd",
+      "kind": "impl",
+      "label": {
+        "default": "impl Sync for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Sync for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Sync",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Sync:Marker:aa612b439ecef068e07db02996247855",
+      "kind": "impl",
+      "label": {
+        "default": "impl Sync for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Sync for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Sync",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Sync:Widget:12f7f9aa968d72c12e818aa7abdba9bb",
+      "kind": "impl",
+      "label": {
+        "default": "impl Sync for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Sync for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "TryFrom",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryFrom:Color:ce19bf3ca1c7f019c5ea751e4cc75295",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryFrom for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl TryFrom for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "TryFrom",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryFrom:Marker:821520809bd74b34394abbcdfe108117",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryFrom for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl TryFrom for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "TryFrom",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryFrom for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl TryFrom for Widget"
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::Error",
+      "kind": "assoc_type",
+      "label": {
+        "default": "Error"
+      },
+      "parent": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::Error"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "value: U"
+        ],
+        "is_result": true,
+        "output": "Result<T, T::Error>",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::try_from",
+      "kind": "method",
+      "label": {
+        "default": "try_from"
+      },
+      "parent": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::try_from"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "TryInto",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryInto:Color:2b5c33797e1a2c1104f999ba6d3cff5e",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryInto for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl TryInto for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "TryInto",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryInto:Marker:d7a769595dad31b11453ee4a1565148c",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryInto for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl TryInto for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "TryInto",
+        "synthetic": "blanket",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "kind": "impl",
+      "label": {
+        "default": "impl TryInto for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl TryInto for Widget"
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::Error",
+      "kind": "assoc_type",
+      "label": {
+        "default": "Error"
+      },
+      "parent": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::Error"
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: Self"
+        ],
+        "is_result": true,
+        "output": "Result<U, U::Error>",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::try_into",
+      "kind": "method",
+      "label": {
+        "default": "try_into"
+      },
+      "parent": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::try_into"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "Unpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Unpin:Color:4836f0d26d999578693900a05ec5e05a",
+      "kind": "impl",
+      "label": {
+        "default": "impl Unpin for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl Unpin for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "Unpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Unpin:Marker:221b2c2753666b04b5e744707095c72f",
+      "kind": "impl",
+      "label": {
+        "default": "impl Unpin for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl Unpin for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "Unpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:Unpin:Widget:edbb883dc9e714f8b45dc39e732415de",
+      "kind": "impl",
+      "label": {
+        "default": "impl Unpin for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Unpin for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "UnsafeUnpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:UnsafeUnpin:Color:060c247589d44a71d926c52bb12a1a6e",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnsafeUnpin for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl UnsafeUnpin for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "UnsafeUnpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:UnsafeUnpin:Marker:50cd3e0b45c4fc678c506f41d7401d15",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnsafeUnpin for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl UnsafeUnpin for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "UnsafeUnpin",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:UnsafeUnpin:Widget:3127d3540bb5b9e4e2602be2ffad0d2b",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnsafeUnpin for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl UnsafeUnpin for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Color",
+        "impl_trait": "UnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:UnwindSafe:Color:a9e5650ad7fd242395156d75470da2aa",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnwindSafe for Color"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "impl UnwindSafe for Color"
+    },
+    {
+      "attributes": {
+        "impl_for": "Marker",
+        "impl_trait": "UnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:UnwindSafe:Marker:e95c059aab570af9d5611aa18bbc7981",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnwindSafe for Marker"
+      },
+      "parent": "item:struct:cvcore::model::Marker",
+      "provenance": "discovered",
+      "qualified_name": "impl UnwindSafe for Marker"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "UnwindSafe",
+        "synthetic": "auto",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:UnwindSafe:Widget:334ff50e911234a9900efa5172abf7e4",
+      "kind": "impl",
+      "label": {
+        "default": "impl UnwindSafe for Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl UnwindSafe for Widget"
+    },
+    {
+      "attributes": {
+        "impl_for": "Widget",
+        "impl_trait": "inherent",
+        "visibility": "default"
+      },
+      "id": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "kind": "impl",
+      "label": {
+        "default": "impl Widget"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "impl Widget",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 47,
+          "start_col": 1,
+          "start_line": 36
+        }
+      }
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "Color",
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Returns the widget's color (references the `Color` type).",
+        "summary": "Returns the widget's color (references the `Color` type)."
+      },
+      "id": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::color",
+      "kind": "method",
+      "label": {
+        "default": "color"
+      },
+      "parent": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::color",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 6,
+          "end_line": 46,
+          "start_col": 5,
+          "start_line": 43
+        }
+      }
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "id: u32",
+          "name: String"
+        ],
+        "is_result": false,
+        "output": "Self",
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Creates a new widget (documented public method).",
+        "summary": "Creates a new widget (documented public method)."
+      },
+      "id": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::new",
+      "kind": "method",
+      "label": {
+        "default": "new"
+      },
+      "parent": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "provenance": "discovered",
+      "qualified_name": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::new",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 6,
+          "end_line": 40,
+          "start_col": 5,
+          "start_line": 38
+        }
+      }
+    },
+    {
+      "attributes": {
+        "aliases": [
+          "Color"
+        ],
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "A documented color enum.",
+        "summary": "A documented color enum."
+      },
+      "id": "item:enum:cvcore::model::Color",
+      "kind": "enum",
+      "label": {
+        "default": "Color"
+      },
+      "parent": "module:cvcore::model",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Color",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 19,
+          "start_col": 1,
+          "start_line": 12
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Stable identifier.",
+        "summary": "Stable identifier."
+      },
+      "id": "item:field:cvcore::model::Widget::id",
+      "kind": "field",
+      "label": {
+        "default": "id"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Widget::id",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 16,
+          "end_line": 6,
+          "start_col": 5,
+          "start_line": 6
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Human-readable name.",
+        "summary": "Human-readable name."
+      },
+      "id": "item:field:cvcore::model::Widget::name",
+      "kind": "field",
+      "label": {
+        "default": "name"
+      },
+      "parent": "item:struct:cvcore::model::Widget",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Widget::name",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 21,
+          "end_line": 8,
+          "start_col": 5,
+          "start_line": 8
+        }
+      }
+    },
+    {
+      "attributes": {
+        "inputs": [
+          "self: &Self"
+        ],
+        "is_result": false,
+        "output": "String",
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Renders the value to a string.",
+        "summary": "Renders the value to a string."
+      },
+      "id": "item:method:cvcore::model::Render::render",
+      "kind": "method",
+      "label": {
+        "default": "render"
+      },
+      "parent": "item:trait:cvcore::model::Render",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Render::render",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 32,
+          "end_line": 27,
+          "start_col": 5,
+          "start_line": 27
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "A documented service that wraps a core `Widget`.",
+        "summary": "A documented service that wraps a core `Widget`."
+      },
+      "id": "item:struct:cvapp::Service",
+      "kind": "struct",
+      "label": {
+        "default": "Service"
+      },
+      "parent": "module:cvapp::cvapp",
+      "provenance": "discovered",
+      "qualified_name": "cvapp::Service",
+      "source": {
+        "path": "crates/cvapp/crates/cvapp/src/lib.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 9,
+          "start_col": 1,
+          "start_line": 7
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "public"
+      },
+      "id": "item:struct:cvcore::model::Marker",
+      "kind": "struct",
+      "label": {
+        "default": "Marker"
+      },
+      "parent": "module:cvcore::model",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Marker",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 19,
+          "end_line": 22,
+          "start_col": 1,
+          "start_line": 22
+        }
+      }
+    },
+    {
+      "attributes": {
+        "aliases": [
+          "Widget"
+        ],
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "A documented widget with an id and a name.",
+        "summary": "A documented widget with an id and a name."
+      },
+      "id": "item:struct:cvcore::model::Widget",
+      "kind": "struct",
+      "label": {
+        "default": "Widget"
+      },
+      "parent": "module:cvcore::model",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Widget",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 9,
+          "start_col": 1,
+          "start_line": 4
+        }
+      }
+    },
+    {
+      "attributes": {
+        "aliases": [
+          "Render"
+        ],
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "A documented rendering trait.",
+        "summary": "A documented rendering trait."
+      },
+      "id": "item:trait:cvcore::model::Render",
+      "kind": "trait",
+      "label": {
+        "default": "Render"
+      },
+      "parent": "module:cvcore::model",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Render",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 28,
+          "start_col": 1,
+          "start_line": 25
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Blue.",
+        "summary": "Blue."
+      },
+      "id": "item:variant:cvcore::model::Color::Blue",
+      "kind": "variant",
+      "label": {
+        "default": "Blue"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Color::Blue",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 9,
+          "end_line": 18,
+          "start_col": 5,
+          "start_line": 18
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Green.",
+        "summary": "Green."
+      },
+      "id": "item:variant:cvcore::model::Color::Green",
+      "kind": "variant",
+      "label": {
+        "default": "Green"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Color::Green",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 10,
+          "end_line": 16,
+          "start_col": 5,
+          "start_line": 16
+        }
+      }
+    },
+    {
+      "attributes": {
+        "visibility": "default"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Red.",
+        "summary": "Red."
+      },
+      "id": "item:variant:cvcore::model::Color::Red",
+      "kind": "variant",
+      "label": {
+        "default": "Red"
+      },
+      "parent": "item:enum:cvcore::model::Color",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model::Color::Red",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 8,
+          "end_line": 14,
+          "start_col": 5,
+          "start_line": 14
+        }
+      }
+    },
+    {
+      "attributes": {
+        "doc_coverage": {
+          "documented": 3,
+          "percent": 100,
+          "total": 3
+        },
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "`cvapp` — depends on `cvcore` to exercise crate-dependency and cross-crate\ntype-reference relations.",
+        "summary": "`cvapp` — depends on `cvcore` to exercise crate-dependency and cross-crate type-reference relations."
+      },
+      "id": "module:cvapp::cvapp",
+      "kind": "module",
+      "label": {
+        "default": "cvapp"
+      },
+      "parent": "target:cvapp:lib:cvapp",
+      "provenance": "discovered",
+      "qualified_name": "cvapp",
+      "source": {
+        "path": "crates/cvapp/crates/cvapp/src/lib.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 21,
+          "start_col": 1,
+          "start_line": 1
+        }
+      }
+    },
+    {
+      "attributes": {
+        "doc_coverage": {
+          "documented": 5,
+          "percent": 83,
+          "total": 6
+        },
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "`cvcore` — core model types for the CrateVista PRD-07 sample workspace.\n\nDeliberately small but structurally rich: public + private modules,\ndocumented + undocumented public items, structs/enums, a trait and its\nimplementation, and inherent methods with type references.",
+        "summary": "`cvcore` — core model types for the CrateVista PRD-07 sample workspace."
+      },
+      "id": "module:cvcore::cvcore",
+      "kind": "module",
+      "label": {
+        "default": "cvcore"
+      },
+      "parent": "target:cvcore:lib:cvcore",
+      "provenance": "discovered",
+      "qualified_name": "cvcore",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/lib.rs",
+        "span": {
+          "end_col": 40,
+          "end_line": 10,
+          "start_col": 1,
+          "start_line": 1
+        }
+      }
+    },
+    {
+      "attributes": {
+        "doc_coverage": {
+          "documented": 5,
+          "percent": 83,
+          "total": 6
+        },
+        "visibility": "public"
+      },
+      "docs": {
+        "documented": true,
+        "markdown": "Public model types (documented + undocumented, structs/enums/traits/impls).",
+        "summary": "Public model types (documented + undocumented, structs/enums/traits/impls)."
+      },
+      "id": "module:cvcore::model",
+      "kind": "module",
+      "label": {
+        "default": "model"
+      },
+      "parent": "module:cvcore::cvcore",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::model",
+      "source": {
+        "path": "crates/cvcore/crates/cvcore/src/model.rs",
+        "span": {
+          "end_col": 2,
+          "end_line": 47,
+          "start_col": 1,
+          "start_line": 1
+        }
+      }
+    },
+    {
+      "attributes": {
+        "declared_features": [],
+        "default_features_enabled": true,
+        "doc_coverage": {
+          "documented": 3,
+          "percent": 100,
+          "total": 3
+        },
+        "enabled_features": [],
+        "source_kind": "unknown",
+        "version": "0.1.0"
+      },
+      "id": "package:cvapp",
+      "kind": "package",
+      "label": {
+        "default": "cvapp"
+      },
+      "parent": "workspace",
+      "provenance": "discovered",
+      "qualified_name": "cvapp",
+      "source": {
+        "path": "crates/cvapp/Cargo.toml"
+      }
+    },
+    {
+      "attributes": {
+        "declared_features": [],
+        "default_features_enabled": true,
+        "doc_coverage": {
+          "documented": 5,
+          "percent": 83,
+          "total": 6
+        },
+        "enabled_features": [],
+        "source_kind": "unknown",
+        "version": "0.1.0"
+      },
+      "id": "package:cvcore",
+      "kind": "package",
+      "label": {
+        "default": "cvcore"
+      },
+      "parent": "workspace",
+      "provenance": "discovered",
+      "qualified_name": "cvcore",
+      "source": {
+        "path": "crates/cvcore/Cargo.toml"
+      }
+    },
+    {
+      "attributes": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "required_features": [],
+        "test": true
+      },
+      "id": "target:cvapp:lib:cvapp",
+      "kind": "target",
+      "label": {
+        "default": "cvapp (lib)"
+      },
+      "parent": "package:cvapp",
+      "provenance": "discovered",
+      "qualified_name": "cvapp::cvapp",
+      "source": {
+        "path": "crates/cvapp/src/lib.rs"
+      }
+    },
+    {
+      "attributes": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "required_features": [],
+        "test": true
+      },
+      "id": "target:cvcore:lib:cvcore",
+      "kind": "target",
+      "label": {
+        "default": "cvcore (lib)"
+      },
+      "parent": "package:cvcore",
+      "provenance": "discovered",
+      "qualified_name": "cvcore::cvcore",
+      "source": {
+        "path": "crates/cvcore/src/lib.rs"
+      }
+    },
+    {
+      "id": "workspace",
+      "kind": "workspace",
+      "label": {
+        "default": "sample-workspace"
+      },
+      "provenance": "discovered",
+      "qualified_name": "sample-workspace",
+      "source": {
+        "path": "Cargo.toml"
+      }
+    }
+  ],
+  "project": {
+    "description": "",
+    "id": "workspace",
+    "name": "sample-workspace"
+  },
+  "relations": [
+    {
+      "from": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::new",
+      "id": "rel:accepts_type:impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::new->item:struct:cvcore::model::Widget:param",
+      "kind": "accepts_type",
+      "provenance": "discovered",
+      "role": "param",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e",
+      "id": "rel:contains:impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e->impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e::type_id",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e::type_id"
+    },
+    {
+      "from": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d",
+      "id": "rel:contains:impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d->impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d::borrow",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d::borrow"
+    },
+    {
+      "from": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d",
+      "id": "rel:contains:impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d->impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d::borrow_mut",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d::borrow_mut"
+    },
+    {
+      "from": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd",
+      "id": "rel:contains:impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd->impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd::from",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd::from"
+    },
+    {
+      "from": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7",
+      "id": "rel:contains:impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7->impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7::into",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7::into"
+    },
+    {
+      "from": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "id": "rel:contains:impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257->impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::Error",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::Error"
+    },
+    {
+      "from": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "id": "rel:contains:impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257->impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::try_from",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257::try_from"
+    },
+    {
+      "from": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "id": "rel:contains:impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb->impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::Error",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::Error"
+    },
+    {
+      "from": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "id": "rel:contains:impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb->impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::try_into",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb::try_into"
+    },
+    {
+      "from": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "id": "rel:contains:impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792->impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::describe",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::describe"
+    },
+    {
+      "from": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "id": "rel:contains:impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792->impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::new",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792::new"
+    },
+    {
+      "from": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb",
+      "id": "rel:contains:impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb->impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb::type_id",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb::type_id"
+    },
+    {
+      "from": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676",
+      "id": "rel:contains:impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676->impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676::borrow",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676::borrow"
+    },
+    {
+      "from": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef",
+      "id": "rel:contains:impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef->impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef::borrow_mut",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef::borrow_mut"
+    },
+    {
+      "from": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601",
+      "id": "rel:contains:impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601->impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601::from",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601::from"
+    },
+    {
+      "from": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e",
+      "id": "rel:contains:impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e->impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e::into",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e::into"
+    },
+    {
+      "from": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a",
+      "id": "rel:contains:impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a->impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a::render",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a::render"
+    },
+    {
+      "from": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "id": "rel:contains:impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30->impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::Error",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::Error"
+    },
+    {
+      "from": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "id": "rel:contains:impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30->impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::try_from",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30::try_from"
+    },
+    {
+      "from": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "id": "rel:contains:impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562->impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::Error",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::Error"
+    },
+    {
+      "from": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "id": "rel:contains:impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562->impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::try_into",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562::try_into"
+    },
+    {
+      "from": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "id": "rel:contains:impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd->impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::color",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::color"
+    },
+    {
+      "from": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "id": "rel:contains:impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd->impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::new",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::new"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Any:Color:01cbcb64eb73fd96174884c089be0254",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Any:Color:01cbcb64eb73fd96174884c089be0254"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Borrow:Color:0e0684d4a1258050f1f70cf1014cdf54",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Borrow:Color:0e0684d4a1258050f1f70cf1014cdf54"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:BorrowMut:Color:a9e82bdfa149edeba7d9636883f18b40",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:BorrowMut:Color:a9e82bdfa149edeba7d9636883f18b40"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Freeze:Color:ed27b83fda69b7765b14cf78cb6259df",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Freeze:Color:ed27b83fda69b7765b14cf78cb6259df"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:From:Color:6fc8ce8925a27b60127b6ac35003893c",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:From:Color:6fc8ce8925a27b60127b6ac35003893c"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Into:Color:b7a9f527e43f39f2c0a584cb723ffcea",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Into:Color:b7a9f527e43f39f2c0a584cb723ffcea"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:RefUnwindSafe:Color:31fe270fa6785f687c0582b53747bec2",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:RefUnwindSafe:Color:31fe270fa6785f687c0582b53747bec2"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Send:Color:3760d291fa9c01cd86a3f480b61a9418",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Send:Color:3760d291fa9c01cd86a3f480b61a9418"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Sync:Color:df807d3a9d163a68b719f80d20f426dd",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Sync:Color:df807d3a9d163a68b719f80d20f426dd"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:TryFrom:Color:ce19bf3ca1c7f019c5ea751e4cc75295",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryFrom:Color:ce19bf3ca1c7f019c5ea751e4cc75295"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:TryInto:Color:2b5c33797e1a2c1104f999ba6d3cff5e",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryInto:Color:2b5c33797e1a2c1104f999ba6d3cff5e"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:Unpin:Color:4836f0d26d999578693900a05ec5e05a",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Unpin:Color:4836f0d26d999578693900a05ec5e05a"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:UnsafeUnpin:Color:060c247589d44a71d926c52bb12a1a6e",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:UnsafeUnpin:Color:060c247589d44a71d926c52bb12a1a6e"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->impl:cvcore:UnwindSafe:Color:a9e5650ad7fd242395156d75470da2aa",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:UnwindSafe:Color:a9e5650ad7fd242395156d75470da2aa"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->item:variant:cvcore::model::Color::Blue",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:variant:cvcore::model::Color::Blue"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->item:variant:cvcore::model::Color::Green",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:variant:cvcore::model::Color::Green"
+    },
+    {
+      "from": "item:enum:cvcore::model::Color",
+      "id": "rel:contains:item:enum:cvcore::model::Color->item:variant:cvcore::model::Color::Red",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:variant:cvcore::model::Color::Red"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Freeze:Service:0b05166853cf61ad0979aeb8ad25b8bc",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Freeze:Service:0b05166853cf61ad0979aeb8ad25b8bc"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:RefUnwindSafe:Service:51d906cc42c316066d44525ae4482473",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:RefUnwindSafe:Service:51d906cc42c316066d44525ae4482473"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Send:Service:86a832a84956e74fde33ecfbcb47aa9b",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Send:Service:86a832a84956e74fde33ecfbcb47aa9b"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Sync:Service:8a0db8e2314c63e6872ef5b45ea8b6a2",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Sync:Service:8a0db8e2314c63e6872ef5b45ea8b6a2"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:Unpin:Service:12cbfac3e61461a265c001fe41cf6b79",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:Unpin:Service:12cbfac3e61461a265c001fe41cf6b79"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:UnsafeUnpin:Service:460af85b068443a23f490789b815f53b",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:UnsafeUnpin:Service:460af85b068443a23f490789b815f53b"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:UnwindSafe:Service:c24fed784abed543b7df9c3efe5e43eb",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:UnwindSafe:Service:c24fed784abed543b7df9c3efe5e43eb"
+    },
+    {
+      "from": "item:struct:cvapp::Service",
+      "id": "rel:contains:item:struct:cvapp::Service->impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Any:Marker:efd0b8a06d84048fb9f4d747d90ed2e8",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Any:Marker:efd0b8a06d84048fb9f4d747d90ed2e8"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Borrow:Marker:211d9355a481d06264244bd47f469afc",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Borrow:Marker:211d9355a481d06264244bd47f469afc"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:BorrowMut:Marker:0f9782d3095c09badda1ac81d676a5a0",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:BorrowMut:Marker:0f9782d3095c09badda1ac81d676a5a0"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Freeze:Marker:54df9b7cdd919231ffb513c274ede6e8",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Freeze:Marker:54df9b7cdd919231ffb513c274ede6e8"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:From:Marker:0b43f74dca943839999728fdf048f7b2",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:From:Marker:0b43f74dca943839999728fdf048f7b2"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Into:Marker:e12369e948e51ef4385e7cd79e9f8155",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Into:Marker:e12369e948e51ef4385e7cd79e9f8155"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:RefUnwindSafe:Marker:565f1f0081ec7d5c06c5c2b3bff42467",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:RefUnwindSafe:Marker:565f1f0081ec7d5c06c5c2b3bff42467"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Send:Marker:1986d4ef743b9f62c0868412160298d9",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Send:Marker:1986d4ef743b9f62c0868412160298d9"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Sync:Marker:aa612b439ecef068e07db02996247855",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Sync:Marker:aa612b439ecef068e07db02996247855"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:TryFrom:Marker:821520809bd74b34394abbcdfe108117",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryFrom:Marker:821520809bd74b34394abbcdfe108117"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:TryInto:Marker:d7a769595dad31b11453ee4a1565148c",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryInto:Marker:d7a769595dad31b11453ee4a1565148c"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:Unpin:Marker:221b2c2753666b04b5e744707095c72f",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Unpin:Marker:221b2c2753666b04b5e744707095c72f"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:UnsafeUnpin:Marker:50cd3e0b45c4fc678c506f41d7401d15",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:UnsafeUnpin:Marker:50cd3e0b45c4fc678c506f41d7401d15"
+    },
+    {
+      "from": "item:struct:cvcore::model::Marker",
+      "id": "rel:contains:item:struct:cvcore::model::Marker->impl:cvcore:UnwindSafe:Marker:e95c059aab570af9d5611aa18bbc7981",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:UnwindSafe:Marker:e95c059aab570af9d5611aa18bbc7981"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Freeze:Widget:379b39cfd126c9a27486bc9c90dbf4a9",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Freeze:Widget:379b39cfd126c9a27486bc9c90dbf4a9"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:RefUnwindSafe:Widget:2ed89b224fa9dac551118e03304a4981",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:RefUnwindSafe:Widget:2ed89b224fa9dac551118e03304a4981"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Send:Widget:c1d0e0d8a5cf35584d41c5b12a9d19ec",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Send:Widget:c1d0e0d8a5cf35584d41c5b12a9d19ec"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Sync:Widget:12f7f9aa968d72c12e818aa7abdba9bb",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Sync:Widget:12f7f9aa968d72c12e818aa7abdba9bb"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:Unpin:Widget:edbb883dc9e714f8b45dc39e732415de",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:Unpin:Widget:edbb883dc9e714f8b45dc39e732415de"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:UnsafeUnpin:Widget:3127d3540bb5b9e4e2602be2ffad0d2b",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:UnsafeUnpin:Widget:3127d3540bb5b9e4e2602be2ffad0d2b"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:UnwindSafe:Widget:334ff50e911234a9900efa5172abf7e4",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:UnwindSafe:Widget:334ff50e911234a9900efa5172abf7e4"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->item:field:cvcore::model::Widget::id",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:field:cvcore::model::Widget::id"
+    },
+    {
+      "from": "item:struct:cvcore::model::Widget",
+      "id": "rel:contains:item:struct:cvcore::model::Widget->item:field:cvcore::model::Widget::name",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:field:cvcore::model::Widget::name"
+    },
+    {
+      "from": "item:trait:cvcore::model::Render",
+      "id": "rel:contains:item:trait:cvcore::model::Render->item:method:cvcore::model::Render::render",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:method:cvcore::model::Render::render"
+    },
+    {
+      "from": "module:cvapp::cvapp",
+      "id": "rel:contains:module:cvapp::cvapp->item:struct:cvapp::Service",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "module:cvcore::cvcore",
+      "id": "rel:contains:module:cvcore::cvcore->module:cvcore::model",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "module:cvcore::model"
+    },
+    {
+      "from": "module:cvcore::model",
+      "id": "rel:contains:module:cvcore::model->item:enum:cvcore::model::Color",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "module:cvcore::model",
+      "id": "rel:contains:module:cvcore::model->item:struct:cvcore::model::Marker",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "module:cvcore::model",
+      "id": "rel:contains:module:cvcore::model->item:struct:cvcore::model::Widget",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "module:cvcore::model",
+      "id": "rel:contains:module:cvcore::model->item:trait:cvcore::model::Render",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "item:trait:cvcore::model::Render"
+    },
+    {
+      "from": "package:cvapp",
+      "id": "rel:contains:package:cvapp->target:cvapp:lib:cvapp",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "target:cvapp:lib:cvapp"
+    },
+    {
+      "from": "package:cvcore",
+      "id": "rel:contains:package:cvcore->target:cvcore:lib:cvcore",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "target:cvcore:lib:cvcore"
+    },
+    {
+      "from": "target:cvapp:lib:cvapp",
+      "id": "rel:contains:target:cvapp:lib:cvapp->module:cvapp::cvapp",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "module:cvapp::cvapp"
+    },
+    {
+      "from": "target:cvcore:lib:cvcore",
+      "id": "rel:contains:target:cvcore:lib:cvcore->module:cvcore::cvcore",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "module:cvcore::cvcore"
+    },
+    {
+      "from": "workspace",
+      "id": "rel:contains:workspace->package:cvapp",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "package:cvapp"
+    },
+    {
+      "from": "workspace",
+      "id": "rel:contains:workspace->package:cvcore",
+      "kind": "contains",
+      "provenance": "discovered",
+      "to": "package:cvcore"
+    },
+    {
+      "attributes": {
+        "resolved_version": "0.1.0",
+        "source_kind": "unknown"
+      },
+      "from": "package:cvapp",
+      "id": "rel:depends_on:package:cvapp->package:cvcore:normal",
+      "kind": "depends_on",
+      "provenance": "discovered",
+      "role": "normal",
+      "to": "package:cvcore"
+    },
+    {
+      "from": "impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e",
+      "id": "rel:implemented_for:impl:cvapp:Any:Service:d566d108219d72590258177c78deb71e->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d",
+      "id": "rel:implemented_for:impl:cvapp:Borrow:Service:78ae00108fd336c7bcf963a1cd9a9c9d->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d",
+      "id": "rel:implemented_for:impl:cvapp:BorrowMut:Service:95e8f9a33601344862724137ac0dd21d->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:Freeze:Service:0b05166853cf61ad0979aeb8ad25b8bc",
+      "id": "rel:implemented_for:impl:cvapp:Freeze:Service:0b05166853cf61ad0979aeb8ad25b8bc->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd",
+      "id": "rel:implemented_for:impl:cvapp:From:Service:29d986e7c8cb527b26a5d81455e6e2fd->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7",
+      "id": "rel:implemented_for:impl:cvapp:Into:Service:ae912e15c7cf724ceb4b49a5faa10eb7->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:RefUnwindSafe:Service:51d906cc42c316066d44525ae4482473",
+      "id": "rel:implemented_for:impl:cvapp:RefUnwindSafe:Service:51d906cc42c316066d44525ae4482473->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:Send:Service:86a832a84956e74fde33ecfbcb47aa9b",
+      "id": "rel:implemented_for:impl:cvapp:Send:Service:86a832a84956e74fde33ecfbcb47aa9b->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:Sync:Service:8a0db8e2314c63e6872ef5b45ea8b6a2",
+      "id": "rel:implemented_for:impl:cvapp:Sync:Service:8a0db8e2314c63e6872ef5b45ea8b6a2->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257",
+      "id": "rel:implemented_for:impl:cvapp:TryFrom:Service:40386312e0d37fda4132454bac7e2257->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb",
+      "id": "rel:implemented_for:impl:cvapp:TryInto:Service:9b08744bd0bc494a24a71325820bbfeb->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:Unpin:Service:12cbfac3e61461a265c001fe41cf6b79",
+      "id": "rel:implemented_for:impl:cvapp:Unpin:Service:12cbfac3e61461a265c001fe41cf6b79->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:UnsafeUnpin:Service:460af85b068443a23f490789b815f53b",
+      "id": "rel:implemented_for:impl:cvapp:UnsafeUnpin:Service:460af85b068443a23f490789b815f53b->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:UnwindSafe:Service:c24fed784abed543b7df9c3efe5e43eb",
+      "id": "rel:implemented_for:impl:cvapp:UnwindSafe:Service:c24fed784abed543b7df9c3efe5e43eb->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792",
+      "id": "rel:implemented_for:impl:cvapp:inherent:Service:b6af7b10e4834f23bd7ef7be08746792->item:struct:cvapp::Service:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvapp::Service"
+    },
+    {
+      "from": "impl:cvcore:Any:Color:01cbcb64eb73fd96174884c089be0254",
+      "id": "rel:implemented_for:impl:cvcore:Any:Color:01cbcb64eb73fd96174884c089be0254->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Any:Marker:efd0b8a06d84048fb9f4d747d90ed2e8",
+      "id": "rel:implemented_for:impl:cvcore:Any:Marker:efd0b8a06d84048fb9f4d747d90ed2e8->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb",
+      "id": "rel:implemented_for:impl:cvcore:Any:Widget:a74a1baa8ac15b4012ff582594104feb->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Borrow:Color:0e0684d4a1258050f1f70cf1014cdf54",
+      "id": "rel:implemented_for:impl:cvcore:Borrow:Color:0e0684d4a1258050f1f70cf1014cdf54->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Borrow:Marker:211d9355a481d06264244bd47f469afc",
+      "id": "rel:implemented_for:impl:cvcore:Borrow:Marker:211d9355a481d06264244bd47f469afc->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676",
+      "id": "rel:implemented_for:impl:cvcore:Borrow:Widget:c5332f282e4bfffc537476a5f3548676->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:BorrowMut:Color:a9e82bdfa149edeba7d9636883f18b40",
+      "id": "rel:implemented_for:impl:cvcore:BorrowMut:Color:a9e82bdfa149edeba7d9636883f18b40->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:BorrowMut:Marker:0f9782d3095c09badda1ac81d676a5a0",
+      "id": "rel:implemented_for:impl:cvcore:BorrowMut:Marker:0f9782d3095c09badda1ac81d676a5a0->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef",
+      "id": "rel:implemented_for:impl:cvcore:BorrowMut:Widget:ced3d91bbdc8d247713a6fb561e49aef->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Freeze:Color:ed27b83fda69b7765b14cf78cb6259df",
+      "id": "rel:implemented_for:impl:cvcore:Freeze:Color:ed27b83fda69b7765b14cf78cb6259df->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Freeze:Marker:54df9b7cdd919231ffb513c274ede6e8",
+      "id": "rel:implemented_for:impl:cvcore:Freeze:Marker:54df9b7cdd919231ffb513c274ede6e8->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Freeze:Widget:379b39cfd126c9a27486bc9c90dbf4a9",
+      "id": "rel:implemented_for:impl:cvcore:Freeze:Widget:379b39cfd126c9a27486bc9c90dbf4a9->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:From:Color:6fc8ce8925a27b60127b6ac35003893c",
+      "id": "rel:implemented_for:impl:cvcore:From:Color:6fc8ce8925a27b60127b6ac35003893c->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:From:Marker:0b43f74dca943839999728fdf048f7b2",
+      "id": "rel:implemented_for:impl:cvcore:From:Marker:0b43f74dca943839999728fdf048f7b2->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601",
+      "id": "rel:implemented_for:impl:cvcore:From:Widget:f45cc4bc61fb031021fc0be1dcc9d601->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Into:Color:b7a9f527e43f39f2c0a584cb723ffcea",
+      "id": "rel:implemented_for:impl:cvcore:Into:Color:b7a9f527e43f39f2c0a584cb723ffcea->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Into:Marker:e12369e948e51ef4385e7cd79e9f8155",
+      "id": "rel:implemented_for:impl:cvcore:Into:Marker:e12369e948e51ef4385e7cd79e9f8155->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e",
+      "id": "rel:implemented_for:impl:cvcore:Into:Widget:d602e34705ac084fc661bb18614b259e->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:RefUnwindSafe:Color:31fe270fa6785f687c0582b53747bec2",
+      "id": "rel:implemented_for:impl:cvcore:RefUnwindSafe:Color:31fe270fa6785f687c0582b53747bec2->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:RefUnwindSafe:Marker:565f1f0081ec7d5c06c5c2b3bff42467",
+      "id": "rel:implemented_for:impl:cvcore:RefUnwindSafe:Marker:565f1f0081ec7d5c06c5c2b3bff42467->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:RefUnwindSafe:Widget:2ed89b224fa9dac551118e03304a4981",
+      "id": "rel:implemented_for:impl:cvcore:RefUnwindSafe:Widget:2ed89b224fa9dac551118e03304a4981->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a",
+      "id": "rel:implemented_for:impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Send:Color:3760d291fa9c01cd86a3f480b61a9418",
+      "id": "rel:implemented_for:impl:cvcore:Send:Color:3760d291fa9c01cd86a3f480b61a9418->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Send:Marker:1986d4ef743b9f62c0868412160298d9",
+      "id": "rel:implemented_for:impl:cvcore:Send:Marker:1986d4ef743b9f62c0868412160298d9->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Send:Widget:c1d0e0d8a5cf35584d41c5b12a9d19ec",
+      "id": "rel:implemented_for:impl:cvcore:Send:Widget:c1d0e0d8a5cf35584d41c5b12a9d19ec->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Sync:Color:df807d3a9d163a68b719f80d20f426dd",
+      "id": "rel:implemented_for:impl:cvcore:Sync:Color:df807d3a9d163a68b719f80d20f426dd->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Sync:Marker:aa612b439ecef068e07db02996247855",
+      "id": "rel:implemented_for:impl:cvcore:Sync:Marker:aa612b439ecef068e07db02996247855->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Sync:Widget:12f7f9aa968d72c12e818aa7abdba9bb",
+      "id": "rel:implemented_for:impl:cvcore:Sync:Widget:12f7f9aa968d72c12e818aa7abdba9bb->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:TryFrom:Color:ce19bf3ca1c7f019c5ea751e4cc75295",
+      "id": "rel:implemented_for:impl:cvcore:TryFrom:Color:ce19bf3ca1c7f019c5ea751e4cc75295->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:TryFrom:Marker:821520809bd74b34394abbcdfe108117",
+      "id": "rel:implemented_for:impl:cvcore:TryFrom:Marker:821520809bd74b34394abbcdfe108117->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30",
+      "id": "rel:implemented_for:impl:cvcore:TryFrom:Widget:a72e99a9b7fbb1d545deb454ff0b8a30->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:TryInto:Color:2b5c33797e1a2c1104f999ba6d3cff5e",
+      "id": "rel:implemented_for:impl:cvcore:TryInto:Color:2b5c33797e1a2c1104f999ba6d3cff5e->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:TryInto:Marker:d7a769595dad31b11453ee4a1565148c",
+      "id": "rel:implemented_for:impl:cvcore:TryInto:Marker:d7a769595dad31b11453ee4a1565148c->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562",
+      "id": "rel:implemented_for:impl:cvcore:TryInto:Widget:005beebfd37b8049ccdb9786d7cb3562->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Unpin:Color:4836f0d26d999578693900a05ec5e05a",
+      "id": "rel:implemented_for:impl:cvcore:Unpin:Color:4836f0d26d999578693900a05ec5e05a->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:Unpin:Marker:221b2c2753666b04b5e744707095c72f",
+      "id": "rel:implemented_for:impl:cvcore:Unpin:Marker:221b2c2753666b04b5e744707095c72f->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:Unpin:Widget:edbb883dc9e714f8b45dc39e732415de",
+      "id": "rel:implemented_for:impl:cvcore:Unpin:Widget:edbb883dc9e714f8b45dc39e732415de->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:UnsafeUnpin:Color:060c247589d44a71d926c52bb12a1a6e",
+      "id": "rel:implemented_for:impl:cvcore:UnsafeUnpin:Color:060c247589d44a71d926c52bb12a1a6e->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:UnsafeUnpin:Marker:50cd3e0b45c4fc678c506f41d7401d15",
+      "id": "rel:implemented_for:impl:cvcore:UnsafeUnpin:Marker:50cd3e0b45c4fc678c506f41d7401d15->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:UnsafeUnpin:Widget:3127d3540bb5b9e4e2602be2ffad0d2b",
+      "id": "rel:implemented_for:impl:cvcore:UnsafeUnpin:Widget:3127d3540bb5b9e4e2602be2ffad0d2b->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:UnwindSafe:Color:a9e5650ad7fd242395156d75470da2aa",
+      "id": "rel:implemented_for:impl:cvcore:UnwindSafe:Color:a9e5650ad7fd242395156d75470da2aa->item:enum:cvcore::model::Color:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "impl:cvcore:UnwindSafe:Marker:e95c059aab570af9d5611aa18bbc7981",
+      "id": "rel:implemented_for:impl:cvcore:UnwindSafe:Marker:e95c059aab570af9d5611aa18bbc7981->item:struct:cvcore::model::Marker:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Marker"
+    },
+    {
+      "from": "impl:cvcore:UnwindSafe:Widget:334ff50e911234a9900efa5172abf7e4",
+      "id": "rel:implemented_for:impl:cvcore:UnwindSafe:Widget:334ff50e911234a9900efa5172abf7e4->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd",
+      "id": "rel:implemented_for:impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd->item:struct:cvcore::model::Widget:impl_for",
+      "kind": "implemented_for",
+      "provenance": "discovered",
+      "role": "impl_for",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a",
+      "id": "rel:implements:impl:cvcore:Render:Widget:e2ef231a246948181ff40bf10ee1434a->item:trait:cvcore::model::Render:impl_trait",
+      "kind": "implements",
+      "provenance": "discovered",
+      "role": "impl_trait",
+      "to": "item:trait:cvcore::model::Render"
+    },
+    {
+      "from": "module:cvcore::cvcore",
+      "id": "rel:re_exports:module:cvcore::cvcore->item:enum:cvcore::model::Color:re_export",
+      "kind": "re_exports",
+      "provenance": "discovered",
+      "role": "re_export",
+      "to": "item:enum:cvcore::model::Color"
+    },
+    {
+      "from": "module:cvcore::cvcore",
+      "id": "rel:re_exports:module:cvcore::cvcore->item:struct:cvcore::model::Widget:re_export",
+      "kind": "re_exports",
+      "provenance": "discovered",
+      "role": "re_export",
+      "to": "item:struct:cvcore::model::Widget"
+    },
+    {
+      "from": "module:cvcore::cvcore",
+      "id": "rel:re_exports:module:cvcore::cvcore->item:trait:cvcore::model::Render:re_export",
+      "kind": "re_exports",
+      "provenance": "discovered",
+      "role": "re_export",
+      "to": "item:trait:cvcore::model::Render"
+    },
+    {
+      "from": "impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::color",
+      "id": "rel:returns_type:impl:cvcore:inherent:Widget:f7f8483a5334fc212d372451fdacdabd::color->item:enum:cvcore::model::Color:return",
+      "kind": "returns_type",
+      "provenance": "discovered",
+      "role": "return",
+      "to": "item:enum:cvcore::model::Color"
+    }
+  ],
+  "schema_version": "1.0",
+  "views": [
+    {
+      "entity_kinds": [
+        "package"
+      ],
+      "id": "view:crate-dependencies",
+      "relation_kinds": [
+        "depends_on"
+      ],
+      "title": {
+        "default": "Crate dependencies"
+      }
+    },
+    {
+      "entity_kinds": [
+        "package",
+        "module"
+      ],
+      "id": "view:documentation-coverage",
+      "relation_kinds": [
+        "contains"
+      ],
+      "title": {
+        "default": "Documentation coverage"
+      }
+    },
+    {
+      "entity_kinds": [
+        "package",
+        "target",
+        "module"
+      ],
+      "id": "view:module-hierarchy",
+      "relation_kinds": [
+        "contains"
+      ],
+      "title": {
+        "default": "Module hierarchy"
+      }
+    },
+    {
+      "entity_kinds": [
+        "module",
+        "struct",
+        "enum",
+        "union",
+        "trait",
+        "function",
+        "method",
+        "type_alias",
+        "constant",
+        "static",
+        "macro"
+      ],
+      "id": "view:public-api",
+      "presentation": {
+        "visibility": "public"
+      },
+      "relation_kinds": [
+        "contains",
+        "re_exports",
+        "imports"
+      ],
+      "title": {
+        "default": "Public API"
+      }
+    },
+    {
+      "entity_kinds": [
+        "trait",
+        "impl",
+        "struct",
+        "enum",
+        "union"
+      ],
+      "id": "view:traits-and-impls",
+      "relation_kinds": [
+        "implements",
+        "implemented_for",
+        "contains"
+      ],
+      "title": {
+        "default": "Traits and implementations"
+      }
+    },
+    {
+      "entity_kinds": [
+        "struct",
+        "enum",
+        "union",
+        "trait",
+        "function",
+        "method",
+        "type_alias"
+      ],
+      "id": "view:type-relationships",
+      "relation_kinds": [
+        "has_field_type",
+        "accepts_type",
+        "returns_type",
+        "error_type"
+      ],
+      "title": {
+        "default": "Type relationships"
+      }
+    },
+    {
+      "entity_kinds": [
+        "struct",
+        "enum",
+        "union",
+        "type_alias",
+        "constant",
+        "static"
+      ],
+      "id": "view:types",
+      "relation_kinds": [
+        "has_field_type",
+        "contains"
+      ],
+      "title": {
+        "default": "Types"
+      }
+    },
+    {
+      "entity_kinds": [
+        "workspace",
+        "package",
+        "target"
+      ],
+      "id": "view:workspace-overview",
+      "relation_kinds": [
+        "contains",
+        "depends_on"
+      ],
+      "title": {
+        "default": "Workspace overview"
+      }
+    }
+  ]
+}

@@ -1,0 +1,550 @@
+{
+  "$defs": {
+    "DocBlock": {
+      "description": "A rustdoc/Markdown documentation block for an entity.",
+      "properties": {
+        "documented": {
+          "description": "Whether the underlying item is documented (used for coverage).",
+          "type": "boolean"
+        },
+        "markdown": {
+          "description": "The full documentation as Markdown.",
+          "type": "string"
+        },
+        "summary": {
+          "description": "An optional short summary (e.g. the first paragraph).",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "markdown",
+        "documented"
+      ],
+      "type": "object"
+    },
+    "Entity": {
+      "description": "A node in the explorer graph.",
+      "properties": {
+        "attributes": {
+          "additionalProperties": true,
+          "description": "Freeform attributes.",
+          "type": "object"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalizedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional longer description (localization-ready)."
+        },
+        "docs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocBlock"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional documentation block."
+        },
+        "id": {
+          "$ref": "#/$defs/EntityId",
+          "description": "Stable identifier."
+        },
+        "kind": {
+          "$ref": "#/$defs/EntityKind",
+          "description": "Open, string-backed kind."
+        },
+        "label": {
+          "$ref": "#/$defs/LocalizedText",
+          "description": "Display label (localization-ready)."
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntityId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional containing entity."
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance",
+          "description": "Discovered vs manual provenance."
+        },
+        "qualified_name": {
+          "description": "Fully-qualified name (e.g. `crate::module::Type`).",
+          "type": "string"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional repository-relative source location."
+        },
+        "tags": {
+          "description": "Ordered, deduplicated tags.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "label",
+        "qualified_name",
+        "provenance"
+      ],
+      "type": "object"
+    },
+    "EntityId": {
+      "description": "Stable identifier of an entity.",
+      "type": "string"
+    },
+    "EntityKind": {
+      "description": "The classification of an [`crate::entity::Entity`]. Open and string-backed.",
+      "type": "string"
+    },
+    "LocalizedText": {
+      "description": "Localization-ready text: a default string plus optional per-language\ntranslations keyed by language code.",
+      "properties": {
+        "default": {
+          "description": "The default (source-language) text.",
+          "type": "string"
+        },
+        "translations": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional translations keyed by language code (e.g. `ru`).",
+          "type": "object"
+        }
+      },
+      "required": [
+        "default"
+      ],
+      "type": "object"
+    },
+    "Project": {
+      "description": "Project/workspace metadata.",
+      "properties": {
+        "default_branch": {
+          "description": "Optional default branch.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "description": "Short description.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Stable project id.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Human-readable project name.",
+          "type": "string"
+        },
+        "repository_url": {
+          "description": "Optional repository URL.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "root": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional repository-relative root location."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "type": "object"
+    },
+    "Provenance": {
+      "description": "Whether an entity/relation was discovered automatically or declared manually.",
+      "oneOf": [
+        {
+          "const": "discovered",
+          "description": "Derived automatically from Cargo/rustdoc data.",
+          "type": "string"
+        },
+        {
+          "const": "manual",
+          "description": "Declared in CrateVista configuration.",
+          "type": "string"
+        }
+      ]
+    },
+    "Relation": {
+      "description": "A typed, directed edge between two entities.",
+      "properties": {
+        "attributes": {
+          "additionalProperties": true,
+          "description": "Freeform attributes (e.g. protocol labels such as HTTP/SQL).",
+          "type": "object"
+        },
+        "from": {
+          "$ref": "#/$defs/EntityId",
+          "description": "Source entity id."
+        },
+        "id": {
+          "$ref": "#/$defs/RelationId",
+          "description": "Stable identifier."
+        },
+        "kind": {
+          "$ref": "#/$defs/RelationKind",
+          "description": "Open, string-backed kind."
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalizedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional edge label (localization-ready)."
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance",
+          "description": "Discovered vs manual provenance."
+        },
+        "role": {
+          "description": "Optional semantic role, disambiguating multiple same-kind relations\nbetween the same endpoints.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "to": {
+          "$ref": "#/$defs/EntityId",
+          "description": "Target entity id."
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "from",
+        "to",
+        "provenance"
+      ],
+      "type": "object"
+    },
+    "RelationId": {
+      "description": "Stable identifier of a relation.",
+      "type": "string"
+    },
+    "RelationKind": {
+      "description": "The classification of a [`crate::relation::Relation`]. Open and string-backed.",
+      "type": "string"
+    },
+    "RepoRelativePath": {
+      "type": "string"
+    },
+    "SchemaVersion": {
+      "description": "The schema version (`MAJOR.MINOR`) of a serialized artifact.\n\nA transparent string so `document.json` carries `\"schema_version\": \"1.1\"`.\n\nConsumers gate on the **major** only: a reader that supports major `1` must\naccept every `1.x` artifact, because minor bumps are additive by policy\n(ADR-0003). `1.0` documents therefore keep loading unchanged.",
+      "type": "string"
+    },
+    "SourceLocation": {
+      "description": "A repository-relative source location with an optional span.",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/RepoRelativePath",
+          "description": "The validated repository-relative path."
+        },
+        "span": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Span"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional 1-based line/column span."
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "Span": {
+      "description": "A 1-based line/column span within a source file.",
+      "properties": {
+        "end_col": {
+          "description": "1-based end column.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "end_line": {
+          "description": "1-based end line.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "start_col": {
+          "description": "1-based start column.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "start_line": {
+          "description": "1-based start line.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_line",
+        "start_col",
+        "end_line",
+        "end_col"
+      ],
+      "type": "object"
+    },
+    "Stage": {
+      "description": "An ordered stage/group within a view (e.g. a flow step lane).",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/StageId",
+          "description": "Stable identifier."
+        },
+        "order": {
+          "description": "Ordering index within the view.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "title": {
+          "$ref": "#/$defs/LocalizedText",
+          "description": "Display title (localization-ready)."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "order"
+      ],
+      "type": "object"
+    },
+    "StageId": {
+      "description": "Stable identifier of a stage within a view.",
+      "type": "string"
+    },
+    "View": {
+      "description": "A named projection over the canonical entities/relations.\n\nViews carry filters and presentation metadata but never UI coordinates\n(layout is computed client-side).",
+      "properties": {
+        "default_focus": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntityId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional default focus entity."
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalizedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional description (localization-ready)."
+        },
+        "docs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocBlock"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "View-level documentation (Markdown), e.g. what a manual flow describes.\n\nOptional and absent on the generated views; added in schema `1.1`."
+        },
+        "entity_ids": {
+          "description": "Explicit membership (else membership is derived from the filters).",
+          "items": {
+            "$ref": "#/$defs/EntityId"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "entity_kinds": {
+          "description": "Entity-kind filter.",
+          "items": {
+            "$ref": "#/$defs/EntityKind"
+          },
+          "type": "array"
+        },
+        "examples": {
+          "description": "Worked examples whose contents are embedded in the document.\n\nOptional and empty on the generated views; added in schema `1.1`.",
+          "items": {
+            "$ref": "#/$defs/ViewExample"
+          },
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/$defs/ViewId",
+          "description": "Stable identifier."
+        },
+        "presentation": {
+          "additionalProperties": true,
+          "description": "Presentation hints (legend/grouping); never coordinates.",
+          "type": "object"
+        },
+        "relation_kinds": {
+          "description": "Relation-kind filter.",
+          "items": {
+            "$ref": "#/$defs/RelationKind"
+          },
+          "type": "array"
+        },
+        "stages": {
+          "description": "Ordered stages/groups.",
+          "items": {
+            "$ref": "#/$defs/Stage"
+          },
+          "type": "array"
+        },
+        "title": {
+          "$ref": "#/$defs/LocalizedText",
+          "description": "Display title (localization-ready)."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "type": "object"
+    },
+    "ViewExample": {
+      "description": "A worked example attached to a view (e.g. sample output for a manual flow).\n\nThe example's [`content`](ViewExample::content) is **embedded** in the\ndocument at generation time rather than referenced by path, so the explorer\nrenders it without the guarded `/api/source` endpoint and a static export is\nself-contained. Producers embed only files a maintainer named explicitly in\nconfiguration.",
+      "properties": {
+        "content": {
+          "description": "The example content, embedded verbatim (UTF-8).",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalizedText"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional prose about the example (localization-ready)."
+        },
+        "id": {
+          "description": "Stable identifier, unique within the view.",
+          "type": "string"
+        },
+        "language": {
+          "description": "Syntax hint for display only (e.g. `json`, `http`, `sql`). Never\ninterpreted or executed.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "title": {
+          "$ref": "#/$defs/LocalizedText",
+          "description": "Display title (localization-ready)."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "content"
+      ],
+      "type": "object"
+    },
+    "ViewId": {
+      "description": "Stable identifier of a view.",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "The canonical explorer document serialized to `document.json`.\n\nDeterministic: it carries no timestamps, no runtime metadata, and no\ndiagnostics (those are separate `generation.json` / `diagnostics.json`\nartifacts). Entities, relations, and views are sorted by id.",
+  "properties": {
+    "entities": {
+      "description": "Entities, sorted by id.",
+      "items": {
+        "$ref": "#/$defs/Entity"
+      },
+      "type": "array"
+    },
+    "project": {
+      "$ref": "#/$defs/Project",
+      "description": "Project/workspace metadata."
+    },
+    "relations": {
+      "description": "Relations, sorted by id.",
+      "items": {
+        "$ref": "#/$defs/Relation"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion",
+      "description": "Schema version of this artifact."
+    },
+    "views": {
+      "description": "Views, sorted by id.",
+      "items": {
+        "$ref": "#/$defs/View"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "project",
+    "entities",
+    "relations",
+    "views"
+  ],
+  "title": "ExplorerDocument",
+  "type": "object"
+}

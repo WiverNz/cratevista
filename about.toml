@@ -1,0 +1,46 @@
+# cargo-about configuration — the accepted-licence policy for CrateVista's Rust
+# dependency graph (PRD 10, Phase 6.K). CI pins the exact cargo-about version
+# (see .github/workflows/ci.yml `CARGO_ABOUT_VERSION`) and fails when a dependency
+# declares a licence outside this allowlist. Licences are matched by SPDX id — never
+# inferred from a crate name.
+#
+# Report generation:
+#   cargo about generate --workspace about.hbs -o docs/licenses/rust-dependencies.md
+# Policy/drift check (CI):
+#   cargo about generate --workspace --fail-on-missing-field about.hbs -o <tmp>
+#   then diff <tmp> against the committed docs/licenses/rust-dependencies.md.
+
+# The four release targets, so platform-specific dependencies are covered
+# deterministically regardless of the host generating the report.
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+]
+
+# Dev-dependencies never enter the published crates or the installed binary, so the
+# shipped-dependency licence report ignores them. (The harness-only dev-deps —
+# flate2/tar/zip/sha2/toml/assert_cmd/etc. — are covered by their own upstream
+# licences and are not distributed.)
+ignore-dev-dependencies = true
+
+# Build dependencies DO affect what is compiled, so they are included.
+ignore-build-dependencies = false
+
+# Fail unless every crate resolves to an accepted licence.
+accepted = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-DFS-2016",
+    "Unicode-3.0",
+    "MPL-2.0",
+    "Unlicense",
+]

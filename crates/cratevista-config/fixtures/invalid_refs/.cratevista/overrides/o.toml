@@ -1,0 +1,6 @@
+# Aimed at an entity that does not exist. cratevista-config must NOT resolve
+# this: PRD 05's `apply_overlay` owns `overlay_target_missing`.
+
+[[override]]
+target = "item:struct:totally::made::Up"
+label = "Never applied"

@@ -1,0 +1,30 @@
+[package]
+name = "cratevista-server"
+description = "Local loopback HTTP server and embedded web application for CrateVista."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+cratevista-schema = { workspace = true }
+axum = { workspace = true }
+futures-core = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "net", "macros", "sync", "time"] }
+tower = { workspace = true }
+tower-http = { workspace = true, features = ["set-header"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+blake3 = { workspace = true }
+rust-embed = { workspace = true, features = ["debug-embed"] }
+mime_guess = { workspace = true }
+arc-swap = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tower = { workspace = true, features = ["util"] }
+tempfile = { workspace = true }

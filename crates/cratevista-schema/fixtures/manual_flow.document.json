@@ -1,0 +1,109 @@
+{
+  "entities": [
+    {
+      "id": "manual:api-gateway",
+      "kind": "infrastructure",
+      "label": {
+        "default": "API Gateway"
+      },
+      "provenance": "manual",
+      "qualified_name": "api-gateway"
+    },
+    {
+      "id": "manual:postgres",
+      "kind": "external_system",
+      "label": {
+        "default": "PostgreSQL"
+      },
+      "provenance": "manual",
+      "qualified_name": "postgres"
+    },
+    {
+      "id": "manual:web-client",
+      "kind": "external_system",
+      "label": {
+        "default": "Web Client"
+      },
+      "provenance": "manual",
+      "qualified_name": "web-client"
+    },
+    {
+      "id": "package:demo",
+      "kind": "package",
+      "label": {
+        "default": "demo"
+      },
+      "provenance": "discovered",
+      "qualified_name": "demo"
+    }
+  ],
+  "project": {
+    "default_branch": "main",
+    "description": "A sample CrateVista workspace.",
+    "id": "demo",
+    "name": "Demo Workspace",
+    "repository_url": "https://example.com/demo"
+  },
+  "relations": [
+    {
+      "from": "manual:api-gateway",
+      "id": "rel:manual:manual:api-gateway->package:demo",
+      "kind": "manual",
+      "provenance": "manual",
+      "to": "package:demo"
+    },
+    {
+      "from": "manual:web-client",
+      "id": "rel:manual:manual:web-client->manual:api-gateway",
+      "kind": "manual",
+      "label": {
+        "default": "HTTP + WS"
+      },
+      "provenance": "manual",
+      "role": "http",
+      "to": "manual:api-gateway"
+    },
+    {
+      "from": "package:demo",
+      "id": "rel:manual:package:demo->manual:postgres",
+      "kind": "manual",
+      "provenance": "manual",
+      "to": "manual:postgres"
+    }
+  ],
+  "schema_version": "1.0",
+  "views": [
+    {
+      "default_focus": "manual:web-client",
+      "description": {
+        "default": "A manually curated runtime flow."
+      },
+      "entity_ids": [
+        "manual:web-client",
+        "manual:api-gateway",
+        "package:demo",
+        "manual:postgres"
+      ],
+      "id": "view:clients-to-infra",
+      "stages": [
+        {
+          "id": "stage:client",
+          "order": 1,
+          "title": {
+            "default": "Client"
+          }
+        },
+        {
+          "id": "stage:gateway",
+          "order": 2,
+          "title": {
+            "default": "Gateway"
+          }
+        }
+      ],
+      "title": {
+        "default": "Clients → Gateway → Services → Infrastructure"
+      }
+    }
+  ]
+}

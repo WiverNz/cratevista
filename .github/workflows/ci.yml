@@ -1,0 +1,345 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  # CrateVista pins the latest stable Rust (ADR-0010). Keep in sync with
+  # rust-toolchain.toml and Cargo.toml `rust-version`.
+  RUST_STABLE: "1.97.1"
+  # The exact cargo-local-registry used to build the offline install registry
+  # (issue 10, Phase 5B). Pinned: it must build/run under Rust 1.97.1 and expose
+  # both `sync` and `add`. See PRD/issue_10 Decision 8 + the Phase-5B ledger.
+  CARGO_LOCAL_REGISTRY_VERSION: "0.2.12"
+  # The exact cargo-about used for the Rust dependency-licence report (issue 10,
+  # Phase 6.K). See about.toml and docs/licenses/.
+  CARGO_ABOUT_VERSION: "0.7.1"
+  # The pinned nightly used ONLY for runtime rustdoc-JSON generation (never to build
+  # CrateVista itself). See docs/adr/0004-rustdoc-toolchain-policy.md.
+  RUST_NIGHTLY: "nightly-2026-07-01"
+
+jobs:
+  # Format and lint once on a single platform, on the pinned stable toolchain.
+  lint:
+    name: Format & Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal --component rustfmt,clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: MSRV/pinned-stable check
+        run: cargo +${{ env.RUST_STABLE }} check --workspace --all-features
+      # Rust dependency-licence policy + drift: the committed report must match a
+      # fresh deterministic (offline, locked) regeneration, and cargo-about fails on
+      # any licence outside about.toml's accepted allowlist.
+      - name: Install cargo-about (pinned)
+        run: cargo install cargo-about --version ${{ env.CARGO_ABOUT_VERSION }} --locked
+      - name: Rust licence report policy + drift
+        run: |
+          cargo about generate --frozen --workspace about.hbs -o docs/licenses/rust-dependencies.md
+          git diff --exit-code -- docs/licenses/rust-dependencies.md
+
+  # Build and test on all supported platforms, on the pinned stable toolchain
+  # (no nightly needed).
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --workspace --all-features
+      - name: Test
+        run: cargo test --workspace --all-features
+
+  # PRD-07: the interactive explorer, verified end to end in one job.
+  #
+  # Deliberately NOT split across jobs. `cratevista-server` embeds the bundle at
+  # compile time, so the E2E binary must be compiled from the exact dist produced
+  # earlier in the same job; shipping dist between jobs would risk testing a
+  # binary that embeds a different bundle. One job keeps that ordering provable.
+  #
+  # No nightly: the committed fixtures are real generated snapshots. Fixture
+  # regeneration (which does need nightly) is never run here.
+  explorer:
+    name: Explorer (frontend + real-browser verification)
+    runs-on: ubuntu-latest
+    steps:
+      # 1. checkout
+      - uses: actions/checkout@v4
+
+      # 2. Rust (pinned stable), incl. rustfmt/clippy for the gates below.
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal --component rustfmt,clippy
+      # Caches only the registry and dependency artifacts; this action drops the
+      # workspace's own crates, and `cratevista-server/build.rs` declares
+      # `rerun-if-changed=embedded`, so no cache can hide bundle drift.
+      - uses: Swatinem/rust-cache@v2
+
+      # 3. Node 24. Caches only the npm download cache, never node_modules or
+      #    dist, so it cannot mask generated-type or dist drift.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # 4. Exact, lockfile-pinned install.
+      - name: npm ci
+        run: npm ci
+        working-directory: web
+
+      # 5. Regenerate the schema-derived types.
+      - name: Generate types
+        run: npm run generate:types
+        working-directory: web
+
+      # 5b. Prove the regeneration changed nothing. `check:types` compares a
+      #     fresh generation against the COMMITTED file — but step 5 has just
+      #     overwritten that file, so on its own it could no longer fail. This
+      #     git check is what actually catches generated-type drift.
+      - name: Fail if the generated types were stale
+        run: git diff --exit-code -- web/src/types/generated
+
+      # 6. The git-free drift guard (also used locally).
+      - name: Check generated types
+        run: npm run check:types
+        working-directory: web
+
+      # 7-9. Type-check with TS7, then the TS6 compatibility API, then lint.
+      - name: Typecheck (TypeScript 7)
+        run: npm run typecheck
+        working-directory: web
+      - name: Typecheck (TypeScript 6 compatibility API)
+        run: npm run typecheck:compat
+        working-directory: web
+      - name: Lint
+        run: npm run lint
+        working-directory: web
+
+      # 10. Unit/component tests.
+      - name: Unit tests
+        run: npm run test
+        working-directory: web
+
+      # 10b. Web dependency-licence policy + drift (deterministic, offline).
+      - name: Web licence report policy + drift
+        run: npm run license:web:check
+        working-directory: web
+
+      # 11. Drift-check the committed dist against the UNTOUCHED checkout. This
+      #     must come BEFORE any build: building first would overwrite the
+      #     committed baseline and the check could never fail.
+      - name: Check committed embedded bundle is current
+        run: npm run check:dist
+        working-directory: web
+
+      # 12. Build the production bundle.
+      - name: Build production bundle
+        run: npm run build
+        working-directory: web
+
+      # 13. Compile the E2E binary AFTER that dist exists, so it embeds it.
+      - name: Build the server binary (embeds the dist built above)
+        run: cargo build -p cargo-cratevista
+
+      # 14. Only the browser the suite pins, plus its Linux deps.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+
+      # 15. Real-browser verification against the real loopback server.
+      - name: E2E (real server, real embedded bundle)
+        run: npm run e2e
+        working-directory: web
+
+      # 16. Prove Cargo rebuilds the embedding crate when the embedded bundle changes.
+      #     Restores the checkout itself, even on failure.
+      - name: Verify embedded-dist incremental rebuild
+        run: npm run check:embed-rebuild
+        working-directory: web
+
+      # 17-20. Rust gates.
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: Rust tests
+        run: cargo test --workspace --all-features
+      - name: Pinned-stable check
+        run: cargo +${{ env.RUST_STABLE }} check --workspace --all-features
+
+      # Traces, screenshots and captured server logs for any browser failure.
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            web/test-results/
+            web/playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Prove the workspace packages and installs the way crates.io users would: from
+  # `.crate` archives only, with NO workspace checkout, NO network and NO Node, on
+  # all three OSes (issue 10, Phase 5B). Each matrix leg packages and installs its
+  # OWN package set into its own fresh temp registry / CARGO_HOME / install root —
+  # no artifact is carried between OSes (archive formats and path semantics differ).
+  #
+  # This replaces the old `cargo install --path` job, which installed from the
+  # workspace and so never proved a crates.io-style install.
+  #
+  # Node is deliberately NOT set up here; the harness additionally prepends
+  # node/npm/npx poison shims to PATH so any Node invocation is a hard failure.
+  package-install:
+    name: Package + offline install (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+      - uses: Swatinem/rust-cache@v2
+
+      # Populate the Cargo.lock-pinned third-party crates so the registry `sync`
+      # (assembly, which MAY reach crates.io) has them. Installation is strictly
+      # offline; only assembly/sync may fetch.
+      - name: Fetch locked dependencies
+        run: cargo fetch --locked
+
+      # The pinned local-registry tool. Builds the offline third-party base.
+      - name: Install cargo-local-registry (pinned)
+        run: cargo install cargo-local-registry --version ${{ env.CARGO_LOCAL_REGISTRY_VERSION }} --locked
+
+      # Package-file-set assertions (server ships embedded/**; cargo-cratevista
+      # ships README + both licences) and the byte-identical licence-drift check.
+      - name: Package file-set + licence-drift checks
+        shell: bash
+        run: |
+          cargo test -p cargo-cratevista --test packaging
+          cargo test -p cargo-cratevista --test packaging package_file_sets_are_correct -- --ignored --exact --nocapture
+
+      # The permanent load-bearing proof (Part 12): Cargo installs an unpublished
+      # package from a replaced local-registry source, offline. If this fails, the
+      # locked source mechanism is no longer accepted and the leg fails BEFORE the
+      # full package build.
+      - name: Unpublished-package source-replacement preflight
+        run: cargo test -p cargo-cratevista --test local_registry unpublished_package_source_replacement_preflight -- --ignored --exact --nocapture
+
+      # The full offline package-then-install matrix leg: package the nine crates,
+      # assemble the registry, install cargo-cratevista --locked --offline from a
+      # fresh CARGO_HOME outside the repo, then run the installed
+      # `cargo cratevista --help` and a metadata-only `build` (no nightly, no Node).
+      - name: Offline local-registry package + install
+        shell: bash
+        run: |
+          cargo test -p cargo-cratevista --test local_registry local_registry_package_install_works \
+            -- --ignored --exact --nocapture 2>&1 | tee "local-registry-${{ matrix.os }}.log"
+
+      # The harness log (stdout) for a failed leg — not the registry cache.
+      - name: Upload harness log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-registry-log-${{ matrix.os }}
+          path: local-registry-*.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Non-publishing release-artifact smoke (issue 10, Phase 7F). Exercises the SAME
+  # deterministic archive helper release.yml uses, on all four release runners/targets,
+  # WITHOUT creating a release or uploading anything. No Node is needed to assemble or
+  # verify an archive; the frontend bundle is the committed embedded/ bytes.
+  release-smoke:
+    name: Release-artifact smoke (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable toolchain + target
+        run: |
+          rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+          rustup target add ${{ matrix.target }} --toolchain ${{ env.RUST_STABLE }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-smoke-${{ matrix.target }}
+      - name: Build release binary
+        run: cargo build --release --locked -p cargo-cratevista --target ${{ matrix.target }}
+      - name: Assemble + verify archive (shared helper, no upload)
+        shell: bash
+        env:
+          CRATEVISTA_RELEASE_VERSION: "0.1.0"
+          CRATEVISTA_RELEASE_TARGET: ${{ matrix.target }}
+          CRATEVISTA_RELEASE_OUTDIR: ${{ github.workspace }}/dist-smoke
+        run: |
+          set -euo pipefail
+          bin="target/${{ matrix.target }}/release/cargo-cratevista"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then bin="${bin}.exe"; fi
+          export CRATEVISTA_RELEASE_BIN="$bin"
+          mkdir -p "$CRATEVISTA_RELEASE_OUTDIR"
+          cargo test -p cargo-cratevista --test release_archive make_release_archive \
+            -- --ignored --exact --nocapture
+          # Recompute the checksum independently (proves the .sha256 matches).
+          cd "$CRATEVISTA_RELEASE_OUTDIR"
+          for f in *.sha256; do sha256sum -c "$f"; done
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-apple-darwin
+            os: macos-13
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+
+  # README first-run verification (issue 10, Phase 7E). Installs from source on stable
+  # and runs the documented first-run commands. NO Node is set up.
+  readme-first-run:
+    name: README first-run (stable)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+      - uses: Swatinem/rust-cache@v2
+      - name: README first-run (stable portion)
+        run: bash ci/readme-first-run.sh stable
+
+  # Gated nightly full pipeline (issue 10, Phase 7D). The ONLY job that installs the
+  # pinned nightly, used solely for runtime rustdoc-JSON generation — never to build
+  # CrateVista itself. Runs the real run_build → run_generate → materialize pipeline
+  # and the README nightly generation portion. NO Node.
+  nightly-pipeline:
+    name: Nightly full pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable + pinned nightly toolchains
+        run: |
+          rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+          rustup toolchain install ${{ env.RUST_NIGHTLY }} --profile minimal
+      - uses: Swatinem/rust-cache@v2
+      - name: Full-pipeline static build (real rustdoc JSON via the pinned nightly)
+        run: cargo test -p cratevista-core --test build_live -- --ignored --exact build_live_materializes_a_static_site --nocapture
+      - name: README first-run (nightly generation portion)
+        run: bash ci/readme-first-run.sh nightly

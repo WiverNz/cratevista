@@ -1,0 +1,33 @@
+# Every reference here is wrong in a different way, and each degrades locally:
+# the flow is still built from whatever survives.
+
+[[entity]]
+id = "real"
+kind = "manual_block"
+label = "A real manual entity"
+
+[[flow]]
+id = "broken-refs"
+title = "Broken references"
+members = [
+  "manual:real",              # fine
+  "manual:ghost",             # no [[entity]] declares it -> config diagnoses
+  "item:struct:nope::Gone",   # a DISCOVERED id that does not exist -> PRD 05's job
+]
+default_focus = "manual:phantom"   # unknown manual -> config diagnoses
+docs = [".cratevista/docs/missing.md"]   # no such file -> step 4 diagnoses
+
+  [[flow.relation]]
+  from = "manual:real"
+  to = "manual:nowhere"        # unknown manual -> config diagnoses
+  role = "x"
+
+  [[flow.relation]]
+  from = "manual:real"
+  to = "item:struct:also::Missing"   # discovered -> passed through, PRD 05's job
+  role = "y"
+
+  [[flow.example]]
+  id = "gone"
+  title = "Missing example"
+  path = ".cratevista/examples/gone.json"   # no such file -> step 4 diagnoses

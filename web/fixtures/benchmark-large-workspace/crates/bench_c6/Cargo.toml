@@ -1,0 +1,11 @@
+[package]
+name = "bench_c6"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+bench_c5 = { path = "../bench_c5" }

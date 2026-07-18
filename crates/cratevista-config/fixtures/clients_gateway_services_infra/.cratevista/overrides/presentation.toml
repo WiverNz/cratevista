@@ -1,0 +1,15 @@
+# Presentation enrichment of a DISCOVERED entity. Identity is never touched:
+# `EntityOverride` has no id/kind/parent/source fields at all.
+
+[[override]]
+target = "package:demo"
+label = "Demo service"
+description = "The Rust service behind the gateway."
+tags = ["core"]
+category = "service"
+stage = "stage:services"
+promoted = true
+docs = [".cratevista/docs/demo-notes.md"]
+
+  [override.presentation]
+  accent = "orange"

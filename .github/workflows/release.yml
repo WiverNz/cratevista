@@ -1,0 +1,198 @@
+name: Release
+
+# Authoritative trigger: a pushed SemVer tag `vMAJOR.MINOR.PATCH` (e.g. `v0.1.0`).
+# Ordinary branches and pull requests never trigger a release. This workflow builds
+# checksummed cross-platform archives and uploads them to the GitHub Release for the
+# tag. It NEVER publishes to crates.io (that is the separate, manual publish.yml) and
+# adds no binary signing (SHA-256 checksums only; deferred — see ADR-0009 / PRD 10).
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+# Default to no permissions; only the upload job is granted `contents: write`.
+permissions: {}
+
+env:
+  CARGO_TERM_COLOR: always
+  # Pinned stable Rust for every release build (stable only — this workflow never
+  # installs or uses a pre-release toolchain).
+  RUST_STABLE: "1.97.1"
+  # Pinned Node for the frontend reproducibility gate only.
+  NODE_VERSION: "24"
+
+jobs:
+  # 1) Validate the tag against the workspace/package versions BEFORE building.
+  validate:
+    name: Validate tag and versions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+      - name: Tag ⇔ workspace/package version consistency
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The ref must be a matching tag; derive the version without the `v`.
+          case "${GITHUB_REF:-}" in
+            refs/tags/v*) : ;;
+            *) echo "not a version tag: ${GITHUB_REF:-<none>}" >&2; exit 1 ;;
+          esac
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          # The workspace [workspace.package] version and every one of the nine
+          # workspace packages must equal the tag version. `--locked` ensures the
+          # committed Cargo.lock is honoured.
+          meta="$(cargo +${RUST_STABLE} metadata --no-deps --format-version 1 --locked)"
+          mismatch="$(printf '%s' "$meta" | python3 -c 'import json,sys; v=sys.argv[1]; m=json.load(sys.stdin); print("\n".join(p["name"]+"="+p["version"] for p in m["packages"] if p["version"]!=v))' "$version")"
+          if [ -n "$mismatch" ]; then
+            echo "these packages do not match tag $version:" >&2
+            echo "$mismatch" >&2
+            exit 1
+          fi
+          count="$(printf '%s' "$meta" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)["packages"]))')"
+          if [ "$count" -ne 9 ]; then
+            echo "expected 9 workspace packages, found $count" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "validated release version $version across $count workspace packages"
+
+  # 2) Build the four release targets — one native runner each (no cross-compile).
+  build:
+    name: Build ${{ matrix.target }}
+    needs: validate
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-apple-darwin
+            os: macos-13
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned stable toolchain + target
+        run: |
+          rustup toolchain install ${{ env.RUST_STABLE }} --profile minimal
+          rustup target add ${{ matrix.target }} --toolchain ${{ env.RUST_STABLE }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.target }}
+
+      # Frontend reproducibility gate: prove the COMMITTED embedded bundle matches a
+      # fresh production build. The temporary build is comparison-only; the release
+      # binary embeds the already committed, verified `embedded/` bytes.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: npm ci
+        run: npm ci
+        working-directory: web
+      - name: Verify committed embedded bundle is current (check:dist)
+        run: npm run check:dist
+        working-directory: web
+      - name: Verify embedded-dist incremental rebuild (check:embed-rebuild)
+        run: npm run check:embed-rebuild
+        working-directory: web
+
+      # Compile the release binary, which embeds the committed `embedded/` bytes.
+      - name: Build release binary
+        run: cargo build --release --locked -p cargo-cratevista --target ${{ matrix.target }}
+
+      # Assemble the archive + SHA-256 with the ONE shared, deterministic helper
+      # (crates/cargo-cratevista/tests/release_archive.rs) — no per-leg shell logic.
+      - name: Assemble archive + checksum
+        shell: bash
+        env:
+          CRATEVISTA_RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+          CRATEVISTA_RELEASE_TARGET: ${{ matrix.target }}
+          CRATEVISTA_RELEASE_OUTDIR: ${{ github.workspace }}/dist-release
+        run: |
+          set -euo pipefail
+          bin="target/${{ matrix.target }}/release/cargo-cratevista"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then bin="${bin}.exe"; fi
+          export CRATEVISTA_RELEASE_BIN="$bin"
+          mkdir -p "$CRATEVISTA_RELEASE_OUTDIR"
+          cargo test -p cargo-cratevista --test release_archive make_release_archive \
+            -- --ignored --exact --nocapture
+
+      - name: Upload archive artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.target }}
+          path: dist-release/*
+          if-no-files-found: error
+          retention-days: 7
+
+  # 3) Create the GitHub Release and upload the four archives + four checksums.
+  release:
+    name: Publish GitHub Release
+    needs: [validate, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all archives
+        uses: actions/download-artifact@v4
+        with:
+          path: dist-download
+          pattern: release-*
+          merge-multiple: true
+      - name: Verify the complete target set and recompute every checksum
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+          cd dist-download
+          expected=(
+            "cargo-cratevista-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+            "cargo-cratevista-${VERSION}-aarch64-apple-darwin.tar.gz"
+            "cargo-cratevista-${VERSION}-x86_64-apple-darwin.tar.gz"
+            "cargo-cratevista-${VERSION}-x86_64-pc-windows-msvc.zip"
+          )
+          for archive in "${expected[@]}"; do
+            [ -f "$archive" ] || { echo "missing archive: $archive" >&2; exit 1; }
+            [ -f "${archive}.sha256" ] || { echo "missing checksum: ${archive}.sha256" >&2; exit 1; }
+            # Recompute and compare (sha256sum reads "<hex>  <name>").
+            sha256sum -c "${archive}.sha256"
+          done
+          # No unexpected archive is present.
+          for f in *.tar.gz *.zip; do
+            [ -e "$f" ] || continue
+            case " ${expected[*]} " in
+              *" $f "*) : ;;
+              *) echo "unexpected archive: $f" >&2; exit 1 ;;
+            esac
+          done
+          echo "all four archives and checksums verified"
+      - name: Create GitHub Release and upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --notes "Release $TAG. See CHANGELOG.md. Archives are checksummed with SHA-256; binaries are not claimed byte-reproducible." \
+            dist-download/*

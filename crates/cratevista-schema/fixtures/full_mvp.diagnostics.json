@@ -1,0 +1,13 @@
+{
+  "diagnostics": [
+    {
+      "code": "unresolved_type",
+      "entities": [
+        "item:function:demo::app::run"
+      ],
+      "message": "could not resolve type `Foo` in a function signature",
+      "severity": "warning"
+    }
+  ],
+  "schema_version": "1.0"
+}

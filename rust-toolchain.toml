@@ -1,0 +1,11 @@
+# CrateVista tracks the latest stable Rust release during pre-1.0 development,
+# pinned explicitly so local development and CI are reproducible.
+# Policy: docs/adr/0010-rust-version-policy.md.
+#
+# The nightly toolchain needed to generate rustdoc JSON for a *target* project
+# is a separate, PRD-04-defined runtime concern — it is NOT required to build,
+# test, format, or lint CrateVista itself.
+[toolchain]
+channel = "1.97.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"
