@@ -56,11 +56,6 @@ jobs:
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    env:
-      # macOS exposes its conventional /var/folders temp root through the /var
-      # symlink. Use the runner's physical workspace temp path so symlink-safety
-      # tests exercise symlinks they create, not that operating-system alias.
-      TMPDIR: ${{ runner.temp }}
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +69,11 @@ jobs:
         run: cargo build --workspace --all-features
       - name: Test
         run: cargo test --workspace --all-features
+        env:
+          # macOS exposes its conventional /var/folders temp root through the
+          # /var symlink. At step scope the runner context is available, so use
+          # its physical workspace temp path for symlink-safety tests.
+          TMPDIR: ${{ runner.temp }}
 
   # PRD-07: the interactive explorer, verified end to end in one job.
   #
