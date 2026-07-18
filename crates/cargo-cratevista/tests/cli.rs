@@ -380,25 +380,25 @@ fn no_output_publishes_to_the_workspace_local_default_from_root() {
 #[test]
 fn no_output_anchors_to_the_workspace_not_the_external_cwd() {
     let ws = tempfile::tempdir().unwrap();
-    write_bin_crate(ws.path(), "wsanchor");
+    let ws_path = ws.path().canonicalize().unwrap();
+    write_bin_crate(&ws_path, "wsanchor");
     let external = tempfile::tempdir().unwrap();
+    let external_path = external.path().canonicalize().unwrap();
 
     bin()
         .arg("build")
         .arg("--manifest-path")
-        .arg(ws.path().join("Cargo.toml"))
-        .current_dir(external.path())
+        .arg(ws_path.join("Cargo.toml"))
+        .current_dir(&external_path)
         .assert()
         .success();
 
     assert!(
-        ws.path()
-            .join("target/cratevista/site/index.html")
-            .is_file(),
+        ws_path.join("target/cratevista/site/index.html").is_file(),
         "site must be under the workspace root"
     );
     assert!(
-        !external.path().join("target/cratevista/site").exists(),
+        !external_path.join("target/cratevista/site").exists(),
         "nothing may be written under the external cwd"
     );
 }
@@ -406,39 +406,42 @@ fn no_output_anchors_to_the_workspace_not_the_external_cwd() {
 #[test]
 fn relative_output_from_outside_resolves_against_the_workspace() {
     let ws = tempfile::tempdir().unwrap();
-    write_bin_crate(ws.path(), "wsdist");
+    let ws_path = ws.path().canonicalize().unwrap();
+    write_bin_crate(&ws_path, "wsdist");
     let external = tempfile::tempdir().unwrap();
+    let external_path = external.path().canonicalize().unwrap();
 
     bin()
         .args(["build", "--output", "dist"])
         .arg("--manifest-path")
-        .arg(ws.path().join("Cargo.toml"))
-        .current_dir(external.path())
+        .arg(ws_path.join("Cargo.toml"))
+        .current_dir(&external_path)
         .assert()
         .success();
 
-    assert!(ws.path().join("dist/index.html").is_file());
-    assert!(!external.path().join("dist").exists());
+    assert!(ws_path.join("dist/index.html").is_file());
+    assert!(!external_path.join("dist").exists());
 }
 
 #[test]
 fn absolute_output_is_used_exactly() {
     let ws = tempfile::tempdir().unwrap();
-    write_bin_crate(ws.path(), "wsabs");
+    let ws_path = ws.path().canonicalize().unwrap();
+    write_bin_crate(&ws_path, "wsabs");
     let target = tempfile::tempdir().unwrap();
-    let site = target.path().join("exact-site");
+    let site = target.path().canonicalize().unwrap().join("exact-site");
 
     bin()
         .args(["build", "--output"])
         .arg(&site)
         .arg("--manifest-path")
-        .arg(ws.path().join("Cargo.toml"))
-        .current_dir(ws.path())
+        .arg(ws_path.join("Cargo.toml"))
+        .current_dir(&ws_path)
         .assert()
         .success();
 
     assert!(site.join("index.html").is_file());
-    assert!(!ws.path().join("target/cratevista/site").exists());
+    assert!(!ws_path.join("target/cratevista/site").exists());
 }
 
 #[test]

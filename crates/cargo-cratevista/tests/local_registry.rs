@@ -1112,7 +1112,11 @@ fn run_preflight(root: &Path) {
 fn local_registry_package_install_works() {
     let root = repo_root();
     let tmp = tempfile::tempdir().unwrap();
-    let base = tmp.path();
+    // macOS exposes its temporary directory through `/var`, which is a symlink
+    // to `/private/var`. Use the physical path so the production symlink guard
+    // tests the harness's own paths rather than that OS-level alias.
+    let canonical_tmp = tmp.path().canonicalize().unwrap();
+    let base = canonical_tmp.as_path();
 
     // --- Part 4 control #7: the preflight GATES the whole harness. If Cargo no
     //     longer accepts an unpublished package from a replaced source, this

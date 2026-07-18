@@ -245,6 +245,34 @@ A produced site opens **no** `EventSource` and makes **zero** requests to any
 sibling JSON over `file://`) — serve it over HTTP. Full hosting guide:
 [`docs/hosting.md`](docs/hosting.md).
 
+## Repository cleanup
+
+Before archiving a checkout, preview the repository-local generated output that can
+be removed:
+
+```powershell
+# Windows preview
+./scripts/clean-project.ps1
+
+# Windows cleanup
+./scripts/clean-project.ps1 -Apply
+```
+
+```bash
+# Linux/macOS preview
+./scripts/clean-project.sh
+
+# Linux/macOS cleanup
+./scripts/clean-project.sh --apply
+```
+
+Both scripts default to dry-run, read the same explicit allowlist from
+[`scripts/clean-project-paths.txt`](scripts/clean-project-paths.txt), print every
+path they would remove, print the total removable size, and finish with
+`git status --short` for manual review. The cleanup is intentionally limited to
+reproducible repository-local output; it does not use `git clean` or modify Git
+state.
+
 ## Privacy
 
 CrateVista is local-first. It does not upload your source code or generated data.

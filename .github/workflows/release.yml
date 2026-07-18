@@ -126,7 +126,7 @@ jobs:
           CRATEVISTA_RELEASE_OUTDIR: ${{ github.workspace }}/dist-release
         run: |
           set -euo pipefail
-          bin="target/${{ matrix.target }}/release/cargo-cratevista"
+          bin="${{ github.workspace }}/target/${{ matrix.target }}/release/cargo-cratevista"
           if [ "${{ matrix.os }}" = "windows-latest" ]; then bin="${bin}.exe"; fi
           export CRATEVISTA_RELEASE_BIN="$bin"
           mkdir -p "$CRATEVISTA_RELEASE_OUTDIR"

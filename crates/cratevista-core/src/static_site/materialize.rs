@@ -940,13 +940,19 @@ mod tests {
         let real_parent = temp.path().join("real");
         fs::create_dir_all(&real_parent).unwrap();
         let output = temp.path().join("link/site");
-        let art = write_artifacts(temp.path());
+        // Keep artifacts elsewhere so creating them cannot change the output's
+        // deliberately missing `link` ancestor before the race hook runs.
+        let artifact_temp = TempDir::new().unwrap();
+        let art = write_artifacts(artifact_temp.path());
         // Before the second resolve, replace the (missing) parent with a symlink.
         let link = temp.path().join("link");
-        let mut fs = FaultFs::none();
+        let fs = FaultFs::none();
         let real_clone = real_parent.clone();
         *fs.before_reresolve.borrow_mut() = Some(Box::new(move || {
-            let _ = symlink(&real_clone, &link);
+            // Parent preparation has created the previously missing directory;
+            // model the race by replacing it before identity is checked again.
+            fs::remove_dir(&link).unwrap();
+            symlink(&real_clone, &link).unwrap();
         }));
         let result = run(&fs, &output, None, &art);
         assert_eq!(result, Err(BuildError::OutputSymlink));

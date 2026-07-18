@@ -2,3 +2,5 @@
 # across platforms (roundtrip and schema-drift tests compare exact bytes).
 crates/cratevista-schema/schema/*.json text eol=lf
 crates/cratevista-schema/fixtures/*.json text eol=lf
+# Markdown fixture bytes are embedded verbatim and compared in cross-platform tests.
+crates/cratevista-config/tests/fixtures/**/*.md text eol=lf
