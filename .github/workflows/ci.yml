@@ -44,6 +44,10 @@ jobs:
         run: cargo install cargo-about --version ${{ env.CARGO_ABOUT_VERSION }} --locked
       - name: Rust licence report policy + drift
         run: |
+          # `--frozen` may inspect target-specific packages that the Linux build
+          # did not download (for example anstyle-wincon). Prime the complete
+          # locked dependency set before enforcing offline generation.
+          cargo fetch --locked
           cargo about generate --frozen --workspace about.hbs -o docs/licenses/rust-dependencies.md
           git diff --exit-code -- docs/licenses/rust-dependencies.md
 
@@ -52,6 +56,11 @@ jobs:
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    env:
+      # macOS exposes its conventional /var/folders temp root through the /var
+      # symlink. Use the runner's physical workspace temp path so symlink-safety
+      # tests exercise symlinks they create, not that operating-system alias.
+      TMPDIR: ${{ runner.temp }}
     strategy:
       fail-fast: false
       matrix:
