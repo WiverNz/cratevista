@@ -55,9 +55,13 @@ describe("graph controls", () => {
     await ready();
     expect(screen.getByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Edge visibility"), { target: { value: "hidden" } });
-    expect(screen.queryByTestId("edge-rel:contains:ws-pkg")).not.toBeInTheDocument();
+    // Edge removal re-renders asynchronously (React Flow); wait for it rather than
+    // asserting synchronously (which races on slower CI runners).
+    await waitFor(() =>
+      expect(screen.queryByTestId("edge-rel:contains:ws-pkg")).not.toBeInTheDocument(),
+    );
     fireEvent.change(screen.getByLabelText("Edge visibility"), { target: { value: "all" } });
-    expect(screen.getByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
+    expect(await screen.findByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
   });
 
   it("edge mode related shows only edges touching the selection", async () => {

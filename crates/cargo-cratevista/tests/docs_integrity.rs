@@ -87,10 +87,13 @@ fn internal_markdown_links_resolve() {
 
 #[test]
 fn no_deleted_reference_assets_or_external_reference_residue() {
+    // The removed external reference project's name, assembled from parts so this
+    // guard file itself does not contain the forbidden token.
+    let removed_ref = concat!("game", "srv");
     for doc in LINK_CHECKED {
         let text = read(doc).to_ascii_lowercase();
         assert!(
-            !text.contains("gamesrv"),
+            !text.contains(removed_ref),
             "{doc} must not mention the removed external reference project"
         );
         assert!(

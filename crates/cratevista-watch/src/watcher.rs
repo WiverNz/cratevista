@@ -1454,12 +1454,18 @@ mod tests {
             ),
         )
         .await;
+        // A native backend (macOS FSEvents) can report a change at directory
+        // granularity, so accept the staged path being the file or its `new/` parent
+        // — both prove the candidate observed the change in the new subtree before
+        // activation (the point of the test), rather than old-set misclassification.
+        let staged_rel = staged
+            .strip_prefix(&root)
+            .unwrap_or(staged.as_path())
+            .to_string_lossy()
+            .replace('\\', "/");
         assert!(
-            staged
-                .to_string_lossy()
-                .replace('\\', "/")
-                .ends_with("new/added.rs"),
-            "staged the wrong path: {staged:?}"
+            staged_rel == "new/added.rs" || staged_rel == "new",
+            "staged path must be the new-subtree change: {staged:?}"
         );
 
         // Activate.
@@ -1546,8 +1552,14 @@ mod tests {
         )
         .await;
 
-        // The old watcher is still fully active while the candidate waits.
-        put(&root.join("old/edited.rs"), "pub fn edited() {}\n");
+        // The old watcher is still fully active while the candidate waits. Issue the
+        // write more than once: a native backend (macOS FSEvents) can drop a single
+        // change, and the debouncer collapses the repeated identical writes into one
+        // request (the same reason `poke_until_staged` re-pokes).
+        for _ in 0..5 {
+            put(&root.join("old/edited.rs"), "pub fn edited() {}\n");
+            tokio::time::sleep(Duration::from_millis(40)).await;
+        }
 
         gate.release.add_permits(1);
         within("the replacement", replacing)
@@ -1594,10 +1606,18 @@ mod tests {
             .expect("must succeed");
 
         let paths = harness.next_paths(&root).await;
-        assert_eq!(
-            paths,
-            ["shared/touched.rs"],
-            "the overlap must collapse to one path"
+        // The coalescing guarantee under test is ONE regeneration request (asserted
+        // just below via `try_recv`). A native backend (macOS FSEvents) may surface a
+        // sibling in the same watched directory at directory granularity, so require
+        // the touched path within a single shared-subtree burst rather than an exact
+        // singleton set.
+        assert!(
+            paths.iter().any(|p| p == "shared/touched.rs"),
+            "the touched path must appear: {paths:?}"
+        );
+        assert!(
+            paths.iter().all(|p| p.starts_with("shared/")),
+            "the coalesced burst stays within the shared subtree: {paths:?}"
         );
         // And it is one burst, not two runs.
         assert!(

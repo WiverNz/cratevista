@@ -2182,7 +2182,8 @@ Each phase is independently reviewable and leaves the tree green.
 >   with `unicode-ident`, reverted). Web: `npm run license:web:check` (drift + policy,
 >   no name inference, unparseable compound → fail). Reports are path/timestamp-free.
 > - **Documentation verification (7H).** `crates/cargo-cratevista/tests/docs_integrity.rs`:
->   internal Markdown links resolve; no `gamesrv`/`docs/references/` residue; no stale
+>   internal Markdown links resolve; no removed-reference-project or
+>   deleted-screenshot residue; no stale
 >   `web/dist` instruction; no publication/snippet/binary-reproducibility/`file://`
 >   overclaim; correct stable-vs-nightly wording + tuple; `Aleksandr Skibin` authorship
 >   inherited by all nine crates.
@@ -2207,8 +2208,9 @@ Each phase is independently reviewable and leaves the tree green.
 >   --workspace --all-features`, `cargo +1.97.1 check`, the ignored `release_archive_smoke`,
 >   `build_live` (nightly), `build_static`, the Phase-5B preflight + full offline install
 >   harness, `cargo about generate --frozen` + `npm run license:web:check`, the full
->   frontend suite, `git diff --check`, `cargo metadata` author check, `git grep -ni
->   gamesrv` / `reference-repositories.local` (none) — results in the Phase-7 gate run.
+>   frontend suite, `git diff --check`, `cargo metadata` author check, a grep for the
+>   removed external reference project and the old local-reference file (none) —
+>   results in the Phase-7 gate run.
 > - **Hosted closure pending.** The GitHub-hosted matrices — Phase-5B package-install on
 >   ubuntu/macOS/windows, the release-smoke matrix, and the README/nightly jobs — are
 >   **implemented but not executed** (no remote configured, `gh` absent). Per the
