@@ -1,3 +1,6 @@
+# Keep every detected text file stable across Windows, macOS, and Linux.
+* text=auto eol=lf
+
 # Keep canonical JSON artifacts and fixtures at LF so byte-equality holds
 # across platforms (roundtrip and schema-drift tests compare exact bytes).
 crates/cratevista-schema/schema/*.json text eol=lf
