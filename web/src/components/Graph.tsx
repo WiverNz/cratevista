@@ -1,5 +1,5 @@
 // React Flow graph canvas wired to the projection + LayoutClient positions.
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -32,8 +32,18 @@ import {
   shouldShowEdgeLabel,
   type EdgeState,
 } from "../adapter/relationStyle.ts";
+import { getNodeCards } from "../model/nodeCards.ts";
+import { NodeCardView } from "./NodeCard.tsx";
+import type { NodeCard } from "../model/nodeCards.ts";
+import { searchEntities } from "../state/selectors.ts";
 
-type EntityNodeData = { node: GraphNode; label: string };
+type EntityNodeData = {
+  node: GraphNode;
+  label: string;
+  card: NodeCard;
+  related: boolean;
+  searchMatch: boolean;
+};
 type RelationEdgeData = {
   edge: GraphEdge;
   label?: string;
@@ -44,25 +54,26 @@ type RelationEdgeData = {
 type EntityRfNode = Node<EntityNodeData, "entity">;
 type RelationRfEdge = Edge<RelationEdgeData, "relation">;
 
-const NODE_WIDTH = 180;
-const NODE_HEIGHT = 56;
-
+/**
+ * A graph node card. The card *content* (title, kind badge, metrics, diagnostic
+ * badge, dimensions) is fully precomputed in `data.card`; this component only
+ * chooses a density level from zoom + selection and a single dominant visual
+ * state from the state flags. No metric is aggregated here.
+ */
 export function EntityNode({ data, selected }: NodeProps<EntityRfNode>) {
-  const { node } = data;
+  const { zoom } = useViewport();
   return (
-    <div
-      className={`cv-node${selected ? " cv-node-selected" : ""}${node.style.known ? "" : " cv-node-generic"}`}
-      style={{ borderColor: node.style.color }}
-      aria-label={`${node.kind}: ${node.label}`}
-    >
+    <>
       <Handle type="target" position={Position.Left} />
-      <div className="cv-node-title">{node.label}</div>
-      <div className="cv-node-kind" style={{ color: node.style.color }}>
-        {node.style.category}
-        {!node.style.known && " (unknown)"}
-      </div>
+      <NodeCardView
+        card={data.card}
+        zoom={zoom}
+        selected={!!selected}
+        related={data.related}
+        searchMatch={data.searchMatch}
+      />
       <Handle type="source" position={Position.Right} />
-    </div>
+    </>
   );
 }
 
@@ -243,29 +254,55 @@ function GraphInner({
   projection: Projection;
   layoutState: LayoutState;
 }) {
-  const { store } = useApp();
+  const { store, model } = useApp();
   useFitOnLayout(layoutState);
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const selection = useUi((s) => s.selection);
   const edgeMode = useUi((s) => s.edgeMode);
   const focusId = useUi((s) => s.focusId);
+  const search = useUi((s) => s.search);
   const selectedEntity = selection.kind === "entity" ? selection.id : null;
   const selectedRelation = selection.kind === "relation" ? selection.id : null;
 
+  // Card metrics are precomputed once per model (memoized by model identity);
+  // selection/zoom re-renders never rebuild them.
+  const nodeCards = useMemo(() => getNodeCards(model), [model]);
+  const searchMatches = useMemo(
+    () => new Set(search.trim() ? searchEntities(model, search) : []),
+    [model, search],
+  );
+
+  const anchor = selectedEntity ?? focusId ?? null;
+  // Nodes 1 hop from the anchor (for the "related" emphasis), from visible edges.
+  const relatedNodeIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!anchor) return ids;
+    for (const e of projection.graph.edges) {
+      if (e.source === anchor) ids.add(e.target);
+      else if (e.target === anchor) ids.add(e.source);
+    }
+    return ids;
+  }, [anchor, projection.graph.edges]);
+
   const nodes: EntityRfNode[] = projection.graph.nodes.map((n) => {
     const pos = layoutState.positions.get(n.id) ?? { x: 0, y: 0 };
+    const card = nodeCards.get(n.id)!;
     return {
       id: n.id,
       type: "entity",
       position: { x: pos.x, y: pos.y },
       selected: n.id === selectedEntity,
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-      data: { node: n, label: n.label },
+      width: card.width,
+      height: card.height,
+      data: {
+        node: n,
+        label: n.label,
+        card,
+        related: relatedNodeIds.has(n.id),
+        searchMatch: searchMatches.has(n.id),
+      },
     };
   });
-
-  const anchor = selectedEntity ?? focusId ?? null;
   const visibleEdges =
     edgeMode === "hidden"
       ? []

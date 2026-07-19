@@ -18,6 +18,7 @@ import {
   type RelationLegendEntry,
 } from "../state/selectors.ts";
 import { reduceGraph } from "../adapter/reduce.ts";
+import { cardSize } from "../model/nodeCards.ts";
 import { count, measure, record } from "./perf.ts";
 import type { GraphNode } from "../adapter/adapter.ts";
 import {
@@ -226,12 +227,10 @@ export function useLayout(engine: LayoutEngine, projection: Projection | null): 
   useEffect(() => {
     if (!projection) return;
     let cancelled = false;
-    const nodes = projection.graph.nodes.map((n) => ({
-      id: n.id,
-      width: 180,
-      height: 56,
-      parent: n.parent,
-    }));
+    const nodes = projection.graph.nodes.map((n) => {
+      const size = cardSize(n.kind);
+      return { id: n.id, width: size.width, height: size.height, parent: n.parent };
+    });
     const edges = projection.graph.edges.map((e) => ({
       id: e.id,
       source: e.source,

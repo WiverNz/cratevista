@@ -134,25 +134,185 @@ select:focus-visible,
   min-height: 0;
 }
 
-.cv-node {
-  width: 180px;
-  min-height: 56px;
-  background: #0f1a2c;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 10px;
+/* --- Node cards -------------------------------------------------------- */
+/* Per-category accent tokens. Category is ALSO signalled by the textual kind
+   badge, border/accent treatment and typography — never colour alone. Dark is
+   the default; a light palette is provided for maintained light tokens. */
+:root {
+  --node-workspace: #f74c00;
+  --node-package: #e0a020;
+  --node-target: #c08040;
+  --node-module: #4c8bf7;
+  --node-type: #33b1a3;
+  --node-trait: #e055a0;
+  --node-function: #5cb85c;
+  --node-impl: #a05ce0;
+  --node-manual: #8a9a7a;
+  --node-unknown: #9aa4b2;
+  --node-bg: #0f1a2c;
+  --node-head-fg: #c8d4e6;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --node-workspace: #c23a00;
+    --node-package: #9a6e00;
+    --node-target: #8a5a25;
+    --node-module: #2f66c0;
+    --node-type: #148075;
+    --node-trait: #b03585;
+    --node-function: #2f8f2f;
+    --node-impl: #6a45c0;
+    --node-manual: #5a6a48;
+    --node-unknown: #5a6472;
+    --node-bg: #ffffff;
+    --node-head-fg: #3a4658;
+  }
+}
+:root[data-theme="light"] {
+  --node-workspace: #c23a00;
+  --node-package: #9a6e00;
+  --node-target: #8a5a25;
+  --node-module: #2f66c0;
+  --node-type: #148075;
+  --node-trait: #b03585;
+  --node-function: #2f8f2f;
+  --node-impl: #6a45c0;
+  --node-manual: #5a6a48;
+  --node-unknown: #5a6472;
+  --node-bg: #ffffff;
+  --node-head-fg: #3a4658;
 }
 
-.cv-node-selected {
-  box-shadow: 0 0 0 2px var(--focus);
+.cv-node {
+  /* width/min-height are set inline from the card's deterministic box. */
+  --accent: var(--node-unknown);
+  background: var(--node-bg);
+  border: 1px solid var(--border);
+  /* Category accent as a left bar — a non-colour-only structural cue. */
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 9px;
+  overflow: hidden; /* no horizontal scroll inside a card */
+  font-size: 12px;
 }
+.cv-node--workspace { --accent: var(--node-workspace); }
+.cv-node--package { --accent: var(--node-package); }
+.cv-node--target { --accent: var(--node-target); }
+.cv-node--module { --accent: var(--node-module); }
+.cv-node--type { --accent: var(--node-type); }
+.cv-node--trait { --accent: var(--node-trait); }
+.cv-node--function { --accent: var(--node-function); }
+.cv-node--impl { --accent: var(--node-impl); }
+.cv-node--manual { --accent: var(--node-manual); border-style: dashed; }
+.cv-node--unknown { --accent: var(--node-unknown); border-left-style: dotted; }
+
+/* Workspace/package overview cards read as headings; code cards are quieter. */
+.cv-node--workspace,
+.cv-node--package {
+  border-top: 2px solid var(--accent);
+}
+
+.cv-node-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--node-head-fg);
+}
+.cv-node-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 4px;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+.cv-node-unknown {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 10px;
+}
+.cv-node-diag {
+  margin-left: auto;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cv-node-diag--error { color: var(--sev-error, #ff6b6b); }
+.cv-node-diag--warning { color: var(--sev-warning, #f0b429); }
+.cv-node-diag--info { color: var(--sev-info, #4c8bf7); }
 
 .cv-node-title {
   font-weight: 600;
+  margin-top: 2px;
+  /* Long names truncate; full name stays in `title`/aria-label. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cv-node-context {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cv-node-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  margin-top: 3px;
+}
+.cv-node-metric {
+  font-size: 11px;
+  white-space: nowrap;
+}
+.cv-node-metric-label {
+  color: var(--muted);
+}
+.cv-node-metric-value {
+  font-variant-numeric: tabular-nums;
+}
+.cv-node-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+  margin-top: 3px;
+}
+.cv-node-ind {
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 4px;
 }
 
-.cv-node-kind {
-  font-size: 12px;
+/* Visual states, weakest → strongest. Selection always dominates. */
+.cv-node--state-related {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+.cv-node--state-diagnostic-warning {
+  box-shadow: 0 0 0 1px var(--sev-warning, #f0b429);
+}
+.cv-node--state-diagnostic-error {
+  box-shadow: 0 0 0 2px var(--sev-error, #ff6b6b);
+}
+.cv-node--state-search {
+  box-shadow: 0 0 0 2px #b98900;
+  border-color: #b98900;
+}
+.cv-node--state-selected {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+/* Selected must remain visible in forced-colors / high-contrast mode. */
+@media (forced-colors: active) {
+  .cv-node--state-selected {
+    outline: 3px solid Highlight;
+    outline-offset: 1px;
+  }
 }
 
 .cv-swatch {

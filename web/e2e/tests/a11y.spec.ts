@@ -147,8 +147,8 @@ test.describe("visual robustness", () => {
     await page.goto(normalURL);
     await waitForGraph(page);
 
-    // Each node states its kind in text, in addition to the colour coding.
-    const kinds = await page.locator(".cv-node .cv-node-kind").allInnerTexts();
+    // Each node states its kind in a text badge, in addition to the colour coding.
+    const kinds = await page.locator(".cv-node .cv-node-badge").allInnerTexts();
     expect(kinds.length).toBeGreaterThan(0);
     for (const text of kinds) expect(text.trim().length).toBeGreaterThan(0);
 
