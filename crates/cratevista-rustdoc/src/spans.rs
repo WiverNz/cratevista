@@ -37,8 +37,23 @@ pub fn map_span(
     let full = if is_absolute_str(&normalized) {
         normalized
     } else {
+        // A relative rustdoc filename is EITHER package-relative (`src/lib.rs`) or
+        // already workspace-relative (`crates/foo/src/lib.rs`), depending on the
+        // rustdoc invocation's working directory. Assuming package-relative and
+        // prepending the package root doubles the prefix for workspaces whose members
+        // live under a subdirectory (e.g. `crates/<pkg>`), yielding
+        // `crates/foo/crates/foo/src/lib.rs`. Disambiguate deterministically, with no
+        // filesystem access: if the filename already begins with the package's
+        // workspace-relative prefix, it is workspace-relative and is used as-is;
+        // otherwise it is package-relative.
         let package = normalize_sep(&context.package_root.to_string_lossy());
-        format!("{}/{}", package.trim_end_matches('/'), normalized)
+        let package_rel = strip_prefix_components(&workspace, &package);
+        match package_rel {
+            Some(prefix) if !prefix.is_empty() && starts_with_components(&normalized, &prefix) => {
+                format!("{}/{}", workspace.trim_end_matches('/'), normalized)
+            }
+            _ => format!("{}/{}", package.trim_end_matches('/'), normalized),
+        }
     };
 
     let relative =
@@ -97,6 +112,20 @@ fn split_components(path: &str) -> Vec<&str> {
         .collect()
 }
 
+/// Whether `path`'s leading components equal `prefix`'s components (case-insensitive,
+/// ignoring `.`/empty parts) — i.e. `path` lies under `prefix`.
+fn starts_with_components(path: &str, prefix: &str) -> bool {
+    let path_components = split_components(path);
+    let prefix_components = split_components(prefix);
+    if path_components.len() < prefix_components.len() {
+        return false;
+    }
+    prefix_components
+        .iter()
+        .zip(path_components.iter())
+        .all(|(p, c)| p.eq_ignore_ascii_case(c))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -133,6 +162,24 @@ mod tests {
             (s.start_line, s.start_col, s.end_line, s.end_col),
             (3, 5, 3, 9)
         );
+    }
+
+    #[test]
+    fn workspace_relative_filename_is_not_doubled() {
+        // rustdoc emitted a filename already relative to the workspace root
+        // (`crates/foo/...`), as it does for a virtual workspace whose members live
+        // under `crates/`. The old code prepended the package root and produced
+        // `crates/foo/crates/foo/src/state.rs`, which resolves to no file on disk.
+        let location = map_span(&context(), &span("crates/foo/src/state.rs")).unwrap();
+        assert_eq!(location.path.as_str(), "crates/foo/src/state.rs");
+    }
+
+    #[test]
+    fn package_relative_still_resolves_when_it_shadows_the_prefix() {
+        // A genuinely package-relative filename whose first component is not the
+        // package prefix stays package-relative.
+        let location = map_span(&context(), &span("src/crates/mod.rs")).unwrap();
+        assert_eq!(location.path.as_str(), "crates/foo/src/crates/mod.rs");
     }
 
     #[test]

@@ -1138,7 +1138,7 @@ A new `.github/workflows/release.yml`, separate from `ci.yml`:
   CI cannot produce):
   - `x86_64-unknown-linux-gnu` (ubuntu-latest);
   - `aarch64-apple-darwin` (macos-latest, which is Apple-silicon) **and**
-    `x86_64-apple-darwin` (macos-13 Intel runner);
+    `x86_64-apple-darwin` (macos-15-intel Intel runner);
   - `x86_64-pc-windows-msvc` (windows-latest).
 - **Build (one strategy — the committed relocated bundle is authoritative)**: the
   frontend bundle lives at `crates/cratevista-server/embedded/` (Vite `outDir`) and
@@ -2043,7 +2043,7 @@ Each phase is independently reviewable and leaves the tree green.
 >   `[workspace.package]` version and all nine package versions (`--locked`). The
 >   `build` matrix builds the **exact four** targets on native runners (no
 >   cross-compile): `x86_64-unknown-linux-gnu` (ubuntu-latest), `aarch64-apple-darwin`
->   (macos-latest), `x86_64-apple-darwin` (macos-13), `x86_64-pc-windows-msvc`
+>   (macos-latest), `x86_64-apple-darwin` (macos-15-intel), `x86_64-pc-windows-msvc`
 >   (windows-latest). Each leg runs the frontend reproducibility gates (`npm ci`,
 >   `check:dist`, `check:embed-rebuild` — comparison only) then `cargo build --release
 >   --locked -p cargo-cratevista --target <t>`, embedding the committed `embedded/`
@@ -2637,7 +2637,7 @@ cargo package -p cargo-cratevista --list          # must list README + licenses
   matrix (the authoritative completeness/buildability proof); crates.io-side
   validation is a final manual launch step, not a CI gate.
 - **Apple-silicon vs Intel Mac target confusion** → both `aarch64-apple-darwin`
-  (macos-latest) and `x86_64-apple-darwin` (macos-13) built and checksum-verified.
+  (macos-latest) and `x86_64-apple-darwin` (macos-15-intel) built and checksum-verified.
 - **Overclaiming in launch copy** → checklist item: every public claim maps to a
   tested, implemented feature; name availability is a final manual gate.
 - **Base-path breakage on Pages** → relative URLs by default + subpath E2E; no

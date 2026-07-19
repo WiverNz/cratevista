@@ -29,10 +29,26 @@ pub fn assoc_item_kind(inner: &ItemEnum) -> &'static str {
     }
 }
 
-/// The trait path (with generic args) an impl implements, or `"inherent"`.
+/// The **bare** trait path an impl implements (no generic args), or `"inherent"`.
+///
+/// This is the human-readable prefix of the impl entity id; the generic arguments
+/// are carried by [`impl_trait_display`] (which feeds the discriminator and the
+/// label), so the id prefix stays free of `<>` while distinct `Trait<A>`/`Trait<B>`
+/// impls still receive distinct discriminators.
 pub fn impl_trait_or_inherent(imp: &Impl) -> String {
     match &imp.trait_ {
         Some(path) => path.path.clone(),
+        None => "inherent".to_string(),
+    }
+}
+
+/// The trait an impl implements **including generic arguments** (e.g.
+/// `From<std::io::Error>`), or `"inherent"`. This is what distinguishes
+/// `impl From<A> for T` from `impl From<B> for T`: it feeds both the impl-block
+/// discriminator (so the two never collide) and the human-readable label.
+pub fn impl_trait_display(imp: &Impl) -> String {
+    match &imp.trait_ {
+        Some(path) => crate::types::display_path(path),
         None => "inherent".to_string(),
     }
 }
@@ -44,9 +60,11 @@ pub fn impl_for_display(imp: &Impl) -> String {
 
 /// A deterministic normalized signature for the impl-block discriminator.
 ///
-/// Includes the negativity flag, trait (with args), self type, generic
-/// parameters, where-predicate arity, and the sorted names of the impl's items,
-/// so that multiple/inherent/blanket impls for one type never collide.
+/// Includes the negativity flag, trait **with generic args**, self type, generic
+/// parameters, where-predicate arity, and the sorted names of the impl's items, so
+/// that multiple/inherent/blanket impls for one type never collide. The trait's
+/// generic arguments are essential: without them `impl From<A> for T` and
+/// `impl From<B> for T` produce the same signature and one impl is silently dropped.
 pub fn impl_signature(krate: &Crate, imp: &Impl) -> String {
     let mut member_names: Vec<String> = imp
         .items
@@ -56,14 +74,23 @@ pub fn impl_signature(krate: &Crate, imp: &Impl) -> String {
         .collect();
     member_names.sort();
 
+    // The trait and self type use **canonical** identities (full paths from the
+    // crate's `paths` map), so two distinct types that share a short display name —
+    // `serde_json::Error` and `sqlx_core::Error`, both shown as `Error` — never
+    // collapse. `where=` carries the rendered where-clause, so two hand-written
+    // blanket impls that differ only in their bounds stay distinct.
+    let trait_signature = match &imp.trait_ {
+        Some(path) => crate::types::path_identity(krate, path),
+        None => "inherent".to_string(),
+    };
     format!(
         "neg={};synthetic={};trait={};for={};generics={};where={};members=[{}]",
         imp.is_negative,
         imp.is_synthetic,
-        impl_trait_or_inherent(imp),
-        impl_for_display(imp),
+        trait_signature,
+        crate::types::type_identity(krate, &imp.for_),
         generics_signature(&imp.generics),
-        imp.generics.where_predicates.len(),
+        crate::types::where_identity(krate, &imp.generics),
         member_names.join(","),
     )
 }

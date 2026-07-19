@@ -20,7 +20,7 @@ use crate::diagnostics::{code, warn};
 use crate::error::RustdocError;
 use crate::ids::{
     assoc_item_kind, impl_for_display, impl_is_synthetic_or_blanket, impl_signature,
-    impl_trait_or_inherent, join, raw_id_label,
+    impl_trait_display, impl_trait_or_inherent, join, raw_id_label,
 };
 use crate::options::NormalizeContext;
 use crate::result::{CrateIngest, CrateSummary, TypeReferenceRole, UnresolvedTypeRef};
@@ -353,6 +353,7 @@ impl<'a> Builder<'a> {
             return;
         };
         let trait_or_inherent = impl_trait_or_inherent(imp);
+        let trait_display = impl_trait_display(imp);
         let for_display = impl_for_display(imp);
         let signature = impl_signature(self.krate, imp);
         let entity_id = EntityId::impl_block(
@@ -361,10 +362,12 @@ impl<'a> Builder<'a> {
             &for_display,
             &signature,
         );
+        // The label carries the trait's generic args (`impl From<X> for T`), so two
+        // impls that differ only in the trait argument are visibly distinct.
         let label = if trait_or_inherent == "inherent" {
             format!("impl {for_display}")
         } else {
-            format!("impl {trait_or_inherent} for {for_display}")
+            format!("impl {trait_display} for {for_display}")
         };
         self.record(Node {
             raw_id: id,
@@ -566,7 +569,7 @@ impl<'a> Builder<'a> {
                     .insert("impl_for".into(), for_display.clone().into());
                 entity
                     .attributes
-                    .insert("impl_trait".into(), impl_trait_or_inherent(imp).into());
+                    .insert("impl_trait".into(), impl_trait_display(imp).into());
                 if impl_is_synthetic_or_blanket(imp) {
                     let kind = if imp.blanket_impl.is_some() {
                         "blanket"
@@ -872,8 +875,8 @@ mod tests {
     use std::collections::HashMap;
 
     use rustdoc_types::{
-        ExternalCrate, Generics, ItemSummary, Module, Path as RdPath, Struct, StructKind, Target,
-        Type, Visibility,
+        ExternalCrate, GenericArg, GenericArgs, Generics, Impl, ItemSummary, Module,
+        Path as RdPath, Struct, StructKind, Target, Type, Visibility,
     };
 
     fn ctx() -> NormalizeContext {
@@ -1021,6 +1024,153 @@ mod tests {
             },
             format_version: rustdoc_types::FORMAT_VERSION,
         }
+    }
+
+    /// A crate whose struct `Target` has two trait impls that differ ONLY in the
+    /// trait's generic argument — `impl From<Aaa> for Target` and
+    /// `impl From<Bbb> for Target` — the FlightTrace `duplicate_item_identity`
+    /// pattern. Before the fix both derived the same impl identity and one was
+    /// silently dropped; they must now be distinct.
+    fn crate_with_two_from_impls() -> Crate {
+        fn from_impl(arg: &str, arg_id: u32) -> ItemEnum {
+            ItemEnum::Impl(Impl {
+                is_unsafe: false,
+                generics: empty_generics(),
+                provided_trait_methods: Vec::new(),
+                trait_: Some(RdPath {
+                    path: "From".to_string(),
+                    id: Id(800),
+                    args: Some(Box::new(GenericArgs::AngleBracketed {
+                        args: vec![GenericArg::Type(resolved(arg_id, arg))],
+                        constraints: vec![],
+                    })),
+                }),
+                for_: resolved(1, "Target"),
+                items: Vec::new(),
+                is_negative: false,
+                is_synthetic: false,
+                blanket_impl: None,
+            })
+        }
+
+        let mut index: HashMap<Id, Item> = HashMap::new();
+        index.insert(
+            Id(0),
+            item(
+                0,
+                "tiny",
+                ItemEnum::Module(Module {
+                    is_crate: true,
+                    items: vec![Id(1)],
+                    is_stripped: false,
+                }),
+            ),
+        );
+        index.insert(
+            Id(1),
+            item(
+                1,
+                "Target",
+                ItemEnum::Struct(Struct {
+                    kind: StructKind::Unit,
+                    generics: empty_generics(),
+                    impls: vec![Id(10), Id(20)],
+                }),
+            ),
+        );
+        index.insert(Id(10), item(10, "", from_impl("Aaa", 900)));
+        index.insert(Id(20), item(20, "", from_impl("Bbb", 901)));
+
+        let mut paths: HashMap<Id, ItemSummary> = HashMap::new();
+        paths.insert(
+            Id(0),
+            ItemSummary {
+                crate_id: 0,
+                path: vec!["tiny".into()],
+                kind: ItemKind::Module,
+            },
+        );
+        paths.insert(
+            Id(1),
+            ItemSummary {
+                crate_id: 0,
+                path: vec!["tiny".into(), "Target".into()],
+                kind: ItemKind::Struct,
+            },
+        );
+
+        Crate {
+            root: Id(0),
+            crate_version: None,
+            includes_private: false,
+            index,
+            paths,
+            external_crates: HashMap::new(),
+            target: Target {
+                triple: "x86_64".into(),
+                target_features: Vec::new(),
+            },
+            format_version: rustdoc_types::FORMAT_VERSION,
+        }
+    }
+
+    #[test]
+    fn distinct_trait_arg_impls_get_distinct_identities() {
+        let ingest = normalize_crate(&crate_with_two_from_impls(), &ctx()).unwrap();
+
+        // Both impls survive as distinct entities (nothing dropped). Under the old
+        // behavior the trait's generic arg was omitted, so both derived the same id,
+        // one was dropped, and a `duplicate_item_identity` warning was emitted.
+        let impls: Vec<&Entity> = ingest
+            .entities
+            .iter()
+            .filter(|e| e.id.as_str().starts_with("impl:"))
+            .collect();
+        assert_eq!(
+            impls.len(),
+            2,
+            "both From impls must survive as distinct entities"
+        );
+        let ids: BTreeSet<&str> = impls.iter().map(|e| e.id.as_str()).collect();
+        assert_eq!(ids.len(), 2, "the two impls must have distinct ids");
+
+        assert!(
+            !ingest
+                .diagnostics
+                .iter()
+                .any(|d| d.code == code::DUPLICATE_ITEM_IDENTITY),
+            "distinct impls must not collide: {:?}",
+            ingest.diagnostics
+        );
+
+        // The labels carry the trait's generic argument.
+        let labels: BTreeSet<String> = impls.iter().map(|e| e.label.default.clone()).collect();
+        assert!(
+            labels.contains("impl From<Aaa> for Target"),
+            "labels: {labels:?}"
+        );
+        assert!(
+            labels.contains("impl From<Bbb> for Target"),
+            "labels: {labels:?}"
+        );
+
+        // The signatures themselves differ (the discriminator input), while an
+        // identical impl collapses deterministically.
+        let a = crate::ids::impl_signature(
+            &crate_with_two_from_impls(),
+            match &crate_with_two_from_impls().index[&Id(10)].inner {
+                ItemEnum::Impl(i) => i,
+                _ => unreachable!(),
+            },
+        );
+        let b = crate::ids::impl_signature(
+            &crate_with_two_from_impls(),
+            match &crate_with_two_from_impls().index[&Id(20)].inner {
+                ItemEnum::Impl(i) => i,
+                _ => unreachable!(),
+            },
+        );
+        assert_ne!(a, b, "distinct trait args must yield distinct signatures");
     }
 
     #[test]
