@@ -10,6 +10,44 @@ relationships between them — built from your real `cargo metadata` and rustdoc
 **locally** and **source-private**. Run it as a live loopback server, or `build` a
 self-contained static site you can host anywhere.
 
+## Screenshots
+
+<p align="center">
+  <a href="#the-explorer">
+    <img src="docs/images/cratevista-workspace-overview.webp" width="100%"
+         alt="CrateVista workspace overview showing FlightTrace packages, targets and typed dependency edges">
+  </a>
+</p>
+
+<p align="center">
+  <em>Explore workspace structure, package dependencies, targets and typed relations.</em>
+</p>
+
+<p align="center">
+  <code>./scripts/open-project.ps1 D:\Projects\MyRustProject</code>
+</p>
+
+<table>
+  <tr>
+    <td width="62%" valign="middle" align="center">
+      <a href="#the-explorer">
+        <img src="docs/images/cratevista-inspector.webp" width="100%"
+             alt="CrateVista inspector showing a selected Rust entity and repository-relative source information">
+      </a>
+      <br><em>Inspector &amp; source navigation</em>
+    </td>
+    <td width="38%" valign="top" align="center">
+      <a href="#the-explorer">
+        <img src="docs/images/cratevista-diagnostics.webp" width="100%"
+             alt="CrateVista grouped diagnostics explorer showing records and represented occurrence counts">
+      </a>
+      <br><em>Grouped diagnostics</em>
+    </td>
+  </tr>
+</table>
+
+<sub>Screenshots use FlightTrace as an example Rust workspace.</sub>
+
 ## What makes it different
 
 CrateVista is not another view of the same data:
@@ -25,14 +63,6 @@ CrateVista is not another view of the same data:
 - **Not a terminal inspector.** Terminal tools answer one query at a time.
   CrateVista is a real browser UI: layout runs off-thread, state lives in the URL so
   any view is shareable, and it works fully offline.
-
-## Screenshots
-
-<!-- SCREENSHOT/GIF PLACEHOLDER — add a capture of CrateVista's OWN UI here
-     (`cargo cratevista open` on a real workspace). No screenshot ships yet; this is
-     a placeholder, not a claim that one exists. -->
-
-_A screenshot/GIF of the CrateVista explorer will go here._
 
 ## The explorer
 
