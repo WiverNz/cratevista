@@ -1476,10 +1476,15 @@ mod tests {
             .expect("the replacement must succeed");
 
         let paths = harness.next_paths(&root).await;
+        // FSEvents may report the `new/` directory rather than the individual
+        // file. Reconciliation then legitimately adds existing Rust files from
+        // that directory, and an event already accepted by the still-active old
+        // watcher may share the same debounce burst. The guarantee here is that
+        // the candidate-only change survives activation, exactly once.
         assert_eq!(
-            paths,
-            ["new/added.rs"],
-            "the staged event must be drained through the new set"
+            paths.iter().filter(|path| *path == "new/added.rs").count(),
+            1,
+            "the staged event must be drained through the new set exactly once: {paths:?}"
         );
         harness.watcher.shutdown().expect("shutdown");
         within("join", harness.watcher.join()).await.expect("join");
