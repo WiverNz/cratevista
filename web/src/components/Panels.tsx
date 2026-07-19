@@ -1,6 +1,7 @@
 // Legend, inspector (entity + relation), status panels, and blocking/empty states.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApp, useUi, type Projection } from "../app/AppContext.tsx";
+import { DiagnosticsExplorer } from "./DiagnosticsExplorer.tsx";
 import { SafeMarkdown } from "../markdown/SafeMarkdown.tsx";
 import { localized } from "../types/index.ts";
 import type { LegendEntry } from "../state/selectors.ts";
@@ -109,22 +110,7 @@ export function DiagnosticsPanel() {
     );
   }
   const list = diagnostics?.diagnostics ?? [];
-  return (
-    <div className="cv-panel" aria-label="Diagnostics">
-      <h2 className="cv-panel-title">Diagnostics ({list.length})</h2>
-      {list.length === 0 ? (
-        <p className="cv-muted">No diagnostics.</p>
-      ) : (
-        <ul>
-          {list.map((d, i) => (
-            <li key={i} className={`cv-diag cv-diag-${d.severity}`}>
-              <strong>{d.severity}</strong> <code>{d.code}</code> {d.message}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+  return <DiagnosticsExplorer diagnostics={list} />;
 }
 
 function diagnosticsFor(

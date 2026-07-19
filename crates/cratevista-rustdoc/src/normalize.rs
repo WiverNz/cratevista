@@ -876,12 +876,15 @@ fn collapse_expected_source_omissions(diagnostics: &mut Vec<DocumentDiagnostic>,
             continue;
         }
         diagnostics.retain(|d| d.code != code_str);
-        diagnostics.push(info(
-            code_str,
-            format!(
-                "{count} item(s) in crate `{crate_name}` have {describe}; no repository-relative source location is available"
-            ),
-        ));
+        diagnostics.push(
+            info(
+                code_str,
+                format!(
+                    "{count} item(s) in crate `{crate_name}` have {describe}; no repository-relative source location is available"
+                ),
+            )
+            .representing(count as u64),
+        );
     }
 }
 

@@ -85,7 +85,7 @@ export function okOutcome(overrides: Partial<Extract<LoadOutcome, { status: "ok"
   const diagnostics: DiagnosticsReport = {
     schema_version: "1.0",
     diagnostics: [
-      { severity: "warning", code: "unresolved_type", message: "could not resolve X", entities: [STRUCT] },
+      { severity: "warning", code: "unresolved_type", message: "could not resolve X", occurrence_count: 1, entities: [STRUCT] },
     ],
   };
   return {

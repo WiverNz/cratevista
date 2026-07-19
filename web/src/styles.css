@@ -289,3 +289,134 @@ select:focus-visible,
   max-height: 320px;
   overflow-y: auto;
 }
+
+/* --- Diagnostics explorer (grouped, scalable) --------------------------- */
+.cv-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.cv-diagnostics {
+  --sev-error: #ff6b6b;
+  --sev-warning: #f0b429;
+  --sev-info: #4c8bf7;
+}
+.cv-diag-summary {
+  margin: 0 0 4px;
+}
+.cv-diag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+}
+.cv-diag-sevfilter {
+  display: flex;
+  gap: 4px;
+}
+.cv-diag-sevbtn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.cv-diag-sevbtn[aria-pressed="true"] {
+  border-color: currentcolor;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+}
+.cv-diag-sevbtn[aria-pressed="false"] {
+  opacity: 0.55;
+}
+.cv-diag-sev-error .cv-diag-sevtag,
+.cv-diag-sevbtn.cv-diag-sev-error {
+  color: var(--sev-error);
+}
+.cv-diag-sev-warning .cv-diag-sevtag,
+.cv-diag-sevbtn.cv-diag-sev-warning {
+  color: var(--sev-warning);
+}
+.cv-diag-sev-info .cv-diag-sevtag,
+.cv-diag-sevbtn.cv-diag-sev-info {
+  color: var(--sev-info);
+}
+.cv-diag-search input {
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  min-width: 12ch;
+}
+.cv-diag-groups {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cv-diag-group {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border-left: 3px solid currentcolor;
+}
+.cv-diag-grouphead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.cv-diag-grouphead:hover {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+.cv-diag-sevtag {
+  font-weight: 600;
+}
+.cv-diag-counts {
+  color: var(--muted);
+  margin-left: auto;
+}
+.cv-diag-explain {
+  margin: 0 8px 6px;
+  font-size: 12px;
+}
+.cv-diag-entries {
+  border-top: 1px solid var(--border);
+  padding: 4px 8px;
+}
+.cv-diag-entries ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cv-diag-entry {
+  padding: 3px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  overflow-wrap: anywhere;
+}
+.cv-diag-occ {
+  color: var(--muted);
+}
+.cv-diag-showall {
+  margin-top: 6px;
+  background: transparent;
+  color: var(--focus);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+}

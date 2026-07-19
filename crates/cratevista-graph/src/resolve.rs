@@ -140,13 +140,16 @@ pub fn resolve_cross_crate(
     // One informational summary per KNOWN external crate, in deterministic (sorted)
     // order. Unknown-target references are warnings above, never summarized here.
     for (crate_name, count) in &external {
-        diagnostics.push(info(
-            code::EXTERNAL_CRATE_REFERENCE,
-            format!(
-                "{count} cross-crate type reference(s) to external crate `{crate_name}` were not represented as workspace entities (external dependency)"
-            ),
-            None,
-        ));
+        diagnostics.push(
+            info(
+                code::EXTERNAL_CRATE_REFERENCE,
+                format!(
+                    "{count} cross-crate type reference(s) to external crate `{crate_name}` were not represented as workspace entities (external dependency)"
+                ),
+                None,
+            )
+            .representing(*count as u64),
+        );
     }
 
     ResolveOutput {

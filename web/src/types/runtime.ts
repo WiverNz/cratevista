@@ -7,6 +7,13 @@ export interface DocumentDiagnostic {
   severity: "error" | "warning" | "info";
   code: string;
   message: string;
+  /**
+   * How many underlying occurrences this record represents. Ordinary diagnostics are
+   * 1; an aggregated summary carries the exact represented count. Always at least 1 —
+   * the count is taken from the artifact's structured field, NEVER parsed from the
+   * message. A missing field (older artifact) defaults to 1.
+   */
+  occurrence_count: number;
   entities?: string[];
   relations?: string[];
 }
@@ -43,6 +50,15 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((v) => typeof v === "string");
 }
 
+/**
+ * Normalizes the structured occurrence count: a positive integer, defaulting to 1
+ * when absent (older artifact) or invalid. The count is NEVER derived from message
+ * text.
+ */
+function occurrenceCount(value: unknown): number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1 ? value : 1;
+}
+
 /** Rejects malformed required fields; ignores unknown extra fields. */
 export function parseDiagnosticsReport(value: unknown): DiagnosticsReport {
   if (!isObject(value)) throw new TypeError("diagnostics: not an object");
@@ -64,6 +80,7 @@ export function parseDiagnosticsReport(value: unknown): DiagnosticsReport {
       severity: d.severity,
       code: d.code,
       message: d.message,
+      occurrence_count: occurrenceCount(d.occurrence_count),
       entities: isStringArray(d.entities) ? d.entities : undefined,
       relations: isStringArray(d.relations) ? d.relations : undefined,
     };
