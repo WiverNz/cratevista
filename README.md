@@ -115,6 +115,40 @@ library/proc-macro target, generation uses the pinned nightly for rustdoc JSON (
 below); a workspace with no such target still produces a **metadata-only** document
 with no nightly needed.
 
+## Quick launcher
+
+A small cross-platform launcher opens the explorer for any local project in one
+command:
+
+```powershell
+# Windows
+./scripts/open-project.ps1 D:\Projects\MyRustProject
+```
+
+```bash
+# Linux/macOS
+./scripts/open-project.sh /path/to/my-rust-project
+```
+
+It accepts either a workspace directory or a path to its `Cargo.toml`.
+
+- **Default = live explorer.** It runs `cargo cratevista open` with **local source
+  access** and **watch mode**, bound to loopback, letting CrateVista pick a free
+  port and open your browser. Live mode keeps the Rust server process running in the
+  foreground — leave it running to use the explorer; press **Ctrl+C** to stop it.
+- **Static mode** (`-Static` on Windows, `--static` on Linux/macOS) builds a
+  self-contained **snapshot** under `<project>/target/cratevista/site` instead. A
+  snapshot has **no `/api/**`**, **no source viewer** and **no live reload** —
+  rebuild it after changes. Serving a snapshot is not automated by the launcher
+  (CrateVista ships no static-file server and the launcher adds no extra
+  dependency); serve the built directory with any static HTTP host.
+- **Both modes require HTTP; `file://` is unsupported.**
+
+The launcher prefers an installed `cargo cratevista`; run from the CrateVista
+repository, it falls back to a local build. It never modifies the target project or
+its Git state, and it never installs a toolchain — if the pinned nightly is missing
+it prints the exact `rustup toolchain install` command for you to run.
+
 ## Commands
 
 ```bash

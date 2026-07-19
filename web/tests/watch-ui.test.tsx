@@ -313,3 +313,44 @@ describe("no live reload without the capability", () => {
     errors.mockRestore();
   });
 });
+
+describe("project-aware browser tab title", () => {
+  it("sets `CV · <project>` from the loaded document (server mode)", async () => {
+    document.title = "CrateVista";
+    const source = new ScriptedSource();
+    source.next = okOutcome(documentNamed("FlightTrace"));
+    mount(source);
+    await waitFor(() => expect(document.title).toBe("CV · FlightTrace"));
+  });
+
+  it("updates the title when a reload swaps in a different project name", async () => {
+    document.title = "CrateVista";
+    const source = new ScriptedSource();
+    source.next = okOutcome(documentNamed("Alpha"));
+    const { sources } = mount(source);
+    await waitFor(() => expect(document.title).toBe("CV · Alpha"));
+    const es = await waitForEventSource(sources);
+    source.next = okOutcome(documentNamed("Beta"));
+    es.emit(EVENT_SUCCEEDED);
+    await waitFor(() => expect(document.title).toBe("CV · Beta"));
+  });
+
+  it("behaves identically without the live-reload machinery (static mode path)", async () => {
+    document.title = "CrateVista";
+    const source = new ScriptedSource();
+    source.next = okOutcome(documentNamed("StaticProject"));
+    // No `liveReload` prop: the shared load path still titles the tab — the title is
+    // set before, and independently of, the server-only live-reload effect.
+    render(<App source={source} layout={fakeLayout().engine} initialSearch="" />);
+    await waitFor(() => expect(document.title).toBe("CV · StaticProject"));
+  });
+
+  it("keeps the `CrateVista` fallback when the initial load fails with no document", async () => {
+    document.title = "CrateVista";
+    const source = new ScriptedSource();
+    source.next = { status: "document-error", message: "boom" } as LoadOutcome;
+    render(<App source={source} layout={fakeLayout().engine} initialSearch="" />);
+    await screen.findByText(/boom/i);
+    expect(document.title).toBe("CrateVista");
+  });
+});

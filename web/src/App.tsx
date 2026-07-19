@@ -27,6 +27,7 @@ import { detectRuntimeMode, type RuntimeMode } from "./api/runtimeMode.ts";
 import { LayoutClient, type LayoutEngine } from "./layout/client.ts";
 import { buildModel } from "./model/model.ts";
 import { measure, record } from "./app/perf.ts";
+import { applyProjectTitle } from "./app/documentTitle.ts";
 import { createUiStore, toUrlState } from "./state/store.ts";
 import { parseUrlState, serializeUrlState } from "./state/url.ts";
 import { normalizeUrlState } from "./state/normalize.ts";
@@ -244,6 +245,11 @@ export function App(props: AppProps) {
       sourceClient,
     };
     rendered.current = data;
+    // Project-aware tab title, from the document's authoritative project name. This
+    // is the one shared load path, so live and static mode behave identically; a
+    // reload that swaps in a different project name updates the title, and a failed
+    // reload (handled above, keeping the current document) leaves it untouched.
+    applyProjectTitle(outcome.document.project.name);
     setPhase({ kind: "ready", data });
     // A successful load is the only thing that clears the transient watch state:
     // whatever the last error was, it is now answered by a document.

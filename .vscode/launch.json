@@ -1,0 +1,148 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Rust: Doctor",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "cargo-cratevista",
+          "--bin",
+          "cargo-cratevista"
+        ],
+        "filter": {
+          "name": "cargo-cratevista",
+          "kind": "bin"
+        }
+      },
+      "args": ["-vv", "doctor"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_BACKTRACE": "1"
+      },
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "Rust: Generate This Workspace",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "cargo-cratevista",
+          "--bin",
+          "cargo-cratevista"
+        ],
+        "filter": {
+          "name": "cargo-cratevista",
+          "kind": "bin"
+        }
+      },
+      "args": ["-vv", "generate", "--keep-going"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_BACKTRACE": "1"
+      },
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "Rust: Open + Watch This Workspace",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "cargo-cratevista",
+          "--bin",
+          "cargo-cratevista"
+        ],
+        "filter": {
+          "name": "cargo-cratevista",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "-vv",
+        "open",
+        "--watch",
+        "--keep-going",
+        "--source",
+        "--port",
+        "7420"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_BACKTRACE": "1"
+      },
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "Rust: Serve Existing Snapshot",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "cargo-cratevista",
+          "--bin",
+          "cargo-cratevista"
+        ],
+        "filter": {
+          "name": "cargo-cratevista",
+          "kind": "bin"
+        }
+      },
+      "args": ["-vv", "serve", "--source", "--port", "7420"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_BACKTRACE": "1"
+      },
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "Rust: Debug Watcher Regression Test",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--package",
+          "cratevista-watch",
+          "--lib"
+        ],
+        "filter": {
+          "name": "cratevista_watch",
+          "kind": "lib"
+        }
+      },
+      "args": [
+        "watcher::tests::a_new_only_event_staged_before_activation_survives_the_replacement",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "RUST_BACKTRACE": "full"
+      },
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "Web: Debug Current Vitest File",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/web/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${file}", "--no-file-parallelism"],
+      "cwd": "${workspaceFolder}/web",
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    }
+  ]
+}
