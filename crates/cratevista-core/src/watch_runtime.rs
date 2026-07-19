@@ -1628,9 +1628,14 @@ mod tests {
         let work = harness.work.clone();
         let events = harness.watcher_events.clone();
         let shutdown = tokio::spawn(harness.session.shutdown());
-        events
-            .send(WatchEvent::Regeneration(request(&["/w/b.rs"])))
-            .unwrap();
+        // Shutdown's first act is `ingress.stop()`, and the ingress `select!` is
+        // biased so `stop` breaks the loop and drops this receiver outright. The
+        // send therefore races that teardown by design — this is the exact window
+        // a dirty follow-up would use. Either it lands in the buffer and is never
+        // processed (stop won the select), or it is rejected because the receiver
+        // is already gone; both prove the invariant asserted below, so a
+        // `SendError` here is expected, not a failure.
+        let _ = events.send(WatchEvent::Regeneration(request(&["/w/b.rs"])));
         release.send(()).expect("generation is waiting");
         within("shutdown to complete", shutdown).await.unwrap();
 
