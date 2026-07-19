@@ -170,6 +170,38 @@ Use `label` for what a reader sees and `role` for what makes the edge distinct.
 They are often related (`role = "http"`, `label = "HTTPS"`) but they are not the
 same field, and a label alone will not disambiguate two edges.
 
+#### Active-flow animation
+
+A manual relation may opt into an **active-flow** presentation, in which the
+explorer animates the edge's dashes travelling from source to target. This is a
+navigation cue for an ordered or in-progress path through a manual flow — it does
+**not** imply runtime traffic, and it never changes the relation's meaning or
+identity.
+
+Opt in with a single presentation attribute:
+
+```toml
+  [[flow.relation]]
+  from = "manual:web-client"
+  to = "manual:api-gateway"
+  role = "http"
+  label = "request"
+
+  [flow.relation.attributes]
+  flow = "active"
+```
+
+- The exact contract is `attributes.flow = "active"` (the string `"active"`); any
+  other value, type, or a missing attribute leaves the relation **static**.
+- Only **manual** relations are eligible. A discovered relation carrying the same
+  attribute stays static.
+- Absent this attribute, every relation renders exactly as before — existing
+  documents are unchanged.
+- Motion respects `prefers-reduced-motion` (it becomes a static, distinctly-dashed
+  edge), and is automatically suppressed for a view with a very large number of
+  active-flow relations; in both cases direction stays clear from the arrow, the
+  distinct dash pattern, and the label.
+
 ### Examples
 
 ```toml

@@ -1,5 +1,5 @@
 // React Flow graph canvas wired to the projection + LayoutClient positions.
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -10,7 +10,6 @@ import {
   Position,
   BaseEdge,
   EdgeLabelRenderer,
-  getStraightPath,
   useReactFlow,
   useViewport,
   type Node,
@@ -27,6 +26,9 @@ import {
   allRelationStyles,
   edgeVisual,
   edgeZIndex,
+  edgeMotionActive,
+  flowAnimationPolicy,
+  flowDash,
   markerId,
   relationStyleFor,
   shouldShowEdgeLabel,
@@ -36,6 +38,8 @@ import { getNodeCards } from "../model/nodeCards.ts";
 import { NodeCardView } from "./NodeCard.tsx";
 import type { NodeCard } from "../model/nodeCards.ts";
 import { searchEntities } from "../state/selectors.ts";
+import { edgePath, assignParallelRanks } from "./edgeGeometry.ts";
+import type { Point } from "../layout/types.ts";
 
 type EntityNodeData = {
   node: GraphNode;
@@ -50,6 +54,15 @@ type RelationEdgeData = {
   state: EdgeState;
   repeated: boolean;
   hovered?: boolean;
+  /** ELK route polyline for this edge in the current layout, if any. */
+  route?: Point[];
+  /** `from === to`: draw a self-loop. */
+  selfLoop?: boolean;
+  /** Signed rank among edges sharing this node pair (fans parallels apart). */
+  parallelIndex?: number;
+  /** Whether the active view permits continuous flow motion (view-wide policy).
+   *  Combined per-edge with eligibility, state and zoom in the edge component. */
+  flowMotionAllowed?: boolean;
 };
 type EntityRfNode = Node<EntityNodeData, "entity">;
 type RelationRfEdge = Edge<RelationEdgeData, "relation">;
@@ -95,7 +108,21 @@ export function RelationEdge({
   targetY,
   data,
 }: EdgeProps<RelationRfEdge>) {
-  const [path, labelX, labelY] = getStraightPath({ sourceX, sourceY, targetX, targetY });
+  // Geometry is resolved by the pure `edgePath` seam: it follows the ELK route
+  // when the current layout produced one, draws a deterministic self-loop when
+  // the endpoints are the same node, and otherwise falls back to a smooth
+  // orthogonal connector. It knows nothing about relation style.
+  const {
+    d: path,
+    labelX,
+    labelY,
+  } = edgePath({
+    route: data?.route,
+    source: { x: sourceX, y: sourceY },
+    target: { x: targetX, y: targetY },
+    selfLoop: data?.selfLoop,
+    parallelIndex: data?.parallelIndex,
+  });
   const { zoom } = useViewport();
 
   const edge = data?.edge;
@@ -108,17 +135,48 @@ export function RelationEdge({
     !!label &&
     shouldShowEdgeLabel({ zoom, state, hovered: !!data?.hovered, repeated: !!data?.repeated });
 
+  // Flow presentation composes on top of the kind/state visual: eligible edges get
+  // a distinct static flow dash (redundant, non-colour cue) whose geometry SCALES
+  // with the current effective stroke width (so it stays legible as normal →
+  // related → selected widen). Only when the view permits motion, the edge is not
+  // faded, and the zoom is above the floor does the `--motion` class add the CSS
+  // dash animation. Reduced motion is enforced in JS + CSS, so the scaled static
+  // dash + marker + label always remain.
+  const flowEligible = !!edge?.flowEligible;
+  const motion = edgeMotionActive({
+    flowEligible,
+    state,
+    motionAllowed: !!data?.flowMotionAllowed,
+    zoom,
+  });
+  const edgeClass = flowEligible
+    ? `cv-edge-flow${motion ? " cv-edge-flow--motion" : ""}`
+    : undefined;
+  // Width-scaled dash values provided per element via custom properties; the
+  // `.cv-edge-flow` class consumes `--edge-flow-dash`, the animation consumes
+  // `--edge-flow-dash-cycle`. No fixed dash literal.
+  const flowVars = flowEligible ? flowDash(visual.strokeWidth) : null;
+
   return (
     <>
       <BaseEdge
         id={id}
         path={path}
+        className={edgeClass}
         markerEnd={marker ? `url(#${marker})` : undefined}
         style={{
           stroke: visual.stroke,
           strokeWidth: visual.strokeWidth,
-          strokeDasharray: visual.strokeDasharray,
+          // Flow edges take their dash from `--edge-flow-dash` (set here, scaled)
+          // via the class, so leave the inline dasharray unset for them.
+          strokeDasharray: flowEligible ? undefined : visual.strokeDasharray,
           opacity: visual.opacity,
+          ...(flowVars
+            ? ({
+                "--edge-flow-dash": flowVars.dashArray,
+                "--edge-flow-dash-cycle": String(flowVars.cycle),
+              } as CSSProperties)
+            : {}),
         }}
       />
       {showLabel && (
@@ -247,6 +305,27 @@ function useFitOnLayout(layoutState: LayoutState) {
   }, [flow, status, positions]);
 }
 
+/** Tracks the user's `prefers-reduced-motion` setting reactively. Used to withhold
+ *  continuous flow motion in JS (not only via the global CSS kill-switch), so the
+ *  static flow treatment is what a reduced-motion user ever sees. */
+function usePrefersReducedMotion(): boolean {
+  const query = "(prefers-reduced-motion: reduce)";
+  const [reduced, setReduced] = useState<boolean>(() =>
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia(query).matches
+      : false,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia(query);
+    const onChange = () => setReduced(mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+  return reduced;
+}
+
 function GraphInner({
   projection,
   layoutState,
@@ -256,6 +335,7 @@ function GraphInner({
 }) {
   const { store, model } = useApp();
   useFitOnLayout(layoutState);
+  const reducedMotion = usePrefersReducedMotion();
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const selection = useUi((s) => s.selection);
   const edgeMode = useUi((s) => s.edgeMode);
@@ -271,6 +351,16 @@ function GraphInner({
     () => new Set(search.trim() ? searchEntities(model, search) : []),
     [model, search],
   );
+
+  // View-wide flow-animation policy, computed once per projection from the view's
+  // eligible-relation count — never from selection, hover or zoom. Reduced motion
+  // is folded in here (not only via the CSS kill-switch) so no edge or legend
+  // sample animates when the user asked for less motion.
+  const flowPolicy = useMemo(
+    () => flowAnimationPolicy(projection.graph.edges),
+    [projection.graph.edges],
+  );
+  const flowMotionEnabled = flowPolicy.motionAllowed && !reducedMotion;
 
   const anchor = selectedEntity ?? focusId ?? null;
   // Nodes 1 hop from the anchor (for the "related" emphasis), from visible edges.
@@ -319,6 +409,21 @@ function GraphInner({
     labelFrequency.set(text, (labelFrequency.get(text) ?? 0) + 1);
   }
 
+  // Parallel-edge ranks: edges that would draw on top of one another — same
+  // corridor with the same routed geometry, or both route-less — get a signed
+  // offset rank so they fan apart, while routes ELK already separated keep rank 0
+  // and draw untouched. The route each edge would draw feeds the overlap check, so
+  // this depends only on the visible set + current layout, never on selection or
+  // hover. See `assignParallelRanks` for the ordered/unordered grouping contract.
+  const parallelRank = assignParallelRanks(
+    visibleEdges.map((e) => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      route: layoutState.routes.get(e.id),
+    })),
+  );
+
   // Selecting a node emphasizes the relations touching it and fades the rest;
   // with no anchor every edge draws normally.
   const edgeState = (e: GraphEdge): EdgeState => {
@@ -343,6 +448,12 @@ function GraphInner({
         state,
         repeated: (labelFrequency.get(text) ?? 0) > 1,
         hovered: e.id === hoveredEdge,
+        // `layoutState.routes` is empty unless the layout is current, so a stale
+        // layout never supplies routes for a newer projection.
+        route: layoutState.routes.get(e.id),
+        flowMotionAllowed: flowMotionEnabled,
+        selfLoop: e.source === e.target,
+        parallelIndex: parallelRank.get(e.id) ?? 0,
       },
     };
   });
@@ -382,7 +493,15 @@ function GraphInner({
           <CanvasControls />
         </Panel>
         <Panel position="bottom-left">
-          <Legend entries={projection.legend} relations={projection.relationLegend} />
+          <Legend
+            entries={projection.legend}
+            relations={projection.relationLegend}
+            flow={{
+              present: flowPolicy.present,
+              motionEnabled: flowMotionEnabled,
+              suppressedByCount: flowPolicy.suppressedByCount,
+            }}
+          />
         </Panel>
       </ReactFlow>
     </div>

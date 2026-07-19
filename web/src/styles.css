@@ -151,6 +151,14 @@ select:focus-visible,
   --node-unknown: #9aa4b2;
   --node-bg: #0f1a2c;
   --node-head-fg: #c8d4e6;
+  /* Node visual depth (Issue 14, Phase 3). One coherent system:
+     - --node-tint: how much of the category accent tints the card's top surface;
+     - three bounded, non-coloured elevation shadows (leaf / raised overview /
+       selected). No coloured glow, no large blur radius. */
+  --node-tint: 6%;
+  --node-elevation: 0 3px 10px rgba(0, 0, 0, 0.32);
+  --node-elevation-raised: 0 5px 16px rgba(0, 0, 0, 0.4);
+  --node-elevation-selected: 0 6px 18px rgba(0, 0, 0, 0.46);
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
@@ -166,6 +174,11 @@ select:focus-visible,
     --node-unknown: #5a6472;
     --node-bg: #ffffff;
     --node-head-fg: #3a4658;
+    /* Lighter, cooler shadows for a light surface. */
+    --node-tint: 7%;
+    --node-elevation: 0 2px 8px rgba(23, 39, 63, 0.14);
+    --node-elevation-raised: 0 4px 14px rgba(23, 39, 63, 0.2);
+    --node-elevation-selected: 0 5px 16px rgba(23, 39, 63, 0.24);
   }
 }
 :root[data-theme="light"] {
@@ -181,12 +194,27 @@ select:focus-visible,
   --node-unknown: #5a6472;
   --node-bg: #ffffff;
   --node-head-fg: #3a4658;
+  --node-tint: 7%;
+  --node-elevation: 0 2px 8px rgba(23, 39, 63, 0.14);
+  --node-elevation-raised: 0 4px 14px rgba(23, 39, 63, 0.2);
+  --node-elevation-selected: 0 5px 16px rgba(23, 39, 63, 0.24);
 }
 
 .cv-node {
   /* width/min-height are set inline from the card's deterministic box. */
   --accent: var(--node-unknown);
-  background: var(--node-bg);
+  /* Depth (Phase 3): a flat colour fallback FIRST (used where color-mix or
+     gradients are unsupported), then a restrained top-tinted surface derived from
+     the card's own --accent + --node-bg — one rule for every category, no
+     per-category gradient literal — plus a bounded, non-coloured elevation. None
+     of this changes the box model, so the deterministic card size is untouched. */
+  background-color: var(--node-bg);
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) var(--node-tint), var(--node-bg)),
+    var(--node-bg)
+  );
+  box-shadow: var(--node-elevation);
   border: 1px solid var(--border);
   /* Category accent as a left bar — a non-colour-only structural cue. */
   border-left: 4px solid var(--accent);
@@ -206,10 +234,20 @@ select:focus-visible,
 .cv-node--manual { --accent: var(--node-manual); border-style: dashed; }
 .cv-node--unknown { --accent: var(--node-unknown); border-left-style: dotted; }
 
-/* Workspace/package overview cards read as headings; code cards are quieter. */
+/* Workspace/package overview cards read as headings; code cards are quieter. The
+   heading top-border stays, and they sit slightly more raised — depth reinforces
+   the existing hierarchy, it never carries it alone. */
 .cv-node--workspace,
 .cv-node--package {
   border-top: 2px solid var(--accent);
+  box-shadow: var(--node-elevation-raised);
+}
+
+/* Hover raises a card subtly (non-selected only, so selection stays dominant).
+   Shadow-only: no border/padding/size change, so hover never reflows or relayouts,
+   and no card is ever animated. */
+.cv-node:not(.cv-node--state-selected):hover {
+  box-shadow: var(--node-elevation-raised);
 }
 
 .cv-node-head {
@@ -289,27 +327,56 @@ select:focus-visible,
   padding: 0 4px;
 }
 
-/* Visual states, weakest → strongest. Selection always dominates. */
+/* Visual states, weakest → strongest. Selection always dominates. Each state's
+   ring is composed WITH the depth elevation (ring first, then the bounded shadow)
+   so diagnostics/search/selection stay visible and the card keeps its depth. */
 .cv-node--state-related {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
 }
 .cv-node--state-diagnostic-warning {
-  box-shadow: 0 0 0 1px var(--sev-warning, #f0b429);
+  box-shadow:
+    0 0 0 1px var(--sev-warning, #f0b429),
+    var(--node-elevation);
 }
 .cv-node--state-diagnostic-error {
-  box-shadow: 0 0 0 2px var(--sev-error, #ff6b6b);
+  box-shadow:
+    0 0 0 2px var(--sev-error, #ff6b6b),
+    var(--node-elevation);
 }
 .cv-node--state-search {
-  box-shadow: 0 0 0 2px #b98900;
+  box-shadow:
+    0 0 0 2px #b98900,
+    var(--node-elevation);
   border-color: #b98900;
 }
 .cv-node--state-selected {
   border-color: var(--focus);
-  box-shadow: 0 0 0 3px var(--focus);
+  /* Strongest: the focus ring plus the strongest (still bounded) elevation. Same
+     box model as any other card — selection changes shadow/border-colour only. */
+  box-shadow:
+    0 0 0 3px var(--focus),
+    var(--node-elevation-selected);
 }
-/* Selected must remain visible in forced-colors / high-contrast mode. */
+/* Forced colors / high contrast: drop the decorative gradient and all elevation
+   shadows (they are not conveyed to the forced palette anyway), keep a system
+   surface, and retain the selected outline. Hierarchy still reads from the
+   border-left accent, the heading top-border and the kind badge/text. */
 @media (forced-colors: active) {
+  .cv-node {
+    background-image: none;
+    background-color: Canvas;
+    box-shadow: none;
+  }
+  .cv-node--workspace,
+  .cv-node--package,
+  .cv-node:not(.cv-node--state-selected):hover,
+  .cv-node--state-diagnostic-warning,
+  .cv-node--state-diagnostic-error,
+  .cv-node--state-search {
+    box-shadow: none;
+  }
   .cv-node--state-selected {
+    box-shadow: none;
     outline: 3px solid Highlight;
     outline-offset: 1px;
   }
@@ -675,6 +742,46 @@ select:focus-visible,
 .cv-edge-label-related {
   font-weight: 600;
   border-color: color-mix(in srgb, var(--rel-label-fg) 40%, transparent);
+}
+
+/* --- Active-flow relations (Issue 14, Phase 2 + Phase-3 scaling) -----------
+   The timing token is centralized here (theme-independent). The dash geometry is
+   NOT a fixed literal: it scales with the edge's effective stroke width via the
+   `flowDash()` helper, which sets `--edge-flow-dash` and `--edge-flow-dash-cycle`
+   per element (dash+gap = cycle, so one keyframe iteration is seamless). No fixed
+   `9 7` lives here — a wider (selected) edge gets proportionally larger dashes. */
+:root {
+  --edge-flow-duration: 0.9s;
+}
+
+/* Static flow treatment: the distinct, width-scaled dash is the redundant,
+   non-colour, non-motion cue identifying an active-flow relation. Applied to
+   eligible graph edges and the single legend sample. Composes with kind colour /
+   width / opacity / marker, which stay sourced from the relation registry. The
+   dash values come from `--edge-flow-dash`, set per element by `flowDash()`. */
+.cv-edge-flow {
+  stroke-dasharray: var(--edge-flow-dash);
+}
+
+/* Direction-of-travel motion: the path is drawn source→target, so a decreasing
+   dash offset advances the pattern toward the target arrow. CSS/SVG only — no JS
+   loop, no requestAnimationFrame, no per-frame React state. */
+.cv-edge-flow--motion {
+  animation: cv-edge-flow-dash var(--edge-flow-duration) linear infinite;
+}
+@keyframes cv-edge-flow-dash {
+  to {
+    stroke-dashoffset: calc(-1 * var(--edge-flow-dash-cycle));
+  }
+}
+
+/* Reduced motion: stop continuous movement explicitly (belt-and-braces with the
+   global kill-switch). The static dash, marker and label remain, so direction and
+   identity survive with no meaning lost. */
+@media (prefers-reduced-motion: reduce) {
+  .cv-edge-flow--motion {
+    animation: none;
+  }
 }
 
 .cv-legend-kinds,

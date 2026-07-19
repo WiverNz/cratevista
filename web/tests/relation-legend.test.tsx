@@ -10,7 +10,7 @@ import { relationStyleFor } from "../src/adapter/relationStyle.ts";
 import type { Graph, GraphEdge } from "../src/adapter/adapter.ts";
 
 function edge(kind: string): GraphEdge {
-  return { id: `e:${kind}`, source: "a", target: "b", kind, style: { category: kind, color: "", known: true } };
+  return { id: `e:${kind}`, source: "a", target: "b", kind, style: { category: kind, color: "", known: true }, flowEligible: false };
 }
 function relationsFor(kinds: string[]) {
   const graph: Graph = { nodes: [], edges: kinds.map(edge) };

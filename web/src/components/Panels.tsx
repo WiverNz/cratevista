@@ -1,11 +1,11 @@
 // Legend, inspector (entity + relation), status panels, and blocking/empty states.
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useApp, useUi, type Projection } from "../app/AppContext.tsx";
 import { DiagnosticsExplorer } from "./DiagnosticsExplorer.tsx";
 import { SafeMarkdown } from "../markdown/SafeMarkdown.tsx";
 import { localized } from "../types/index.ts";
 import type { LegendEntry, RelationLegendEntry } from "../state/selectors.ts";
-import { dashArrayFor, type RelationStyle } from "../adapter/relationStyle.ts";
+import { dashArrayFor, flowDash, type RelationStyle } from "../adapter/relationStyle.ts";
 import type { Entity, Relation, DocumentDiagnostic } from "../types/index.ts";
 import type { DocumentModel } from "../model/model.ts";
 import {
@@ -14,14 +14,28 @@ import {
 } from "../api/repositoryLinks.ts";
 import type { SourceClient } from "../api/source.ts";
 
+/** View-wide active-flow legend state, mirroring the graph's flow policy. */
+export interface LegendFlow {
+  /** Eligible active-flow relations exist in the view. */
+  present: boolean;
+  /** Continuous motion is currently running (policy allows it and reduced-motion
+   *  is off). */
+  motionEnabled: boolean;
+  /** Eligible relations exceed the view threshold, so motion is suppressed. */
+  suppressedByCount: boolean;
+}
+
 export function Legend({
   entries,
   relations = [],
+  flow,
 }: {
   entries: LegendEntry[];
   relations?: RelationLegendEntry[];
+  flow?: LegendFlow;
 }) {
-  if (entries.length === 0 && relations.length === 0) return null;
+  const showFlow = !!flow?.present;
+  if (entries.length === 0 && relations.length === 0 && !showFlow) return null;
   return (
     <div className="cv-legend" aria-label="Legend">
       <h2 className="cv-panel-title">Legend</h2>
@@ -39,7 +53,82 @@ export function Legend({
         </ul>
       )}
       {relations.length > 0 && <RelationLegend relations={relations} />}
+      {showFlow && <ActiveFlowLegend flow={flow} />}
     </div>
+  );
+}
+
+/**
+ * The single active-flow legend sample, shown once when the view contains eligible
+ * flow relations (never one row per edge). It reuses the same `cv-edge-flow`
+ * classes and motion tokens as graph edges, so it animates only when motion is
+ * actually running and renders statically under reduced motion or view-wide
+ * suppression — where it adds a textual note that motion is off. Its accessible
+ * name names the treatment and its source→target direction.
+ */
+function ActiveFlowLegend({ flow }: { flow: LegendFlow }) {
+  const motionNote = flow.suppressedByCount
+    ? " (motion off: many flows)"
+    : !flow.motionEnabled
+      ? " (motion off)"
+      : "";
+  const label = `Active flow: manual flow relation, ${
+    flow.motionEnabled ? "animated dashes travel" : "arrow shows direction"
+  } from source to target`;
+  return (
+    <div className="cv-flow-legend" role="group" aria-label="Active flow">
+      <ul className="cv-rel-legend-list">
+        <li className="cv-rel-legend-item">
+          <span
+            className="cv-rel-sample"
+            role="img"
+            tabIndex={0}
+            aria-label={label}
+            data-flow="active"
+            data-motion={flow.motionEnabled ? "on" : "off"}
+          >
+            <ActiveFlowSample motion={flow.motionEnabled} />
+          </span>
+          <span className="cv-rel-legend-label">
+            Active flow
+            {motionNote && <span className="cv-muted">{motionNote}</span>}
+          </span>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+/** Sample line width (px). The flow dash geometry scales from this via the same
+ *  `flowDash` helper the graph edges use, so legend and graph never diverge. */
+const FLOW_SAMPLE_WIDTH = 2;
+
+/** Miniature active-flow sample: a manual-toned line carrying the shared,
+ *  width-scaled flow dash (and, when enabled, the shared dash animation) plus a
+ *  directional arrowhead. */
+function ActiveFlowSample({ motion }: { motion: boolean }) {
+  const stroke = "var(--rel-manual)";
+  const fd = flowDash(FLOW_SAMPLE_WIDTH);
+  return (
+    <svg className="cv-rel-sample-svg" width="36" height="12" viewBox="0 0 36 12" aria-hidden="true">
+      <line
+        className={`cv-edge-flow${motion ? " cv-edge-flow--motion" : ""}`}
+        x1="1"
+        y1="6"
+        x2="27"
+        y2="6"
+        style={
+          {
+            stroke,
+            "--edge-flow-dash": fd.dashArray,
+            "--edge-flow-dash-cycle": String(fd.cycle),
+          } as CSSProperties
+        }
+        strokeWidth={FLOW_SAMPLE_WIDTH}
+        strokeLinecap="round"
+      />
+      <polygon points="27,2 35,6 27,10" style={{ fill: stroke }} />
+    </svg>
   );
 }
 

@@ -16,6 +16,7 @@ function graphEdge(kind: string): GraphEdge {
     kind,
     label: kind,
     style: { category: kind, color: "", known: true },
+    flowEligible: false,
   };
 }
 
@@ -24,19 +25,29 @@ function renderEdge(opts: {
   state?: EdgeState;
   label?: string;
   repeated?: boolean;
+  route?: { x: number; y: number }[];
+  selfLoop?: boolean;
+  parallelIndex?: number;
+  sourceX?: number;
+  sourceY?: number;
+  targetX?: number;
+  targetY?: number;
 }) {
   const edge = graphEdge(opts.kind);
   const props = {
     id: edge.id,
-    sourceX: 0,
-    sourceY: 0,
-    targetX: 10,
-    targetY: 0,
+    sourceX: opts.sourceX ?? 0,
+    sourceY: opts.sourceY ?? 0,
+    targetX: opts.targetX ?? 10,
+    targetY: opts.targetY ?? 0,
     data: {
       edge,
       label: opts.label ?? edge.label,
       state: opts.state ?? "normal",
       repeated: opts.repeated ?? false,
+      route: opts.route,
+      selfLoop: opts.selfLoop,
+      parallelIndex: opts.parallelIndex,
     },
   };
   // The component only reads the fields provided above.
@@ -82,6 +93,43 @@ describe("RelationEdge visual encoding", () => {
     cleanup();
     renderEdge({ kind: "depends_on", state: "faded" });
     expect(path("depends_on").dataset.opacity).toBe("0.1");
+  });
+});
+
+describe("RelationEdge geometry threading", () => {
+  it("follows an ELK route when one is present (rounded orthogonal path)", () => {
+    renderEdge({
+      kind: "depends_on",
+      route: [
+        { x: 0, y: 0 },
+        { x: 30, y: 0 },
+        { x: 30, y: 20 },
+        { x: 60, y: 20 },
+      ],
+      sourceX: 0,
+      sourceY: 0,
+      targetX: 60,
+      targetY: 20,
+    });
+    const d = path("depends_on").dataset.d ?? "";
+    expect(d.startsWith("M0,0")).toBe(true);
+    expect(d).toContain("Q"); // rounded corners = routed, not a straight/step fallback
+  });
+
+  it("falls back to a smooth-step connector when there is no route", () => {
+    renderEdge({ kind: "depends_on", sourceX: 0, sourceY: 0, targetX: 40, targetY: 20 });
+    const d = path("depends_on").dataset.d ?? "";
+    // The stub smooth-step is stepped (has an elbow), so more than 2 vertices and
+    // never a plain two-point straight line.
+    expect((d.match(/[ML]/g) ?? []).length).toBeGreaterThan(2);
+    expect(d).not.toBe("M0,0 L40,20");
+  });
+
+  it("draws a non-degenerate self-loop for a same-node relation", () => {
+    renderEdge({ kind: "depends_on", selfLoop: true, sourceX: 100, sourceY: 50, targetX: 60, targetY: 50 });
+    const d = path("depends_on").dataset.d ?? "";
+    expect(d).not.toContain("NaN");
+    expect(d.length).toBeGreaterThan(10);
   });
 });
 

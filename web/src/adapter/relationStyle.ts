@@ -244,3 +244,141 @@ export function edgeZIndex(style: RelationStyle, state: EdgeState): number {
     state === "selected" ? 40 : state === "related" ? 20 : state === "faded" ? -5 : 0;
   return base + stateBump;
 }
+
+// ---------------------------------------------------------------------------
+// Animated flow relations (Issue 14, Phase 2)
+// ---------------------------------------------------------------------------
+
+/** Flow dash geometry as a multiple of the edge's *effective* stroke width, so an
+ *  active flow reads distinctly (longer than the ordinary `dashed` pattern's
+ *  3×/2×) and stays legible as the width grows across normal/related/selected. At
+ *  the manual base width (2) these give the familiar 9/7 dash/gap, but they now
+ *  scale rather than being fixed. Centralized — no per-component dash literals. */
+export const FLOW_DASH_MULT = 4.5;
+export const FLOW_GAP_MULT = 3.5;
+
+/** A resolved, width-scaled flow dash. `cycle` = dash + gap, the seamless
+ *  animation travel distance per iteration. */
+export interface FlowDash {
+  readonly dash: number;
+  readonly gap: number;
+  readonly cycle: number;
+  /** `"<dash> <gap>"`, ready for `stroke-dasharray` / `--edge-flow-dash`. */
+  readonly dashArray: string;
+}
+
+/**
+ * Derives the flow dash/gap/cycle from an effective stroke width. Pure and shared
+ * by the graph edges and the legend sample, so both scale identically. There is no
+ * fixed `9 7` fallback: the geometry always follows the width it is given.
+ */
+export function flowDash(width: number): FlowDash {
+  const dash = round(width * FLOW_DASH_MULT);
+  const gap = round(width * FLOW_GAP_MULT);
+  return { dash, gap, cycle: round(dash + gap), dashArray: `${dash} ${gap}` };
+}
+
+/** The exact, locked presentation-attribute value that opts a manual relation
+ *  into active-flow animation. This is the whole public contract:
+ *  `attributes.flow = "active"`. No other spelling or value is honoured, and
+ *  `attributes.animated` is deliberately not supported. */
+export const FLOW_ATTRIBUTE = "flow";
+/** @see FLOW_ATTRIBUTE */
+export const FLOW_ACTIVE_VALUE = "active";
+
+/**
+ * The maximum number of animation-eligible relations a single view may animate.
+ * At or below this, eligible relations animate; above it, continuous motion is
+ * suppressed view-wide (the static flow treatment is retained). Locked by the
+ * approved PRD; defined once here and never user-configurable.
+ */
+export const EDGE_FLOW_MAX_ANIMATED = 60;
+
+/** Below this zoom, continuous motion is suppressed (motion at tiny scale is
+ *  noise); the static flow cues stay intact. Shares the label floor. */
+export const FLOW_ZOOM_MIN = LABEL_ZOOM_MIN;
+
+/** The minimal shape the eligibility decision needs from a relation. */
+export interface FlowEligibilityInput {
+  /** `"discovered" | "manual"` in practice; any other value is treated as not
+   *  manual and therefore ineligible. */
+  readonly provenance?: string;
+  /** Freeform relation attributes (values are unknown at runtime). */
+  readonly attributes?: Readonly<Record<string, unknown>> | null;
+}
+
+/**
+ * The single, centralized decision point for active-flow animation eligibility.
+ *
+ * A relation is eligible **iff** all of the following hold:
+ *   - its provenance is exactly `"manual"`; and
+ *   - `attributes.flow` exists and is the **string** `"active"`.
+ *
+ * Parsing is strict and total: a boolean `true`, a number, an array, an object,
+ * a differently-cased or different string, a missing attribute, or a discovered
+ * relation carrying the same attribute all return `false`. It reads nothing from
+ * labels, roles, messages, ids or relation kind, and never throws. The graph and
+ * the legend both consume this function — attribute parsing is never duplicated in
+ * components.
+ */
+export function isAnimationEligible(relation: FlowEligibilityInput): boolean {
+  if (relation.provenance !== "manual") return false;
+  const attrs = relation.attributes;
+  if (!attrs || typeof attrs !== "object") return false;
+  const value: unknown = attrs[FLOW_ATTRIBUTE];
+  return typeof value === "string" && value === FLOW_ACTIVE_VALUE;
+}
+
+/** Whether an edge draws the static flow treatment / may animate, precomputed
+ *  once per edge by the adapter so components never re-parse attributes. */
+export interface FlowFlag {
+  readonly flowEligible: boolean;
+}
+
+/** The view-wide animation policy, computed once per projection. */
+export interface FlowPolicy {
+  /** Count of animation-eligible relations in the active view. */
+  readonly eligibleCount: number;
+  /** Whether the legend should show the active-flow sample at all. */
+  readonly present: boolean;
+  /** Whether continuous motion is permitted for the view (present and at or below
+   *  {@link EDGE_FLOW_MAX_ANIMATED}). Independent of selection, zoom and
+   *  reduced-motion, which are applied on top per edge / at render. */
+  readonly motionAllowed: boolean;
+  /** True when eligible relations exist but exceed the threshold, so motion is
+   *  suppressed view-wide and the legend must say so. */
+  readonly suppressedByCount: boolean;
+}
+
+/**
+ * Computes the view-wide flow policy from the edges of the active view exactly
+ * once. Counting is O(edges) and depends only on eligibility — never on
+ * selection, hover, zoom or the faded state — so selection can never bypass the
+ * view-wide suppression, and filtering to a smaller view can re-enable motion.
+ */
+export function flowAnimationPolicy(edges: readonly FlowFlag[]): FlowPolicy {
+  let eligibleCount = 0;
+  for (const e of edges) if (e.flowEligible) eligibleCount++;
+  const present = eligibleCount > 0;
+  const motionAllowed = present && eligibleCount <= EDGE_FLOW_MAX_ANIMATED;
+  return { eligibleCount, present, motionAllowed, suppressedByCount: present && !motionAllowed };
+}
+
+/**
+ * Whether *this* edge should be continuously animated right now, composing the
+ * view policy with the per-edge/interaction conditions. Motion runs only when the
+ * edge is eligible, not faded, the view permits motion, and the zoom is above the
+ * floor. Reduced motion is enforced separately in CSS (and asserted in tests), so
+ * it is intentionally not an input here — the static flow treatment is what a
+ * reduced-motion user sees.
+ */
+export function edgeMotionActive(opts: {
+  flowEligible: boolean;
+  state: EdgeState;
+  motionAllowed: boolean;
+  zoom: number;
+}): boolean {
+  return (
+    opts.flowEligible && opts.state !== "faded" && opts.motionAllowed && opts.zoom >= FLOW_ZOOM_MIN
+  );
+}

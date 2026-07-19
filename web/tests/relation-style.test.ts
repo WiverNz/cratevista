@@ -24,6 +24,7 @@ function edge(kind: string): GraphEdge {
     target: "b",
     kind,
     style: { category: kind, color: "", known: true },
+    flowEligible: false,
   };
 }
 function graphWith(kinds: string[]): Graph {

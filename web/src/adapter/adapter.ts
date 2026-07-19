@@ -8,6 +8,7 @@ import type { DocumentModel } from "../model/model.ts";
 import type { View } from "../types/index.ts";
 import { localized } from "../types/index.ts";
 import { entityStyle, relationStyle, type KindStyle } from "./kindStyle.ts";
+import { isAnimationEligible } from "./relationStyle.ts";
 
 export interface GraphNode {
   id: string;
@@ -26,6 +27,10 @@ export interface GraphEdge {
   kind: string;
   label?: string;
   style: KindStyle;
+  /** Precomputed once here (never re-parsed in components): whether this relation
+   *  opts into active-flow animation via the manual `attributes.flow = "active"`
+   *  contract. See `isAnimationEligible`. */
+  flowEligible: boolean;
 }
 
 export interface Graph {
@@ -127,6 +132,7 @@ export function documentToGraph(
       kind: r.kind,
       label: r.label ? localized(r.label, lang) : undefined,
       style: relationStyle(r.kind),
+      flowEligible: isAnimationEligible(r),
     });
   }
 

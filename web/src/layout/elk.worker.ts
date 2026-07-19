@@ -14,6 +14,7 @@
 import ELK from "elkjs/lib/elk-api.js";
 import ElkWorker from "elkjs/lib/elk-worker.min.js?worker";
 import type { LayoutRequest, LayoutResponse, PositionedNode, RoutedEdge } from "./types.ts";
+import { sectionsToPoints } from "./routes.ts";
 
 interface ElkChild {
   id: string;
@@ -95,13 +96,13 @@ function fromElk(token: number, laid: ElkGraph): LayoutResponse {
     width: c.width ?? 0,
     height: c.height ?? 0,
   }));
-  const edges: RoutedEdge[] = laid.edges.map((e) => {
-    const section = e.sections?.[0];
-    const points = section
-      ? [section.startPoint, ...(section.bendPoints ?? []), section.endPoint]
-      : [];
-    return { id: e.id, points };
-  });
+  // Join whatever routing sections ELK produced into one ordered polyline. A
+  // single section is the common case; a malformed/disconnected set yields `[]`,
+  // which the renderer reads as "no route" and draws its computed fallback.
+  const edges: RoutedEdge[] = laid.edges.map((e) => ({
+    id: e.id,
+    points: sectionsToPoints(e.sections),
+  }));
   return {
     token,
     ok: true,

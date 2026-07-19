@@ -71,6 +71,7 @@ export const Handle = () => null;
 export function BaseEdge(props: {
   id?: string;
   path?: string;
+  className?: string;
   markerEnd?: string;
   style?: {
     stroke?: string;
@@ -79,13 +80,20 @@ export function BaseEdge(props: {
     opacity?: number | string;
   };
 }) {
-  const s = props.style ?? {};
+  const s = (props.style ?? {}) as Record<string, unknown>;
+  const flowDashVar = s["--edge-flow-dash"];
+  const flowCycleVar = s["--edge-flow-dash-cycle"];
   return (
     <path
       data-testid={props.id ? `edgepath-${props.id}` : "edgepath"}
-      data-stroke={s.stroke ?? ""}
+      className={props.className}
+      data-d={props.path ?? ""}
+      data-classname={props.className ?? ""}
+      data-stroke={(s.stroke as string) ?? ""}
       data-width={s.strokeWidth == null ? "" : String(s.strokeWidth)}
-      data-dash={s.strokeDasharray ?? ""}
+      data-dash={(s.strokeDasharray as string) ?? ""}
+      data-flowdash={flowDashVar == null ? "" : String(flowDashVar)}
+      data-flowcycle={flowCycleVar == null ? "" : String(flowCycleVar)}
       data-opacity={s.opacity == null ? "" : String(s.opacity)}
       data-marker={props.markerEnd ?? ""}
     />
@@ -103,6 +111,20 @@ export const Position = {
 
 export function getStraightPath(): [string, number, number] {
   return ["M0,0", 0, 0];
+}
+
+/** Deterministic stepped path, distinct in shape from a straight line, so tests
+ *  can tell "fallback smooth-step was used" from "routed" and from "straight". */
+export function getSmoothStepPath(params: {
+  sourceX: number;
+  sourceY: number;
+  targetX: number;
+  targetY: number;
+}): [string, number, number, number, number] {
+  const { sourceX, sourceY, targetX, targetY } = params;
+  const midX = (sourceX + targetX) / 2;
+  const d = `M${sourceX},${sourceY} L${midX},${sourceY} L${midX},${targetY} L${targetX},${targetY}`;
+  return [d, midX, (sourceY + targetY) / 2, 0, 0];
 }
 
 const flow = {

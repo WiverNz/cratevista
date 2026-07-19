@@ -34,7 +34,7 @@ import { chooseView, differsOnlyBySearch, normalizeUrlState } from "../state/nor
 import { layoutCacheKey } from "../layout/cache.ts";
 import type { LayoutEngine } from "../layout/client.ts";
 import type { SourceClient } from "../api/source.ts";
-import type { PositionedNode } from "../layout/types.ts";
+import type { Point, PositionedNode } from "../layout/types.ts";
 import type { View } from "../types/index.ts";
 import type { GenerationReport, DiagnosticsReport } from "../types/runtime.ts";
 
@@ -204,9 +204,17 @@ export function useProjection(): Projection | null {
   ]);
 }
 
+/** Empty route map shared for every non-current layout, so a stale layout can
+ *  never hand out routes that belong to a superseded projection. */
+const EMPTY_ROUTES: ReadonlyMap<string, Point[]> = new Map();
+
 export type LayoutState = {
   status: "idle" | "loading" | "ok" | "error";
   positions: Map<string, PositionedNode>;
+  /** ELK route polylines keyed by relation id, for the *current* layout only.
+   *  Empty while a layout is pending/errored so routes are never paired with a
+   *  newer projection's node positions. */
+  routes: ReadonlyMap<string, Point[]>;
   error?: string;
   retry: () => void;
 };
@@ -220,8 +228,9 @@ export function useLayout(engine: LayoutEngine, projection: Projection | null): 
   const [resolved, setResolved] = useState<{
     key: string | null;
     positions: Map<string, PositionedNode>;
+    routes: Map<string, Point[]>;
     error?: string;
-  }>({ key: null, positions: new Map() });
+  }>({ key: null, positions: new Map(), routes: new Map() });
   const key = projection?.cacheKey ?? null;
 
   useEffect(() => {
@@ -260,9 +269,17 @@ export function useLayout(engine: LayoutEngine, projection: Projection | null): 
           setResolved({
             key: requestKey,
             positions: new Map(outcome.result.nodes.map((p) => [p.id, p])),
+            // Routes come from the same result as the positions, so the two can
+            // never be mismatched: they are stored together, keyed by relation id.
+            routes: new Map(outcome.result.edges.map((e) => [e.id, e.points])),
           });
         } else if (outcome.status === "error") {
-          setResolved((r) => ({ key: requestKey, positions: r.positions, error: outcome.error }));
+          setResolved((r) => ({
+            key: requestKey,
+            positions: r.positions,
+            routes: r.routes,
+            error: outcome.error,
+          }));
         }
         // "stale" is ignored.
       },
@@ -287,6 +304,10 @@ export function useLayout(engine: LayoutEngine, projection: Projection | null): 
   return {
     status,
     positions: resolved.positions,
+    // Only expose routes for the current layout; a pending/errored (stale) layout
+    // hands out no routes, so the renderer falls back rather than pairing old
+    // routes with new positions.
+    routes: status === "ok" ? resolved.routes : EMPTY_ROUTES,
     error: current ? resolved.error : undefined,
     retry: () => setNonce((n) => n + 1),
   };
