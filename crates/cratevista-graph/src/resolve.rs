@@ -9,7 +9,7 @@ use cratevista_schema::{
     DocumentDiagnostic, Entity, EntityId, Provenance, Relation, RelationId, RelationKind,
 };
 
-use crate::diagnostics::{code, warn};
+use crate::diagnostics::{code, info, warn};
 
 /// The outcome of resolving all crates' unresolved references.
 pub struct ResolveOutput {
@@ -67,6 +67,10 @@ pub fn resolve_cross_crate(
     let mut diagnostics = Vec::new();
     let mut resolved = 0usize;
     let mut unresolved = 0usize;
+    // References to non-analyzed (external) crates are EXPECTED — they cannot become
+    // workspace entities. Rather than one warning per occurrence, they are counted
+    // per external crate (empty key = no crate evidence) and summarized once each.
+    let mut external: BTreeMap<String, usize> = BTreeMap::new();
 
     for summary in crates {
         for reference in &summary.unresolved_refs {
@@ -83,17 +87,23 @@ pub fn resolve_cross_crate(
                     ));
                     resolved += 1;
                 }
-                Resolution::Zero => {
+                Resolution::UnresolvedInWorkspace => {
+                    // The target crate IS analyzed but the item was not found: a real
+                    // gap that should resolve. Kept as a per-occurrence warning.
                     unresolved += 1;
                     diagnostics.push(warn(
                         code::UNRESOLVED_CROSS_CRATE_REFERENCE,
                         format!(
-                            "unresolved cross-crate {} reference `{}`",
+                            "unresolved cross-crate {} reference `{}` (target crate is in the workspace but the item was not found)",
                             reference.role.relation_role(),
                             reference.display
                         ),
                         Some(reference.from.clone()),
                     ));
+                }
+                Resolution::External(crate_name) => {
+                    unresolved += 1;
+                    *external.entry(crate_name.unwrap_or_default()).or_default() += 1;
                 }
                 Resolution::Many => {
                     diagnostics.push(warn(
@@ -110,6 +120,20 @@ pub fn resolve_cross_crate(
         }
     }
 
+    // One informational summary per external crate, in deterministic (sorted) order.
+    for (crate_name, count) in &external {
+        let message = if crate_name.is_empty() {
+            format!(
+                "{count} cross-crate type reference(s) to unattributed external items were not represented as workspace entities (external dependencies)"
+            )
+        } else {
+            format!(
+                "{count} cross-crate type reference(s) to external crate `{crate_name}` were not represented as workspace entities (external dependency)"
+            )
+        };
+        diagnostics.push(info(code::EXTERNAL_CRATE_REFERENCE, message, None));
+    }
+
     ResolveOutput {
         relations,
         diagnostics,
@@ -120,7 +144,11 @@ pub fn resolve_cross_crate(
 
 enum Resolution {
     One(EntityId),
-    Zero,
+    /// The reference targets an analyzed workspace crate but no entity matched.
+    UnresolvedInWorkspace,
+    /// The reference targets a non-analyzed (external) crate, or carries no crate
+    /// evidence (`None`): expected, aggregated instead of one warning per occurrence.
+    External(Option<String>),
     Many,
 }
 
@@ -129,24 +157,26 @@ fn resolve_one(
     analyzed: &BTreeSet<&str>,
     by_path: &BTreeMap<(String, String), Vec<(String, EntityId)>>,
 ) -> Resolution {
-    // Require structured evidence.
+    // No structured evidence: cannot be attributed to a crate, so it cannot be
+    // confirmed as a workspace gap — aggregated as an unattributed external ref.
     let (Some(crate_name), Some(path)) = (&reference.crate_name, &reference.canonical_path) else {
-        return Resolution::Zero;
+        return Resolution::External(None);
     };
     if !analyzed.contains(crate_name.as_str()) {
-        return Resolution::Zero; // external / non-analyzed crate
+        return Resolution::External(Some(crate_name.clone())); // external / non-analyzed crate
     }
+    // The target crate IS analyzed from here on, so a miss is a real workspace gap.
     // Drop the leading crate segment to get the crate-relative path.
     let relative: Vec<&str> = match path.split_first() {
         Some((first, rest)) if first == crate_name => rest.iter().map(String::as_str).collect(),
         _ => path.iter().map(String::as_str).collect(),
     };
     if relative.is_empty() {
-        return Resolution::Zero;
+        return Resolution::UnresolvedInWorkspace;
     }
     let key = (crate_name.clone(), relative.join("::"));
     let Some(candidates) = by_path.get(&key) else {
-        return Resolution::Zero;
+        return Resolution::UnresolvedInWorkspace;
     };
 
     // Constrain by item_kind when available.
@@ -163,7 +193,7 @@ fn resolve_one(
 
     match matching.as_slice() {
         [one] => Resolution::One((*one).clone()),
-        [] => Resolution::Zero,
+        [] => Resolution::UnresolvedInWorkspace,
         _ => Resolution::Many,
     }
 }
@@ -193,7 +223,8 @@ mod tests {
     }
 
     #[test]
-    fn external_crate_reference_stays_unresolved() {
+    fn external_crate_reference_is_aggregated_not_flooded() {
+        use cratevista_schema::Severity;
         let entities = index(vec![item_entity("item:struct:a::X", "struct", "a::X")]);
         // Reference to `core::any::Any` — `core` is not an analyzed crate.
         let reference = unresolved_ref(
@@ -214,6 +245,80 @@ mod tests {
         let out = resolve_cross_crate(&entities, &crates);
         assert!(out.relations.is_empty());
         assert_eq!(out.unresolved, 1);
+        // One aggregated Info summary, not a per-occurrence warning.
+        assert_eq!(out.diagnostics.len(), 1);
+        assert_eq!(out.diagnostics[0].code, code::EXTERNAL_CRATE_REFERENCE);
+        assert_eq!(out.diagnostics[0].severity, Severity::Info);
+        assert!(out.diagnostics[0].message.contains("core"));
+    }
+
+    #[test]
+    fn many_external_refs_collapse_to_one_summary_per_crate() {
+        let entities = index(vec![item_entity("item:struct:a::X", "struct", "a::X")]);
+        // Three refs to `serde`, two to `sqlx` — five occurrences, two summaries.
+        let mut refs = Vec::new();
+        for _ in 0..3 {
+            refs.push(unresolved_ref(
+                "item:struct:a::X",
+                TypeReferenceRole::Field,
+                Some("serde"),
+                Some(vec!["serde", "Error"]),
+                Some("struct"),
+                "Error",
+            ));
+        }
+        for _ in 0..2 {
+            refs.push(unresolved_ref(
+                "item:struct:a::X",
+                TypeReferenceRole::Return,
+                Some("sqlx"),
+                Some(vec!["sqlx", "Pool"]),
+                Some("struct"),
+                "Pool",
+            ));
+        }
+        let crates = vec![crate_summary(
+            "a",
+            "package:a",
+            "target:a:lib:a",
+            "module:a::a",
+            refs,
+        )];
+        let out = resolve_cross_crate(&entities, &crates);
+        let external: Vec<&_> = out
+            .diagnostics
+            .iter()
+            .filter(|d| d.code == code::EXTERNAL_CRATE_REFERENCE)
+            .collect();
+        assert_eq!(external.len(), 2, "one summary per external crate");
+        // Deterministic sorted order (serde before sqlx), with the right counts.
+        assert!(external[0].message.contains("serde") && external[0].message.contains('3'));
+        assert!(external[1].message.contains("sqlx") && external[1].message.contains('2'));
+        assert_eq!(out.unresolved, 5);
+    }
+
+    #[test]
+    fn unresolved_reference_into_a_workspace_crate_stays_a_warning() {
+        // The target crate `a` IS analyzed, but no entity lives at `a::Missing`:
+        // a genuine gap that should resolve — kept as a per-occurrence warning.
+        let entities = index(vec![item_entity("item:struct:a::X", "struct", "a::X")]);
+        let reference = unresolved_ref(
+            "item:struct:a::X",
+            TypeReferenceRole::Field,
+            Some("a"),
+            Some(vec!["a", "Missing"]),
+            Some("struct"),
+            "Missing",
+        );
+        let crates = vec![crate_summary(
+            "a",
+            "package:a",
+            "target:a:lib:a",
+            "module:a::a",
+            vec![reference],
+        )];
+        let out = resolve_cross_crate(&entities, &crates);
+        assert_eq!(out.diagnostics.len(), 1);
         assert_eq!(
             out.diagnostics[0].code,
             code::UNRESOLVED_CROSS_CRATE_REFERENCE

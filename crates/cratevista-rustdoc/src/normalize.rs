@@ -16,7 +16,7 @@ use rustdoc_types::{
     Crate, Id, Item, ItemEnum, ItemKind, Path, StructKind, Type, VariantKind, Visibility,
 };
 
-use crate::diagnostics::{code, warn};
+use crate::diagnostics::{code, info, warn};
 use crate::error::RustdocError;
 use crate::ids::{
     assoc_item_kind, impl_for_display, impl_is_synthetic_or_blanket, impl_signature,
@@ -91,6 +91,11 @@ pub fn normalize_crate(krate: &Crate, ctx: &NormalizeContext) -> Result<CrateIng
     let mut unresolved = unresolved;
     unresolved.sort();
     unresolved.dedup();
+    // Collapse the EXPECTED "source unavailable" omissions — macro/derive-generated
+    // or external spans — into one informational summary per code, instead of one
+    // warning per item. The item still exists with no source location; only the
+    // per-occurrence diagnostic flood is aggregated (the count is preserved).
+    collapse_expected_source_omissions(&mut diagnostics, &ctx.crate_name);
     diagnostics.sort();
 
     let root_module_id = root_module_id.ok_or_else(|| {
@@ -850,6 +855,36 @@ fn variant_field_ids(kind: &VariantKind) -> Vec<Id> {
     }
 }
 
+/// Replaces the per-item, expected "source unavailable" warnings with **one
+/// informational summary per code** (per crate). These spans are macro/derive-
+/// generated or external and cannot be made repository-relative, so surfacing one
+/// per item is noise; the aggregated diagnostic retains the count as evidence.
+/// Deterministic: fixed codes, fixed message shape, single summary each.
+fn collapse_expected_source_omissions(diagnostics: &mut Vec<DocumentDiagnostic>, crate_name: &str) {
+    for (code_str, describe) in [
+        (
+            code::SOURCE_OUTSIDE_WORKSPACE,
+            "a source span outside the workspace root (macro/derive-generated or external)",
+        ),
+        (
+            code::GENERATED_SOURCE_OMITTED,
+            "a generated/macro-expanded source span",
+        ),
+    ] {
+        let count = diagnostics.iter().filter(|d| d.code == code_str).count();
+        if count == 0 {
+            continue;
+        }
+        diagnostics.retain(|d| d.code != code_str);
+        diagnostics.push(info(
+            code_str,
+            format!(
+                "{count} item(s) in crate `{crate_name}` have {describe}; no repository-relative source location is available"
+            ),
+        ));
+    }
+}
+
 /// Drops entities that share an id (keeping the first), emitting a
 /// `duplicate_item_identity` diagnostic per drop.
 fn dedup_entities(entities: Vec<Entity>, diagnostics: &mut Vec<DocumentDiagnostic>) -> Vec<Entity> {
@@ -1112,6 +1147,33 @@ mod tests {
             },
             format_version: rustdoc_types::FORMAT_VERSION,
         }
+    }
+
+    #[test]
+    fn expected_source_omissions_collapse_to_one_summary_per_code() {
+        use cratevista_schema::Severity;
+        let mut diagnostics = vec![
+            warn(code::SOURCE_OUTSIDE_WORKSPACE, "a", None),
+            warn(code::SOURCE_OUTSIDE_WORKSPACE, "b", None),
+            warn(code::SOURCE_OUTSIDE_WORKSPACE, "c", None),
+            warn(code::UNRESOLVED_TYPE_REFERENCE, "keep me", None),
+        ];
+        collapse_expected_source_omissions(&mut diagnostics, "tiny");
+        let outside: Vec<_> = diagnostics
+            .iter()
+            .filter(|d| d.code == code::SOURCE_OUTSIDE_WORKSPACE)
+            .collect();
+        assert_eq!(outside.len(), 1, "three warnings collapse to one summary");
+        assert_eq!(outside[0].severity, Severity::Info);
+        assert!(outside[0].message.contains('3') && outside[0].message.contains("tiny"));
+        // An unrelated diagnostic is untouched.
+        assert_eq!(
+            diagnostics
+                .iter()
+                .filter(|d| d.code == code::UNRESOLVED_TYPE_REFERENCE)
+                .count(),
+            1
+        );
     }
 
     #[test]

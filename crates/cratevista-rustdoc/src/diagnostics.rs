@@ -39,3 +39,8 @@ pub fn warn(
     }
     diagnostic
 }
+
+/// Builds an informational [`DocumentDiagnostic`] (e.g. an aggregated summary).
+pub fn info(code: &str, message: impl Into<String>) -> DocumentDiagnostic {
+    DocumentDiagnostic::new(Severity::Info, code, message)
+}

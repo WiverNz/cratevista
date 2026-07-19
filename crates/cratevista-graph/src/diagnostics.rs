@@ -20,8 +20,13 @@ pub mod code {
     pub const DANGLING_RELATION: &str = "dangling_relation";
     /// A rustdoc crate could not be linked to exactly one metadata target.
     pub const RUSTDOC_TARGET_UNLINKED: &str = "rustdoc_target_unlinked";
-    /// A cross-crate type reference could not be resolved (external / unknown).
+    /// A cross-crate type reference into an **analyzed workspace crate** could not
+    /// be resolved to an entity — a genuine gap worth surfacing per occurrence.
     pub const UNRESOLVED_CROSS_CRATE_REFERENCE: &str = "unresolved_cross_crate_reference";
+    /// One **aggregated, informational** summary (per external crate) of references
+    /// to a non-analyzed dependency that are, as expected, not represented as
+    /// workspace entities. Replaces the per-occurrence flood for external types.
+    pub const EXTERNAL_CRATE_REFERENCE: &str = "external_crate_reference";
     /// A cross-crate type reference matched more than one candidate.
     pub const AMBIGUOUS_CROSS_CRATE_REFERENCE: &str = "ambiguous_cross_crate_reference";
     /// A view referenced a missing entity (defensive; filter-based views avoid this).
