@@ -123,9 +123,12 @@ describe("search, filters, legend", () => {
     expect(screen.getByTestId(`node-${STRUCT}`)).toBeInTheDocument();
     expect(screen.getByTestId(`node-${ENUM}`)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("checkbox", { name: "struct" }));
-    // Now only struct kind is kept.
+    // Now only struct kind is kept. The filter re-render flows through a state
+    // update and a React Flow node refresh, which is not guaranteed to have
+    // flushed by the time `fireEvent` returns on a slow machine — so wait for the
+    // enum node to leave rather than asserting synchronously (a CI-only flake).
+    await waitFor(() => expect(screen.queryByTestId(`node-${ENUM}`)).not.toBeInTheDocument());
     expect(screen.getByTestId(`node-${STRUCT}`)).toBeInTheDocument();
-    expect(screen.queryByTestId(`node-${ENUM}`)).not.toBeInTheDocument();
   });
 
   it("legend reflects present categories", async () => {

@@ -342,6 +342,13 @@ async fn an_unreferenced_doc_beside_a_referenced_one_is_ignored() {
     let mut fixture = start(quick());
     let root = fixture.root();
 
+    // Drain initial-synchronization events and reach a quiescent baseline first, so
+    // the strict assertion below reflects only what these two writes produce. A
+    // native backend (macOS FSEvents) stages the prepared tree's paths on
+    // registration, so `src/lib.rs` can otherwise surface in the first request and
+    // coalesce into this burst.
+    fixture.settle().await;
+
     // Negative: never named by any configuration.
     write(&root.join(".cratevista/docs/scratch.md"), "notes\n");
     // Positive control, in the same directory and therefore the same watch.
