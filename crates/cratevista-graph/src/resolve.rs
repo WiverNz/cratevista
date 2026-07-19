@@ -78,7 +78,7 @@ pub fn resolve_cross_crate(
                 continue; // reserved role (AssociatedType): no approved relation
             };
             match resolve_one(reference, &analyzed, &by_path) {
-                Resolution::One(target) => {
+                Resolution::ResolvedWorkspace(target) => {
                     relations.push(typed(
                         kind,
                         reference.from.clone(),
@@ -87,7 +87,7 @@ pub fn resolve_cross_crate(
                     ));
                     resolved += 1;
                 }
-                Resolution::UnresolvedInWorkspace => {
+                Resolution::UnresolvedWorkspace => {
                     // The target crate IS analyzed but the item was not found: a real
                     // gap that should resolve. Kept as a per-occurrence warning.
                     unresolved += 1;
@@ -101,11 +101,28 @@ pub fn resolve_cross_crate(
                         Some(reference.from.clone()),
                     ));
                 }
-                Resolution::External(crate_name) => {
+                Resolution::ExternalKnownCrate(crate_name) => {
+                    // A reference to a KNOWN external dependency crate: expected, and
+                    // aggregated per crate rather than one warning per occurrence.
                     unresolved += 1;
-                    *external.entry(crate_name.unwrap_or_default()).or_default() += 1;
+                    *external.entry(crate_name).or_default() += 1;
                 }
-                Resolution::Many => {
+                Resolution::UnknownTarget => {
+                    // Insufficient crate evidence: NOT silently treated as external.
+                    // A per-occurrence warning, so an un-attributable reference is
+                    // never hidden inside an external-crate summary.
+                    unresolved += 1;
+                    diagnostics.push(warn(
+                        code::UNRESOLVED_REFERENCE_UNKNOWN_TARGET,
+                        format!(
+                            "unresolved {} reference `{}` with insufficient crate evidence (unknown target crate)",
+                            reference.role.relation_role(),
+                            reference.display
+                        ),
+                        Some(reference.from.clone()),
+                    ));
+                }
+                Resolution::Ambiguous => {
                     diagnostics.push(warn(
                         code::AMBIGUOUS_CROSS_CRATE_REFERENCE,
                         format!(
@@ -120,18 +137,16 @@ pub fn resolve_cross_crate(
         }
     }
 
-    // One informational summary per external crate, in deterministic (sorted) order.
+    // One informational summary per KNOWN external crate, in deterministic (sorted)
+    // order. Unknown-target references are warnings above, never summarized here.
     for (crate_name, count) in &external {
-        let message = if crate_name.is_empty() {
-            format!(
-                "{count} cross-crate type reference(s) to unattributed external items were not represented as workspace entities (external dependencies)"
-            )
-        } else {
+        diagnostics.push(info(
+            code::EXTERNAL_CRATE_REFERENCE,
             format!(
                 "{count} cross-crate type reference(s) to external crate `{crate_name}` were not represented as workspace entities (external dependency)"
-            )
-        };
-        diagnostics.push(info(code::EXTERNAL_CRATE_REFERENCE, message, None));
+            ),
+            None,
+        ));
     }
 
     ResolveOutput {
@@ -142,14 +157,21 @@ pub fn resolve_cross_crate(
     }
 }
 
+/// The explicit classification of one cross-crate reference.
 enum Resolution {
-    One(EntityId),
-    /// The reference targets an analyzed workspace crate but no entity matched.
-    UnresolvedInWorkspace,
-    /// The reference targets a non-analyzed (external) crate, or carries no crate
-    /// evidence (`None`): expected, aggregated instead of one warning per occurrence.
-    External(Option<String>),
-    Many,
+    /// Resolved to exactly one entity in an analyzed workspace crate.
+    ResolvedWorkspace(EntityId),
+    /// The target crate is an analyzed workspace crate but no item matched — a real
+    /// gap worth a per-occurrence warning.
+    UnresolvedWorkspace,
+    /// A reference to a KNOWN external (non-analyzed) dependency crate — expected,
+    /// aggregated into one Info per crate.
+    ExternalKnownCrate(String),
+    /// Insufficient crate evidence to attribute the reference to any crate — kept as
+    /// a per-occurrence warning, never folded into an external summary.
+    UnknownTarget,
+    /// The reference matched more than one candidate.
+    Ambiguous,
 }
 
 fn resolve_one(
@@ -157,26 +179,32 @@ fn resolve_one(
     analyzed: &BTreeSet<&str>,
     by_path: &BTreeMap<(String, String), Vec<(String, EntityId)>>,
 ) -> Resolution {
-    // No structured evidence: cannot be attributed to a crate, so it cannot be
-    // confirmed as a workspace gap — aggregated as an unattributed external ref.
-    let (Some(crate_name), Some(path)) = (&reference.crate_name, &reference.canonical_path) else {
-        return Resolution::External(None);
+    // Without a crate, the reference cannot be attributed to anything: it is neither
+    // confirmed external nor a workspace gap. It stays a warning (UnknownTarget) —
+    // never silently downgraded to an external-dependency Info.
+    let Some(crate_name) = &reference.crate_name else {
+        return Resolution::UnknownTarget;
     };
     if !analyzed.contains(crate_name.as_str()) {
-        return Resolution::External(Some(crate_name.clone())); // external / non-analyzed crate
+        // A known external dependency crate (outside the analyzed workspace).
+        return Resolution::ExternalKnownCrate(crate_name.clone());
     }
-    // The target crate IS analyzed from here on, so a miss is a real workspace gap.
+    // The target crate IS an analyzed workspace crate from here on, so any miss is a
+    // real workspace gap (a warning), not an external reference.
+    let Some(path) = &reference.canonical_path else {
+        return Resolution::UnresolvedWorkspace;
+    };
     // Drop the leading crate segment to get the crate-relative path.
     let relative: Vec<&str> = match path.split_first() {
         Some((first, rest)) if first == crate_name => rest.iter().map(String::as_str).collect(),
         _ => path.iter().map(String::as_str).collect(),
     };
     if relative.is_empty() {
-        return Resolution::UnresolvedInWorkspace;
+        return Resolution::UnresolvedWorkspace;
     }
     let key = (crate_name.clone(), relative.join("::"));
     let Some(candidates) = by_path.get(&key) else {
-        return Resolution::UnresolvedInWorkspace;
+        return Resolution::UnresolvedWorkspace;
     };
 
     // Constrain by item_kind when available.
@@ -192,9 +220,9 @@ fn resolve_one(
         .collect();
 
     match matching.as_slice() {
-        [one] => Resolution::One((*one).clone()),
-        [] => Resolution::UnresolvedInWorkspace,
-        _ => Resolution::Many,
+        [one] => Resolution::ResolvedWorkspace((*one).clone()),
+        [] => Resolution::UnresolvedWorkspace,
+        _ => Resolution::Ambiguous,
     }
 }
 
@@ -325,14 +353,18 @@ mod tests {
         );
     }
 
+    /// A reference with NO crate evidence must NOT be silently classified as an
+    /// external dependency — it stays a per-occurrence `unresolved_reference_unknown_target`
+    /// warning, never an `external_crate_reference` Info summary.
     #[test]
-    fn no_structured_evidence_stays_unresolved() {
+    fn a_reference_with_no_crate_evidence_is_a_warning_not_external_info() {
+        use cratevista_schema::Severity;
         let entities = index(vec![item_entity("item:struct:a::X", "struct", "a::X")]);
         let reference = unresolved_ref(
             "item:struct:a::X",
             TypeReferenceRole::Return,
-            None,
-            None,
+            None, // no crate evidence
+            None, // no canonical path
             None,
             "Mystery",
         );
@@ -346,6 +378,48 @@ mod tests {
         let out = resolve_cross_crate(&entities, &crates);
         assert_eq!(out.unresolved, 1);
         assert!(out.relations.is_empty());
+        // Exactly one diagnostic, and it is the unknown-target WARNING.
+        assert_eq!(out.diagnostics.len(), 1);
+        assert_eq!(
+            out.diagnostics[0].code,
+            code::UNRESOLVED_REFERENCE_UNKNOWN_TARGET
+        );
+        assert_eq!(out.diagnostics[0].severity, Severity::Warning);
+        // It must NOT be downgraded to an external-crate Info summary.
+        assert!(
+            !out.diagnostics
+                .iter()
+                .any(|d| d.code == code::EXTERNAL_CRATE_REFERENCE),
+            "an unattributed reference must never be folded into an external summary"
+        );
+    }
+
+    /// A reference whose crate IS an analyzed workspace crate but the *path* is
+    /// missing is a workspace gap (warning), not an unknown target or external.
+    #[test]
+    fn a_workspace_crate_reference_without_a_path_stays_a_workspace_warning() {
+        let entities = index(vec![item_entity("item:struct:a::X", "struct", "a::X")]);
+        let reference = unresolved_ref(
+            "item:struct:a::X",
+            TypeReferenceRole::Field,
+            Some("a"), // the analyzed workspace crate
+            None,      // but no canonical path
+            None,
+            "Something",
+        );
+        let crates = vec![crate_summary(
+            "a",
+            "package:a",
+            "target:a:lib:a",
+            "module:a::a",
+            vec![reference],
+        )];
+        let out = resolve_cross_crate(&entities, &crates);
+        assert_eq!(out.diagnostics.len(), 1);
+        assert_eq!(
+            out.diagnostics[0].code,
+            code::UNRESOLVED_CROSS_CRATE_REFERENCE
+        );
     }
 
     #[test]

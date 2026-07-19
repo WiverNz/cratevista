@@ -26,7 +26,12 @@ pub mod code {
     /// One **aggregated, informational** summary (per external crate) of references
     /// to a non-analyzed dependency that are, as expected, not represented as
     /// workspace entities. Replaces the per-occurrence flood for external types.
+    /// Only references to a **known** external crate are downgraded to this Info.
     pub const EXTERNAL_CRATE_REFERENCE: &str = "external_crate_reference";
+    /// A cross-crate reference with **insufficient crate evidence** — it cannot be
+    /// attributed to any crate, so it is neither confirmed external nor a workspace
+    /// gap. Kept as a per-occurrence **warning**, never folded into external Info.
+    pub const UNRESOLVED_REFERENCE_UNKNOWN_TARGET: &str = "unresolved_reference_unknown_target";
     /// A cross-crate type reference matched more than one candidate.
     pub const AMBIGUOUS_CROSS_CRATE_REFERENCE: &str = "ambiguous_cross_crate_reference";
     /// A view referenced a missing entity (defensive; filter-based views avoid this).
