@@ -3,7 +3,7 @@
 //! Run with:
 //!
 //! ```bash
-//! cargo run -p cratevista-schema --example gen_fixtures
+//! cargo run -p cratevista-schema --example gen_schema_fixtures
 //! ```
 //!
 //! Fixtures are written through the canonical serializer, so

@@ -3,7 +3,7 @@
 //! workspaces, sanitizing all machine paths to a stable `/w` root so the
 //! fixtures are portable and hermetic.
 //!
-//! Run with: `cargo run -p cratevista-metadata --example gen_fixtures`.
+//! Run with: `cargo run -p cratevista-metadata --example gen_metadata_fixtures`.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;

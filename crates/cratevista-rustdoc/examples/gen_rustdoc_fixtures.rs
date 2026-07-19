@@ -6,7 +6,7 @@
 //! Run from the workspace root with the pinned nightly installed:
 //!
 //! ```text
-//! cargo run -p cratevista-rustdoc --example gen_fixtures
+//! cargo run -p cratevista-rustdoc --example gen_rustdoc_fixtures
 //! ```
 //!
 //! It produces:

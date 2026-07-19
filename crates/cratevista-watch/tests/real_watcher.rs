@@ -165,6 +165,46 @@ impl Fixture {
         self.events.try_recv().is_err()
     }
 
+    /// Drains initial-synchronization requests until the watcher is clearly
+    /// quiescent, establishing a known-idle baseline before a negative assertion.
+    ///
+    /// A native backend (macOS FSEvents) reports directory-granular events for the
+    /// prepared tree at registration, so `Cargo.toml`/`src/lib.rs` can be staged and
+    /// surface in the first request. This flushes them: it discards every request
+    /// that arrives and returns only once a full debounce window passes with none —
+    /// which also catches late-arriving initial events.
+    async fn settle(&mut self) {
+        // Comfortably larger than the `quick()` debounce `max_delay` (600 ms).
+        let idle = Duration::from_millis(1200);
+        loop {
+            match tokio::time::timeout(idle, self.events.recv()).await {
+                Ok(Some(WatchEvent::Regeneration(_))) => {} // discard sync noise
+                Ok(Some(WatchEvent::WatcherFailed { code, message })) => {
+                    panic!("unexpected watcher failure during settle: {code}: {message}")
+                }
+                Ok(None) => panic!("the event stream closed unexpectedly during settle"),
+                Err(_) => return, // no request for a full window: quiescent
+            }
+        }
+    }
+
+    /// Collects the relative paths of every request up to and including the first
+    /// that contains `sentinel`. The sentinel is a **positive control** — a real
+    /// edit known to regenerate — so reaching it proves the watcher was alive and
+    /// delivering the whole time (no sleep-then-hope). The returned set is every
+    /// path that surfaced, which a negative assertion can then inspect.
+    async fn drain_through(&mut self, sentinel: &str) -> Vec<String> {
+        let mut seen = Vec::new();
+        loop {
+            let paths = self.next_paths().await;
+            let reached = paths.iter().any(|path| path == sentinel);
+            seen.extend(paths);
+            if reached {
+                return seen;
+            }
+        }
+    }
+
     async fn stop(self) {
         self.watcher.shutdown().expect("shutdown");
         within("the watcher task to join", self.watcher_join()).await;
@@ -688,22 +728,40 @@ async fn a_prepared_tree_renamed_under_target_produces_no_regeneration() {
     fixture.stop().await;
 }
 
-/// A tree moved under a hidden directory inside a Rust root is not reconciled.
+/// A tree moved under a hidden directory inside a Rust root is not descended into.
 #[tokio::test]
 async fn a_prepared_tree_renamed_under_a_hidden_directory_produces_no_regeneration() {
     let mut fixture = start(quick());
     let root = fixture.root();
 
+    // Drain initial-synchronization events and reach a quiescent baseline first, so
+    // the assertion below reflects only what the hidden-directory rename produces
+    // (a native backend stages the prepared tree's initial paths on registration).
+    fixture.settle().await;
+
+    // Prepare a tree OUTSIDE any watched root, then move it into a hidden directory
+    // under the recursive `src` root. A hidden directory must not be descended into.
     let prepared = root.join("prepared");
     write(&prepared.join("module.rs"), "pub fn hidden() {}\n");
     fs::rename(&prepared, root.join("src/.hidden")).expect("rename");
 
+    // Positive control: a real edit that DOES regenerate. Collect every path up to
+    // and including it — reaching it proves the watcher stayed alive and delivering.
     write(&root.join("src/control.rs"), "pub fn control() {}\n");
-    let paths = fixture.next_paths().await;
-    assert_eq!(
-        paths,
-        ["src/control.rs"],
-        "a hidden directory is ignored before it is descended into: {paths:?}"
+    let paths = fixture.drain_through("src/control.rs").await;
+
+    // The guarantee under test: the hidden directory is never descended into, so no
+    // path from inside `src/.hidden/` is ever reported. This is asserted precisely —
+    // it is NOT a blanket tolerance of extra paths. (A native backend may re-list a
+    // real sibling like `src/lib.rs` from a directory-granular event; that is a real
+    // watched file, not evidence of a hidden-directory descent.)
+    assert!(
+        !paths.iter().any(|path| path.starts_with("src/.hidden")),
+        "a hidden directory must not be descended into: {paths:?}"
+    );
+    assert!(
+        paths.iter().any(|path| path == "src/control.rs"),
+        "the positive control must regenerate (watcher alive): {paths:?}"
     );
     fixture.stop().await;
 }
