@@ -420,3 +420,133 @@ select:focus-visible,
   padding: 2px 8px;
   cursor: pointer;
 }
+
+/* --- Relation edge styling + legend ------------------------------------- */
+/* Central relation-style colour tokens. Meaning is carried by pattern + width
+   + marker as well (see relationStyle.ts), never colour alone. Both a dark
+   (default) and a light palette are defined so edges and the legend stay
+   readable in either theme. */
+:root {
+  --rel-contains: #55627a;
+  --rel-depends-on: #f0a83a;
+  --rel-implements: #e070b0;
+  --rel-implemented-by: #b070e0;
+  --rel-implemented-for: #b070e0;
+  --rel-calls: #5cc98a;
+  --rel-uses: #6fb0e0;
+  --rel-has-field-type: #46c2b0;
+  --rel-accepts-type: #6fc06f;
+  --rel-returns-type: #5c9bf7;
+  --rel-error-type: #e07a6a;
+  --rel-re-exports: #9a7cf0;
+  --rel-imports: #7f9ab0;
+  --rel-references-type: #8a94a2;
+  --rel-manual: #d7a24a;
+  --rel-unknown: #9aa4b2;
+  --rel-label-fg: #dfe7f2;
+  --rel-label-bg: rgba(15, 24, 42, 0.82);
+}
+
+/* Light theme: darker, higher-contrast strokes on a light background, and a
+   light label halo. Applied both by the OS preference and by an explicit
+   data-theme override so the palette can be forced on. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --rel-contains: #6b7686;
+    --rel-depends-on: #b26a00;
+    --rel-implements: #b03585;
+    --rel-implemented-by: #7a3fb0;
+    --rel-implemented-for: #7a3fb0;
+    --rel-calls: #1f8f52;
+    --rel-uses: #2f74b0;
+    --rel-has-field-type: #148075;
+    --rel-accepts-type: #2f8f2f;
+    --rel-returns-type: #2f66c0;
+    --rel-error-type: #b0432f;
+    --rel-re-exports: #6a45c0;
+    --rel-imports: #566d84;
+    --rel-references-type: #5a6472;
+    --rel-manual: #a06a10;
+    --rel-unknown: #5a6472;
+    --rel-label-fg: #1a2230;
+    --rel-label-bg: rgba(255, 255, 255, 0.9);
+  }
+}
+:root[data-theme="light"] {
+  --rel-contains: #6b7686;
+  --rel-depends-on: #b26a00;
+  --rel-implements: #b03585;
+  --rel-implemented-by: #7a3fb0;
+  --rel-implemented-for: #7a3fb0;
+  --rel-calls: #1f8f52;
+  --rel-uses: #2f74b0;
+  --rel-has-field-type: #148075;
+  --rel-accepts-type: #2f8f2f;
+  --rel-returns-type: #2f66c0;
+  --rel-error-type: #b0432f;
+  --rel-re-exports: #6a45c0;
+  --rel-imports: #566d84;
+  --rel-references-type: #5a6472;
+  --rel-manual: #a06a10;
+  --rel-unknown: #5a6472;
+  --rel-label-fg: #1a2230;
+  --rel-label-bg: rgba(255, 255, 255, 0.9);
+}
+
+.cv-edge-defs {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Edge label: a readable halo/background so text never sits directly on edges
+   or nodes. Selected/related labels read a touch stronger. */
+.cv-edge-label {
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 1px 5px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--rel-label-fg) 22%, transparent);
+  /* Never intercept clicks meant for the edge underneath (hover is detected on
+     the edge via onEdgeMouseEnter, so the label needs no pointer events). */
+  pointer-events: none;
+  white-space: nowrap;
+}
+.cv-edge-label-selected,
+.cv-edge-label-related {
+  font-weight: 600;
+  border-color: color-mix(in srgb, var(--rel-label-fg) 40%, transparent);
+}
+
+.cv-legend-kinds,
+.cv-rel-legend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cv-legend-subtitle {
+  font-size: 12px;
+  margin: 6px 0 3px;
+  color: var(--muted);
+}
+.cv-rel-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 0;
+}
+.cv-rel-sample {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 3px;
+  padding: 1px;
+}
+.cv-rel-sample:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.cv-rel-sample-svg {
+  display: block;
+}
+.cv-rel-legend-label {
+  font-size: 12px;
+}

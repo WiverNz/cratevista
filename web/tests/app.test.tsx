@@ -141,7 +141,8 @@ describe("search, filters, legend", () => {
     await ready();
     const legend = screen.getByLabelText("Legend");
     expect(within(legend).getByText(/widget/)).toBeInTheDocument();
-    expect(within(legend).getByText(/\(unknown\)/)).toBeInTheDocument();
+    // Both an unknown entity kind and an unknown relation kind carry the marker.
+    expect(within(legend).getAllByText(/\(unknown\)/).length).toBeGreaterThan(0);
     expect(screen.getByTestId("node-item:widget")).toBeInTheDocument();
   });
 });

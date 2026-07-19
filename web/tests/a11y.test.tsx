@@ -214,7 +214,7 @@ describe("non-color encoding + landmarks", () => {
     renderApp({ outcome: okOutcome({ document: unknownKindDocument() }) });
     await ready();
     const legend = screen.getByLabelText("Legend");
-    expect(within(legend).getByText(/\(unknown\)/)).toBeInTheDocument();
+    expect(within(legend).getAllByText(/\(unknown\)/).length).toBeGreaterThan(0);
   });
 
   it("uses semantic landmarks (banner/nav/main/complementary)", async () => {

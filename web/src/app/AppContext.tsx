@@ -11,9 +11,11 @@ import {
 } from "../adapter/adapter.ts";
 import {
   legendForGraph,
+  relationLegendForGraph,
   kindsInGraph,
   searchEntities,
   type LegendEntry,
+  type RelationLegendEntry,
 } from "../state/selectors.ts";
 import { reduceGraph } from "../adapter/reduce.ts";
 import { count, measure, record } from "./perf.ts";
@@ -86,6 +88,8 @@ export interface Projection {
   view: View;
   graph: Graph;
   legend: LegendEntry[];
+  /** Relation kinds present in this view, with their central-registry styles. */
+  relationLegend: RelationLegendEntry[];
   kinds: string[];
   cacheKey: string;
   /** Reduced (large-graph) mode is active. */
@@ -174,6 +178,7 @@ export function useProjection(): Projection | null {
       view,
       graph,
       legend: legendForGraph(graph),
+      relationLegend: relationLegendForGraph(graph),
       kinds: kindsInGraph(graph),
       cacheKey,
       reduced,

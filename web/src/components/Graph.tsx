@@ -1,5 +1,5 @@
 // React Flow graph canvas wired to the projection + LayoutClient positions.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -23,9 +23,24 @@ import { useApp, useUi, type Projection, type LayoutState } from "../app/AppCont
 import { mark } from "../app/perf.ts";
 import { Legend } from "./Panels.tsx";
 import type { GraphNode, GraphEdge } from "../adapter/adapter.ts";
+import {
+  allRelationStyles,
+  edgeVisual,
+  edgeZIndex,
+  markerId,
+  relationStyleFor,
+  shouldShowEdgeLabel,
+  type EdgeState,
+} from "../adapter/relationStyle.ts";
 
 type EntityNodeData = { node: GraphNode; label: string };
-type RelationEdgeData = { edge: GraphEdge; label?: string };
+type RelationEdgeData = {
+  edge: GraphEdge;
+  label?: string;
+  state: EdgeState;
+  repeated: boolean;
+  hovered?: boolean;
+};
 type EntityRfNode = Node<EntityNodeData, "entity">;
 type RelationRfEdge = Edge<RelationEdgeData, "relation">;
 
@@ -51,6 +66,16 @@ export function EntityNode({ data, selected }: NodeProps<EntityRfNode>) {
   );
 }
 
+/**
+ * A relation edge, styled entirely from the central relation-style registry.
+ *
+ * Stroke colour token, width, dash pattern, opacity and the directional arrow
+ * marker all come from `relationStyleFor(kind)` resolved for the edge's
+ * interaction `state` (normal / related / selected / faded). The label carries a
+ * readable halo and is shown or hidden by `shouldShowEdgeLabel`, so repeated
+ * labels stop forming a wall at low zoom yet stay reachable on hover, selection
+ * or a useful zoom level.
+ */
 export function RelationEdge({
   id,
   sourceX,
@@ -58,20 +83,45 @@ export function RelationEdge({
   targetX,
   targetY,
   data,
-  selected,
 }: EdgeProps<RelationRfEdge>) {
   const [path, labelX, labelY] = getStraightPath({ sourceX, sourceY, targetX, targetY });
+  const { zoom } = useViewport();
+
+  const edge = data?.edge;
+  const state: EdgeState = data?.state ?? "normal";
+  const style = relationStyleFor(edge?.kind ?? "");
+  const visual = edgeVisual(style, state);
+  const marker = markerId(style);
   const label = data?.label;
+  const showLabel =
+    !!label &&
+    shouldShowEdgeLabel({ zoom, state, hovered: !!data?.hovered, repeated: !!data?.repeated });
+
   return (
     <>
-      <BaseEdge id={id} path={path} style={selected ? { strokeWidth: 2 } : undefined} />
-      {label && (
+      <BaseEdge
+        id={id}
+        path={path}
+        markerEnd={marker ? `url(#${marker})` : undefined}
+        style={{
+          stroke: visual.stroke,
+          strokeWidth: visual.strokeWidth,
+          strokeDasharray: visual.strokeDasharray,
+          opacity: visual.opacity,
+        }}
+      />
+      {showLabel && (
         <EdgeLabelRenderer>
+          {/* pointer-events:none (via CSS) so the label never intercepts clicks
+              meant for the edge underneath it. Hover is detected on the edge
+              itself via React Flow's onEdgeMouseEnter. */}
           <div
-            className="cv-edge-label"
+            className={`cv-edge-label cv-edge-label-${state}`}
             style={{
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              color: visual.labelFg,
+              background: visual.labelBg,
             }}
           >
             {label}
@@ -79,6 +129,40 @@ export function RelationEdge({
         </EdgeLabelRenderer>
       )}
     </>
+  );
+}
+
+/** The shared arrow-marker `<defs>`, rendered once per canvas. Each recognized
+ *  relation (and the neutral unknown fallback) gets one marker coloured by its
+ *  stroke token, so markers stay in sync with edge colours in dark and light. */
+export function EdgeMarkerDefs() {
+  return (
+    <svg className="cv-edge-defs" aria-hidden="true" width="0" height="0" focusable="false">
+      <defs>
+        {allRelationStyles().map((style) => {
+          const id = markerId(style);
+          if (!id) return null;
+          return (
+            <marker
+              key={id}
+              id={id}
+              viewBox="0 0 8 8"
+              refX="7"
+              refY="4"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto"
+              markerUnits="userSpaceOnUse"
+            >
+              <path
+                d={style.marker === "arrow-closed" ? "M0,0 L8,4 L0,8 Z" : "M0,0 L8,4 L0,8 L2.5,4 Z"}
+                style={{ fill: `var(${style.strokeToken})` }}
+              />
+            </marker>
+          );
+        })}
+      </defs>
+    </svg>
   );
 }
 
@@ -161,6 +245,7 @@ function GraphInner({
 }) {
   const { store } = useApp();
   useFitOnLayout(layoutState);
+  const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const selection = useUi((s) => s.selection);
   const edgeMode = useUi((s) => s.edgeMode);
   const focusId = useUi((s) => s.focusId);
@@ -187,17 +272,47 @@ function GraphInner({
       : edgeMode === "related" && anchor
         ? projection.graph.edges.filter((e) => e.source === anchor || e.target === anchor)
         : projection.graph.edges;
-  const edges: RelationRfEdge[] = visibleEdges.map((e) => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    type: "relation",
-    selected: e.id === selectedRelation,
-    data: { edge: e, label: e.label ?? e.kind },
-  }));
+
+  // A label is "repeated" when its text appears on more than one visible edge —
+  // these are the labels that pile into a wall, so they are the ones the zoom
+  // rule thins out first.
+  const labelFrequency = new Map<string, number>();
+  for (const e of visibleEdges) {
+    const text = e.label ?? e.kind;
+    labelFrequency.set(text, (labelFrequency.get(text) ?? 0) + 1);
+  }
+
+  // Selecting a node emphasizes the relations touching it and fades the rest;
+  // with no anchor every edge draws normally.
+  const edgeState = (e: GraphEdge): EdgeState => {
+    if (e.id === selectedRelation) return "selected";
+    if (!anchor) return "normal";
+    return e.source === anchor || e.target === anchor ? "related" : "faded";
+  };
+
+  const edges: RelationRfEdge[] = visibleEdges.map((e) => {
+    const state = edgeState(e);
+    const text = e.label ?? e.kind;
+    return {
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      type: "relation",
+      selected: e.id === selectedRelation,
+      zIndex: edgeZIndex(relationStyleFor(e.kind), state),
+      data: {
+        edge: e,
+        label: text,
+        state,
+        repeated: (labelFrequency.get(text) ?? 0) > 1,
+        hovered: e.id === hoveredEdge,
+      },
+    };
+  });
 
   return (
     <div className="cv-graph">
+      <EdgeMarkerDefs />
       {layoutState.status === "loading" && (
         <div className="cv-graph-status" role="status">
           Computing layout…
@@ -219,6 +334,8 @@ function GraphInner({
         onNodeClick={(_, node) => store.getState().selectEntity(node.id)}
         onNodeDoubleClick={(_, node) => store.getState().setFocus(node.id, true)}
         onEdgeClick={(_, edge) => store.getState().selectRelation(edge.id)}
+        onEdgeMouseEnter={(_, edge) => setHoveredEdge(edge.id)}
+        onEdgeMouseLeave={() => setHoveredEdge(null)}
         fitView
         proOptions={{ hideAttribution: true }}
       >
@@ -228,7 +345,7 @@ function GraphInner({
           <CanvasControls />
         </Panel>
         <Panel position="bottom-left">
-          <Legend entries={projection.legend} />
+          <Legend entries={projection.legend} relations={projection.relationLegend} />
         </Panel>
       </ReactFlow>
     </div>

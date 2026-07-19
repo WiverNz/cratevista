@@ -4,7 +4,8 @@ import { useApp, useUi, type Projection } from "../app/AppContext.tsx";
 import { DiagnosticsExplorer } from "./DiagnosticsExplorer.tsx";
 import { SafeMarkdown } from "../markdown/SafeMarkdown.tsx";
 import { localized } from "../types/index.ts";
-import type { LegendEntry } from "../state/selectors.ts";
+import type { LegendEntry, RelationLegendEntry } from "../state/selectors.ts";
+import { dashArrayFor, type RelationStyle } from "../adapter/relationStyle.ts";
 import type { Entity, Relation, DocumentDiagnostic } from "../types/index.ts";
 import type { DocumentModel } from "../model/model.ts";
 import {
@@ -13,24 +14,110 @@ import {
 } from "../api/repositoryLinks.ts";
 import type { SourceClient } from "../api/source.ts";
 
-export function Legend({ entries }: { entries: LegendEntry[] }) {
-  if (entries.length === 0) return null;
+export function Legend({
+  entries,
+  relations = [],
+}: {
+  entries: LegendEntry[];
+  relations?: RelationLegendEntry[];
+}) {
+  if (entries.length === 0 && relations.length === 0) return null;
   return (
     <div className="cv-legend" aria-label="Legend">
       <h2 className="cv-panel-title">Legend</h2>
-      <ul>
-        {entries.map((e) => (
-          <li key={e.category}>
-            <span className="cv-swatch" style={{ background: e.color }} aria-hidden="true" />
-            <span className={e.known ? undefined : "cv-generic"}>
-              {e.category}
-              {!e.known && " (unknown)"}
+      {entries.length > 0 && (
+        <ul className="cv-legend-kinds">
+          {entries.map((e) => (
+            <li key={e.category}>
+              <span className="cv-swatch" style={{ background: e.color }} aria-hidden="true" />
+              <span className={e.known ? undefined : "cv-generic"}>
+                {e.category}
+                {!e.known && " (unknown)"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {relations.length > 0 && <RelationLegend relations={relations} />}
+    </div>
+  );
+}
+
+/** The relation legend: one keyboard-focusable, screen-reader-labelled sample
+ *  per relation kind present in the active view. Every sample is drawn from the
+ *  central relation-style registry (`entry.style`); nothing is redefined here. */
+function RelationLegend({ relations }: { relations: RelationLegendEntry[] }) {
+  return (
+    <div className="cv-rel-legend" role="group" aria-label="Relation types">
+      <h3 className="cv-legend-subtitle">Relations</h3>
+      <ul className="cv-rel-legend-list">
+        {relations.map((entry) => (
+          <li key={entry.kind} className="cv-rel-legend-item">
+            <span
+              className="cv-rel-sample"
+              role="img"
+              tabIndex={0}
+              aria-label={describeRelation(entry)}
+              data-kind={entry.kind}
+              data-pattern={entry.style.pattern}
+              data-width={entry.style.states.normal.width}
+              data-marker={entry.style.marker}
+              data-stroke-token={entry.style.strokeToken}
+            >
+              <RelationSample style={entry.style} />
+            </span>
+            <span className={`cv-rel-legend-label${entry.known ? "" : " cv-generic"}`}>
+              {entry.label}
+              {!entry.known && " (unknown)"}
             </span>
           </li>
         ))}
       </ul>
     </div>
   );
+}
+
+/** Miniature edge sample: line (stroke token, width, dash pattern) + arrowhead. */
+function RelationSample({ style }: { style: RelationStyle }) {
+  const width = style.states.normal.width;
+  const hasMarker = style.marker !== "none";
+  const lineEnd = hasMarker ? 27 : 35;
+  const stroke = `var(${style.strokeToken})`;
+  return (
+    <svg className="cv-rel-sample-svg" width="36" height="12" viewBox="0 0 36 12" aria-hidden="true">
+      <line
+        x1="1"
+        y1="6"
+        x2={lineEnd}
+        y2="6"
+        style={{ stroke }}
+        strokeWidth={width}
+        strokeDasharray={dashArrayFor(style.pattern, width)}
+        strokeLinecap="round"
+      />
+      {hasMarker && (
+        <polygon
+          points={
+            style.marker === "arrow-closed"
+              ? "27,2 35,6 27,10"
+              : "27,2 35,6 27,10 29.5,6"
+          }
+          style={{ fill: stroke }}
+        />
+      )}
+    </svg>
+  );
+}
+
+/** Accessible description of a relation legend row, naming the relation and its
+ *  direction so severity/direction is never conveyed by the sample alone. */
+function describeRelation(entry: RelationLegendEntry): string {
+  const direction =
+    entry.style.marker === "none"
+      ? "no direction marker"
+      : "arrow shows direction from source to target";
+  const known = entry.known ? "" : " (unknown relation)";
+  return `${entry.label}${known}: ${entry.style.pattern} line, ${direction}`;
 }
 
 export function PartialBanner() {

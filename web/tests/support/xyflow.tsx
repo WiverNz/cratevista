@@ -65,7 +65,34 @@ export function EdgeLabelRenderer({ children }: { children?: ReactNode }) {
 export const Background = () => null;
 export const Controls = () => null;
 export const Handle = () => null;
-export const BaseEdge = () => null;
+
+/** Renders the edge path so tests can inspect the registry-derived stroke,
+ *  width, dash pattern, opacity and arrow marker of a `RelationEdge`. */
+export function BaseEdge(props: {
+  id?: string;
+  path?: string;
+  markerEnd?: string;
+  style?: {
+    stroke?: string;
+    strokeWidth?: number | string;
+    strokeDasharray?: string;
+    opacity?: number | string;
+  };
+}) {
+  const s = props.style ?? {};
+  return (
+    <path
+      data-testid={props.id ? `edgepath-${props.id}` : "edgepath"}
+      data-stroke={s.stroke ?? ""}
+      data-width={s.strokeWidth == null ? "" : String(s.strokeWidth)}
+      data-dash={s.strokeDasharray ?? ""}
+      data-opacity={s.opacity == null ? "" : String(s.opacity)}
+      data-marker={props.markerEnd ?? ""}
+    />
+  );
+}
+
+export const MarkerType = { Arrow: "arrow", ArrowClosed: "arrowclosed" } as const;
 
 export const Position = {
   Left: "left",
@@ -85,4 +112,10 @@ const flow = {
   setViewport: () => controlCalls.push("setViewport"),
 };
 export const useReactFlow = () => flow;
-export const useViewport = () => ({ x: 0, y: 0, zoom: 1 });
+
+/** Mutable zoom so component tests can exercise zoom-dependent label rules. */
+let mockZoom = 1;
+export function setMockZoom(z: number): void {
+  mockZoom = z;
+}
+export const useViewport = () => ({ x: 0, y: 0, zoom: mockZoom });
