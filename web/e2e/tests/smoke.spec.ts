@@ -140,18 +140,34 @@ test.describe("normal snapshot", () => {
     await expect(page.locator(".react-flow__node").first()).toBeVisible();
   });
 
-  test("focus / related-only mode toggles and is reflected in the URL", async ({ page }) => {
+  test("hide / dim focus modes toggle and are reflected in the URL", async ({ page }) => {
     await page.locator(".react-flow__node").first().click();
-    const toggle = page.getByRole("button", { name: /Related only/ });
-    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    const hide = page.getByRole("button", { name: "Hide unrelated" });
+    const dim = page.getByRole("button", { name: "Dim unrelated" });
+    const clear = page.getByRole("button", { name: "Clear focus" });
+    await expect(hide).toHaveAttribute("aria-pressed", "false");
+    await expect(dim).toHaveAttribute("aria-pressed", "false");
 
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    // Hide: legacy reduction; URL carries a bare `focus`, no `focusmode`.
+    await hide.click();
+    await expect(hide).toHaveAttribute("aria-pressed", "true");
     await waitForGraph(page);
     expect(new URL(page.url()).searchParams.get("focus")).toBeTruthy();
+    expect(new URL(page.url()).searchParams.get("focusmode")).toBeNull();
 
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    // Dim: full projection; URL carries focus + focusmode=dim.
+    await dim.click();
+    await expect(dim).toHaveAttribute("aria-pressed", "true");
+    await expect(hide).toHaveAttribute("aria-pressed", "false");
+    await waitForGraph(page);
+    expect(new URL(page.url()).searchParams.get("focus")).toBeTruthy();
+    expect(new URL(page.url()).searchParams.get("focusmode")).toBe("dim");
+
+    // Clear: back to the complete graph; both params gone.
+    await clear.click();
+    await expect(dim).toHaveAttribute("aria-pressed", "false");
+    expect(new URL(page.url()).searchParams.get("focus")).toBeNull();
+    expect(new URL(page.url()).searchParams.get("focusmode")).toBeNull();
   });
 
   test("edge modes all / related / hidden each take effect", async ({ page }) => {

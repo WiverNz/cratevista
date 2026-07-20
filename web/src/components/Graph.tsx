@@ -47,6 +47,9 @@ type EntityNodeData = {
   card: NodeCard;
   related: boolean;
   searchMatch: boolean;
+  /** Dim-focus: this node is unrelated to the anchor and should be de-emphasised
+   *  (orthogonal to selected/search/diagnostic — those still win). */
+  dimmed: boolean;
 };
 type RelationEdgeData = {
   edge: GraphEdge;
@@ -84,6 +87,7 @@ export function EntityNode({ data, selected }: NodeProps<EntityRfNode>) {
         selected={!!selected}
         related={data.related}
         searchMatch={data.searchMatch}
+        dimmed={data.dimmed}
       />
       <Handle type="source" position={Position.Right} />
     </>
@@ -340,6 +344,7 @@ function GraphInner({
   const selection = useUi((s) => s.selection);
   const edgeMode = useUi((s) => s.edgeMode);
   const focusId = useUi((s) => s.focusId);
+  const focusMode = useUi((s) => s.focusMode);
   const search = useUi((s) => s.search);
   const selectedEntity = selection.kind === "entity" ? selection.id : null;
   const selectedRelation = selection.kind === "relation" ? selection.id : null;
@@ -374,9 +379,17 @@ function GraphInner({
     return ids;
   }, [anchor, projection.graph.edges]);
 
+  // Dim focus: a full-projection mode (no node/edge removal) that de-emphasises
+  // everything outside the anchor's neighbourhood. The anchor and its related set
+  // stay prominent; ordinary unrelated nodes get the `dimmed` flag (computed once
+  // here, not per NodeCard render). Uses the SAME neighbourhood definition as the
+  // related emphasis — no new traversal.
+  const dimActive = focusMode === "dim" && focusId != null;
+
   const nodes: EntityRfNode[] = projection.graph.nodes.map((n) => {
     const pos = layoutState.positions.get(n.id) ?? { x: 0, y: 0 };
     const card = nodeCards.get(n.id)!;
+    const related = relatedNodeIds.has(n.id);
     return {
       id: n.id,
       type: "entity",
@@ -388,8 +401,9 @@ function GraphInner({
         node: n,
         label: n.label,
         card,
-        related: relatedNodeIds.has(n.id),
+        related,
         searchMatch: searchMatches.has(n.id),
+        dimmed: dimActive && n.id !== anchor && !related,
       },
     };
   });
@@ -479,8 +493,13 @@ function GraphInner({
         edges={edges}
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
-        onNodeClick={(_, node) => store.getState().selectEntity(node.id)}
-        onNodeDoubleClick={(_, node) => store.getState().setFocus(node.id, true)}
+        onNodeClick={(_, node) => {
+          store.getState().selectEntity(node.id);
+          // In dim mode, selecting an (even dimmed) node re-anchors focus to it —
+          // the full projection is unchanged, so this never requests a layout.
+          if (dimActive) store.getState().setFocus(node.id, "dim");
+        }}
+        onNodeDoubleClick={(_, node) => store.getState().setFocus(node.id, "hide")}
         onEdgeClick={(_, edge) => store.getState().selectRelation(edge.id)}
         onEdgeMouseEnter={(_, edge) => setHoveredEdge(edge.id)}
         onEdgeMouseLeave={() => setHoveredEdge(null)}

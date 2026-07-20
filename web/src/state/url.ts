@@ -3,6 +3,11 @@
 // expansion, or transient loading state.
 export type EdgeMode = "all" | "related" | "hidden";
 
+/** Focus emphasis style. Only two values exist; "no focus" is the ABSENCE of a
+ *  `focus` anchor, never a `focusmode` value. `"hide"` is the default and is never
+ *  serialized (a bare `focus=<id>` means hide). */
+export type FocusMode = "hide" | "dim";
+
 export interface UrlState {
   view?: string;
   entity?: string;
@@ -10,6 +15,9 @@ export interface UrlState {
   q?: string;
   kinds?: string[];
   focus?: string;
+  /** Only ever `"dim"` here — `"hide"` is the omitted default and is never stored,
+   *  and `focusmode` is meaningless (and dropped) without a `focus` anchor. */
+  focusmode?: FocusMode;
   edges?: EdgeMode;
   stage?: string;
 }
@@ -32,6 +40,11 @@ export function parseUrlState(search: string): UrlState {
   if (kinds) state.kinds = kinds.split(",").filter(Boolean);
   const focus = p.get("focus");
   if (focus) state.focus = focus;
+  // `focusmode` is meaningful ONLY with an anchor, and only `"dim"` is stored —
+  // `"hide"`, `"all"`, and any unknown value all normalize to the hide default
+  // (absent). A `focusmode` without a `focus` is dropped entirely.
+  const focusmode = p.get("focusmode");
+  if (focus && focusmode === "dim") state.focusmode = "dim";
   const edges = p.get("edges");
   if (edges && (EDGE_MODES as readonly string[]).includes(edges))
     state.edges = edges as EdgeMode;
@@ -49,6 +62,9 @@ export function serializeUrlState(state: UrlState): string {
   if (state.q) p.set("q", state.q);
   if (state.kinds && state.kinds.length > 0) p.set("kinds", state.kinds.join(","));
   if (state.focus) p.set("focus", state.focus);
+  // Serialize `focusmode` only as `dim` and only alongside an anchor; the hide
+  // default is omitted so existing `focus=<id>` URLs stay byte-for-byte identical.
+  if (state.focus && state.focusmode === "dim") p.set("focusmode", "dim");
   if (state.edges && state.edges !== "all") p.set("edges", state.edges);
   if (state.stage) p.set("stage", state.stage);
   const s = p.toString();

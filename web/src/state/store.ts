@@ -2,7 +2,7 @@
 // projected nodes/edges (projection is derived by pure selectors/adapters).
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand";
-import type { EdgeMode, UrlState } from "./url.ts";
+import type { EdgeMode, FocusMode, UrlState } from "./url.ts";
 
 /** Selection is a discriminated union — entity and relation can't both be set. */
 export type Selection =
@@ -15,7 +15,10 @@ export interface UiState {
   selection: Selection;
   search: string;
   kindFilters: ReadonlySet<string>;
-  focusMode: boolean;
+  /** Focus emphasis style. Meaningful only when `focusId` is set: `"hide"` reduces
+   *  the projection to the neighbourhood (legacy "related only"); `"dim"` keeps the
+   *  full projection and dims unrelated content. */
+  focusMode: FocusMode;
   focusId: string | null;
   edgeMode: EdgeMode;
   activeStage: string | null;
@@ -43,7 +46,11 @@ export interface UiActions {
   setSearch(q: string): void;
   toggleKind(kind: string): void;
   setKindFilters(kinds: Iterable<string>): void;
-  setFocus(id: string | null, focusMode: boolean): void;
+  /** Set (or move) the focus anchor with an explicit style. `id: null` clears. */
+  setFocus(id: string | null, mode: FocusMode): void;
+  /** Remove the focus anchor and any focus mode (returns to the complete graph).
+   *  Never serializes a `focusmode` value. */
+  clearFocus(): void;
   setEdgeMode(mode: EdgeMode): void;
   setStage(stage: string | null): void;
   setReducedMode(reduced: boolean): void;
@@ -65,7 +72,7 @@ const initialState: UiState = {
   selection: { kind: "none" },
   search: "",
   kindFilters: new Set(),
-  focusMode: false,
+  focusMode: "hide",
   focusId: null,
   edgeMode: "all",
   activeStage: null,
@@ -93,7 +100,9 @@ export function createUiStore() {
         edgeMode: url?.edges ?? "all",
         activeStage: url?.stage ?? null,
         focusId: url?.focus ?? focusId ?? null,
-        focusMode: Boolean(url?.focus),
+        // Style is meaningful only with an anchor; only "dim" is ever in the URL,
+        // everything else is the hide default.
+        focusMode: url?.focus && url?.focusmode === "dim" ? "dim" : "hide",
       });
     },
 
@@ -102,7 +111,7 @@ export function createUiStore() {
         activeViewId: viewId,
         activeStage: null, // stages are per-view; clear on switch
         selection: opts?.keepSelection ? s.selection : { kind: "none" },
-        focusMode: false,
+        focusMode: "hide",
         focusId: null,
       }));
     },
@@ -130,8 +139,13 @@ export function createUiStore() {
     setKindFilters(kinds) {
       set({ kindFilters: new Set(kinds) });
     },
-    setFocus(id, focusMode) {
-      set({ focusId: id, focusMode });
+    setFocus(id, mode) {
+      // Clearing the anchor also resets the style to the hide default so no
+      // meaningless focus mode is ever retained.
+      set(id === null ? { focusId: null, focusMode: "hide" } : { focusId: id, focusMode: mode });
+    },
+    clearFocus() {
+      set({ focusId: null, focusMode: "hide" });
     },
     setEdgeMode(mode) {
       set({ edgeMode: mode });
@@ -163,7 +177,7 @@ export function createUiStore() {
         selection: { kind: "none" },
         search: "",
         kindFilters: new Set(),
-        focusMode: false,
+        focusMode: "hide",
         focusId: null,
         edgeMode: "all",
         activeStage: null,
@@ -187,6 +201,9 @@ export function toUrlState(s: UiState): UrlState {
   if (s.search) url.q = s.search;
   if (s.kindFilters.size > 0) url.kinds = [...s.kindFilters];
   if (s.focusId) url.focus = s.focusId;
+  // Only "dim" is serialized, and only with an anchor; "hide" is the omitted
+  // default, so a hide-focus URL is byte-for-byte the legacy `focus=<id>`.
+  if (s.focusId && s.focusMode === "dim") url.focusmode = "dim";
   if (s.edgeMode !== "all") url.edges = s.edgeMode;
   if (s.activeStage) url.stage = s.activeStage;
   return url;

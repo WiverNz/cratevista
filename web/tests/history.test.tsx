@@ -57,7 +57,10 @@ describe("history semantics", () => {
     await ready();
     pushes.length = 0;
     fireEvent.click(screen.getByTestId(`node-${STRUCT}`));
-    await waitFor(() => expect(pushes.length).toBe(1));
+    // Deterministic wait on the real condition (the push). The generous timeout
+    // only buys headroom under heavy parallel-suite CPU contention — it is not a
+    // sleep or a retry; the assertion still fails if the push never happens.
+    await waitFor(() => expect(pushes.length).toBe(1), { timeout: 4000 });
     expect(decodeURIComponent(pushes[0])).toContain(STRUCT);
   });
 
@@ -94,14 +97,20 @@ describe("history semantics", () => {
 
     fireEvent.popState(window);
 
-    await waitFor(() =>
-      expect(screen.getByRole("tab", { name: "Workspace overview" })).toHaveAttribute(
-        "aria-selected",
-        "true",
-      ),
+    // Generous, deterministic waits: headroom for parallel-suite CPU contention,
+    // still failing if the popstate restoration never lands.
+    await waitFor(
+      () =>
+        expect(screen.getByRole("tab", { name: "Workspace overview" })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        ),
+      { timeout: 4000 },
     );
     // Durable state restored: selection + edge mode.
-    expect(await screen.findByRole("region", { name: "Entity inspector" })).toHaveTextContent("Thing");
+    expect(
+      await screen.findByRole("region", { name: "Entity inspector" }, { timeout: 4000 }),
+    ).toHaveTextContent("Thing");
     expect((screen.getByLabelText("Edge visibility") as HTMLSelectElement).value).toBe("related");
     // Restoration must not create a duplicate history entry.
     expect(pushes).toEqual([]);

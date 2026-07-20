@@ -101,9 +101,6 @@ describe("layoutCacheKey", () => {
     identity: "id1",
     viewId: "view:types",
     kinds: ["struct", "enum"],
-    focusMode: false,
-    focusId: null,
-    relatedOnly: false,
     edgeMode: "all",
     expanded: [],
     stage: null,
@@ -122,13 +119,15 @@ describe("layoutCacheKey", () => {
     expect(layoutCacheKey({ ...base, kinds: ["struct"] })).not.toBe(k);
     expect(layoutCacheKey({ ...base, expanded: ["n1"] })).not.toBe(k);
     expect(layoutCacheKey({ ...base, stage: "s1" })).not.toBe(k);
+    // Hide-focus reduces the node set → different nodeIds → different key.
     expect(layoutCacheKey({ ...base, nodeIds: ["a"] })).not.toBe(k);
-    expect(layoutCacheKey({ ...base, relatedOnly: true })).not.toBe(k);
+    expect(layoutCacheKey({ ...base, edgeIds: ["x"] })).not.toBe(k);
   });
 
-  it("does not depend on selection/hover (they are not key inputs)", () => {
-    // The key type has no selection/hover fields — same geometry inputs yield
-    // the same key regardless of what is selected/hovered.
+  it("does not depend on selection/hover/focus (they are not key inputs)", () => {
+    // Focus reaches the key ONLY through nodeIds/edgeIds: with the same node/edge
+    // set (as dim-focus keeps), the key is identical regardless of focus. There
+    // are no focus/selection/hover fields on the key at all.
     expect(layoutCacheKey(base)).toBe(layoutCacheKey({ ...base }));
   });
 });

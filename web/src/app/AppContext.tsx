@@ -121,9 +121,12 @@ export function useProjection(): Projection | null {
   return useMemo(() => {
     const view = activeViewId ? model.viewById.get(activeViewId) : undefined;
     if (!view) return null;
+    // Only HIDE focus reduces the projection; DIM keeps the full node/edge set
+    // (unrelated content is dimmed at render, not removed here).
+    const relatedOnly = focusId != null && focusMode === "hide";
     const base = {
       kindFilter: kindFilters.size > 0 ? kindFilters : null,
-      relatedOnly: focusMode,
+      relatedOnly,
       focusId,
       lang: language,
     };
@@ -166,12 +169,12 @@ export function useProjection(): Projection | null {
       identity: model.identity,
       viewId: view.id,
       kinds: [...kindFilters],
-      focusMode,
-      focusId: focusId ?? null,
-      relatedOnly: focusMode,
       edgeMode,
       expanded: [...expanded],
       stage: activeStage,
+      // Focus reaches the key only through its effect on the node/edge set: hide
+      // reduces it (→ new key → relayout); dim leaves it whole (→ same key → no
+      // relayout, even when the dim anchor moves).
       nodeIds: graph.nodes.map((n) => n.id),
       edgeIds: graph.edges.map((e) => e.id),
     });

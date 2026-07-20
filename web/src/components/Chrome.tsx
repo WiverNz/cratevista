@@ -9,8 +9,6 @@ import type { EdgeMode } from "../state/url.ts";
 export function Toolbar() {
   const { store } = useApp();
   const edgeMode = useUi((s) => s.edgeMode);
-  const focusMode = useUi((s) => s.focusMode);
-  const selection = useUi((s) => s.selection);
   return (
     <div className="cv-toolbar" role="toolbar" aria-label="Graph controls">
       <Search />
@@ -27,16 +25,63 @@ export function Toolbar() {
           <option value="hidden">Hidden</option>
         </select>
       </label>
+      <FocusControls />
+    </div>
+  );
+}
+
+/**
+ * Focus controls: a single group of three real buttons over the ONE focus state.
+ *
+ * - **Hide unrelated** — reduce the graph to the anchor's neighbourhood (legacy
+ *   "related only"); normalized URL is a bare `focus=<id>`.
+ * - **Dim unrelated** — keep the whole graph, de-emphasise everything unrelated;
+ *   normalized URL is `focus=<id>&focusmode=dim`.
+ * - **Clear focus** — remove the anchor and any focus mode; back to the full graph.
+ *   Never writes `focusmode=all`.
+ *
+ * The anchor is the selected entity, or the existing focus anchor when nothing is
+ * selected. Hide/Dim are disabled with no anchor to focus; Clear is disabled with
+ * no active focus. `aria-pressed` exposes the current mode.
+ */
+function FocusControls() {
+  const { store } = useApp();
+  const focusMode = useUi((s) => s.focusMode);
+  const focusId = useUi((s) => s.focusId);
+  const selection = useUi((s) => s.selection);
+  const anchorId = selection.kind === "entity" ? selection.id : focusId;
+  const active = focusId != null;
+
+  return (
+    <div className="cv-focus-controls" role="group" aria-label="Focus">
       <button
         type="button"
         className="cv-control"
-        aria-pressed={focusMode}
-        onClick={() => {
-          const id = selection.kind === "entity" ? selection.id : null;
-          store.getState().setFocus(id, !focusMode);
-        }}
+        aria-pressed={active && focusMode === "hide"}
+        disabled={!anchorId}
+        title="Reduce the graph to the selected entity and its immediate neighbours"
+        onClick={() => anchorId && store.getState().setFocus(anchorId, "hide")}
       >
-        {focusMode ? "Related only: on" : "Related only: off"}
+        Hide unrelated
+      </button>
+      <button
+        type="button"
+        className="cv-control"
+        aria-pressed={active && focusMode === "dim"}
+        disabled={!anchorId}
+        title="Keep the whole graph but dim everything unrelated to the selected entity"
+        onClick={() => anchorId && store.getState().setFocus(anchorId, "dim")}
+      >
+        Dim unrelated
+      </button>
+      <button
+        type="button"
+        className="cv-control"
+        disabled={!active}
+        title="Show the complete graph again"
+        onClick={() => store.getState().clearFocus()}
+      >
+        Clear focus
       </button>
     </div>
   );
@@ -46,6 +91,7 @@ export function Search() {
   const { store, model } = useApp();
   const query = useUi((s) => s.search);
   const focusMode = useUi((s) => s.focusMode);
+  const focusId = useUi((s) => s.focusId);
   const results = query.trim() ? searchEntities(model, query) : [];
   return (
     <div className="cv-search">
@@ -68,7 +114,10 @@ export function Search() {
                   aria-selected="false"
                   onClick={() => {
                     store.getState().selectEntity(id);
-                    store.getState().setFocus(id, focusMode);
+                    // Re-anchor an ALREADY-active focus onto the chosen result
+                    // (preserving its hide/dim style); never force focus on when
+                    // none is active.
+                    if (focusId) store.getState().setFocus(id, focusMode);
                   }}
                 >
                   {localized(entity.label)}{" "}

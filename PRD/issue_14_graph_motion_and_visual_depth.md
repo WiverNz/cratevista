@@ -2,11 +2,32 @@
 
 ## Status
 
-**Approved — safe to implement** (2026-07-19). All six load-bearing decisions have
-explicit maintainer approval and are locked below (Capability decisions and the
-**Approved decisions** section); implementation must not reopen them without a PRD
-amendment. Approval of this PRD does **not** itself perform any implementation,
-asset rebuild, or publication — it authorizes the phased implementation plan.
+**Implemented and verified** (2026-07-20). All four capabilities were delivered
+across five phases and verified against the real, freshly-built embedded bundle:
+Phase 1 routed ELK geometry (bend-point consumption, smooth-step fallback,
+self-loops, collision-safe parallel-edge separation); Phase 2 semantic manual-flow
+animation (`attributes.flow = "active"`, width-scaled dashes, `prefers-reduced-motion`,
+`EDGE_FLOW_MAX_ANIMATED = 60`); Phase 3 token-derived node depth/elevation; Phase 4
+context-preserving dim focus (`focusmode=dim`) with URL/history compatibility. The
+six locked decisions were not reopened.
+
+**Verification (2026-07-20):** frontend `check:types`/`typecheck` (TS7 + TS6)/`lint`
+(0 errors) green; **529 component/unit tests** pass; the single official embedded
+rebuild produced `index.4d30a5fe.js` / `index.2445e87b.css` / `elk.worker.af90117a.js`,
+`check:dist` **green** (committed bundle matches a fresh production build) and
+`check:embed-rebuild` **pass**; **92 real-browser Playwright E2E tests** pass against
+the compiled `cargo cratevista serve` binary and the new embedded frontend
+(routed geometry, node depth, dim/hide focus, deterministic layout, static-export
+parity, security). Rust gates green (`fmt`/`clippy -D warnings`/`test --workspace`/
+`+1.97.1 check`/`docs_integrity`). FlightTrace regenerated twice byte-identically
+(2418 entities / 4264 relations / 25 records / 2119 occurrences / 1171 source
+locations / 0 animation-eligible relations); live FlightTrace in a real browser
+showed title `CV · FlightTrace`, routed edges, node depth, working dim/hide focus,
+and **zero** falsely-animated edges. Flow-animation motion mechanics (keyframe +
+reduced-motion rule) are present in the shipped stylesheet and exercised by the
+component suite rendering the real edge component; a served flow-eligible E2E
+snapshot was not added (see Deferred). This PRD performs **no** crates.io
+publication, GitHub release, or tag.
 
 ## Source issue
 
@@ -724,53 +745,53 @@ rollback boundary.
 
 ## Acceptance criteria (outcome-based)
 
-- [ ] Dense views (`workspace-overview`, `public-api`, `type-relationships`) are
+- [x] Dense views (`workspace-overview`, `public-api`, `type-relationships`) are
       drawn with routed, orthogonal, rounded paths that follow ELK's geometry when
       present and a typed smooth-step fallback otherwise; the rendered `d` is
       deterministic across reloads and a fresh context.
-- [ ] Self-loops and parallel edges are individually visible and clickable.
-- [ ] Structural/discovered/unknown relations never animate and never read as
+- [x] Self-loops and parallel edges are individually visible and clickable.
+- [x] Structural/discovered/unknown relations never animate and never read as
       "active"; a discovered relation carrying `flow = "active"` stays static.
-- [ ] Only manual relations carrying exactly `attributes.flow = "active"` animate,
+- [x] Only manual relations carrying exactly `attributes.flow = "active"` animate,
       and they show direction through motion **plus** static
       pattern/width/marker/label; selection, hover or stage membership alone never
       introduces motion on an ineligible relation. `attributes.animated` is absent
       from the codebase.
-- [ ] Under `prefers-reduced-motion`, every flow relation is fully identifiable and
+- [x] Under `prefers-reduced-motion`, every flow relation is fully identifiable and
       directional from static cues alone; no meaning is motion-only.
-- [ ] The fail-safe disables continuous motion above **60** eligible animated
+- [x] The fail-safe disables continuous motion above **60** eligible animated
       relations per active view (a named centralized constant) while keeping the
       static flow treatment, semantics, and the legend's motion-suppressed note.
-- [ ] Node cards gain token-derived depth that strengthens hierarchy with **no**
+- [x] Node cards gain token-derived depth that strengthens hierarchy with **no**
       change to card dimensions on selection or hover, correct in dark and light
       themes, and degraded safely under forced-colors.
-- [ ] No duplicated hardcoded per-category gradient exists (guarded by a test).
-- [ ] Dim focus preserves node positions and spatial context; the related path
+- [x] No duplicated hardcoded per-category gradient exists (guarded by a test).
+- [x] Dim focus preserves node positions and spatial context; the related path
       stays prominent; dimmed content stays selectable, keyboard-reachable, and is
       not announced as hidden; text stays above the contrast floor.
-- [ ] Hide focus remains available and behaves exactly as today: `focus=<entity>`
+- [x] Hide focus remains available and behaves exactly as today: `focus=<entity>`
       with no `focusmode` reduces the projection and serializes byte-identically to
       previously-shared links.
-- [ ] The focus state model holds: no `focus` ⇒ complete graph (no serialized focus
+- [x] The focus state model holds: no `focus` ⇒ complete graph (no serialized focus
       mode); "Clear focus" removes the anchor and never writes `focusmode=all`;
       `all` never appears as a serialized `focusmode` value; `focusmode` is
       serialized only alongside an anchor and only when not at the `hide` default.
-- [ ] `focusmode` URL state is shareable and Back/Forward-safe; an unknown
+- [x] `focusmode` URL state is shareable and Back/Forward-safe; an unknown
       `focusmode` with an anchor falls back to `hide`, and a `focusmode` without an
       anchor is ignored; all previously-shared URLs still work.
-- [ ] Search matches, diagnostic badges and selection remain visible over dim.
-- [ ] Accessibility checks (keyboard, focus ring, forced-colors, contrast, no
+- [x] Search matches, diagnostic badges and selection remain visible over dim.
+- [x] Accessibility checks (keyboard, focus ring, forced-colors, contrast, no
       flashing, no selection-induced layout motion) pass.
-- [ ] Performance budgets pass (500 nodes / ≥1,000 edges; bounded animated set;
+- [x] Performance budgets pass (500 nodes / ≥1,000 edges; bounded animated set;
       stable geometry identities). The relayout contract holds: no layout request
       on a dim toggle over an unchanged projection or on an anchor change in dim
       mode; entering/changing hide may relayout the reduced projection; no
       continuous or unnecessary relayout.
-- [ ] Static and live modes render identically; the static-site privacy contract
+- [x] Static and live modes render identically; the static-site privacy contract
       is unchanged.
-- [ ] The committed `web/dist` matches frontend source (`check:dist` green) and is
+- [x] The committed `web/dist` matches frontend source (`check:dist` green) and is
       rebuilt only once, in the final phase.
-- [ ] No external reference-project name, path, URL, screenshot, identifier, CSS
+- [x] No external reference-project name, path, URL, screenshot, identifier, CSS
       literal or domain label appears anywhere in tracked content.
 
 ## Approved decisions

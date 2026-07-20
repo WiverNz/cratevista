@@ -39,8 +39,14 @@ export function normalizeUrlState(raw: UrlState, model: DocumentModel): UrlState
     if (kinds.length > 0) out.kinds = kinds;
   }
 
-  // Focus: only an existing entity.
-  if (raw.focus && model.entityById.has(raw.focus)) out.focus = raw.focus;
+  // Focus: only an existing entity. `focusmode` is carried ONLY as `dim` and ONLY
+  // with a valid anchor — a stale/missing focus drops any focus mode with it, an
+  // unknown mode (incl. `all`) degrades to the omitted hide default, and a
+  // `focusmode` without a focus is never kept.
+  if (raw.focus && model.entityById.has(raw.focus)) {
+    out.focus = raw.focus;
+    if (raw.focusmode === "dim") out.focusmode = "dim";
+  }
 
   // Edges: only a known mode; `all` is the default and is not serialized.
   if (raw.edges && EDGE_MODES.includes(raw.edges) && raw.edges !== "all") {
@@ -64,6 +70,7 @@ export function differsOnlyBySearch(a: UrlState, b: UrlState): boolean {
       relation: s.relation ?? null,
       kinds: [...(s.kinds ?? [])].sort(),
       focus: s.focus ?? null,
+      focusmode: s.focusmode ?? null,
       edges: s.edges ?? null,
       stage: s.stage ?? null,
     });

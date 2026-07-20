@@ -11,9 +11,6 @@ export interface LayoutCacheKeyParts {
   viewId: string;
   /** Active entity-kind filter (order-independent). */
   kinds: readonly string[];
-  focusMode: boolean;
-  focusId: string | null;
-  relatedOnly: boolean;
   /** Edge visibility mode — it changes which edges are laid out. */
   edgeMode: string;
   /** Expanded neighborhoods (order-independent). */
@@ -25,14 +22,19 @@ export interface LayoutCacheKeyParts {
   edgeIds: readonly string[];
 }
 
+/**
+ * The key includes only what changes the laid-out geometry. Focus is intentionally
+ * NOT a direct input: hide-focus changes the geometry solely by *reducing* the
+ * node/edge set (captured here by `nodeIds`/`edgeIds`), and dim-focus keeps the
+ * full set unchanged — so the same key is reused and dim never relayouts. Any focus
+ * effect that does not change the node/edge set therefore never invalidates the
+ * cache.
+ */
 export function layoutCacheKey(parts: LayoutCacheKeyParts): string {
   const norm = {
     identity: parts.identity,
     viewId: parts.viewId,
     kinds: [...parts.kinds].sort(),
-    focusMode: parts.focusMode,
-    focusId: parts.focusId,
-    relatedOnly: parts.relatedOnly,
     edgeMode: parts.edgeMode,
     expanded: [...parts.expanded].sort(),
     stage: parts.stage,

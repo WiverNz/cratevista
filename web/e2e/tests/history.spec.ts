@@ -22,11 +22,37 @@ test.describe("deep links", () => {
     await expect(page.getByLabel("Entity inspector")).toBeVisible();
     await expect(page.getByRole("searchbox", { name: "Search entities" })).toHaveValue("Widget");
     await expect(page.getByLabel("Edge visibility")).toHaveValue("related");
-    await expect(page.getByRole("button", { name: /Related only/ })).toHaveAttribute(
+    // A bare `focus` (no focusmode) is legacy hide focus → Hide is pressed.
+    await expect(page.getByRole("button", { name: "Hide unrelated" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
     expect(params(page).get("kinds")).toBe("struct");
+  });
+
+  test("a dim-focus deep link restores the full graph with unrelated dimmed", async ({ page, normalURL }) => {
+    const anchor = "item:struct:cvcore::model::Widget";
+    await page.goto(`${normalURL}/?view=view:types&focus=${anchor}&focusmode=dim`);
+    await waitForGraph(page);
+    // Dim is pressed, and the projection is FULL (dim never reduces): at least one
+    // node carries the dimmed marker, and the anchor is not itself dimmed.
+    await expect(page.getByRole("button", { name: "Dim unrelated" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(params(page).get("focusmode")).toBe("dim");
+    await expect(page.locator(".cv-node--dimmed").first()).toBeVisible();
+  });
+
+  test("focusmode without a focus anchor is dropped; focusmode=all is rejected", async ({ page, normalURL }) => {
+    await page.goto(`${normalURL}/?view=view:types&focusmode=dim`);
+    await waitForGraph(page);
+    expect(params(page).get("focusmode")).toBeNull();
+    await page.goto(`${normalURL}/?view=view:types&focus=item:struct:cvcore::model::Widget&focusmode=all`);
+    await waitForGraph(page);
+    // Unknown mode normalises to hide (no focusmode serialised), Hide pressed.
+    expect(params(page).get("focusmode")).toBeNull();
+    await expect(page.getByRole("button", { name: "Hide unrelated" })).toHaveAttribute("aria-pressed", "true");
   });
 
   test("a stale view id falls back to a real view", async ({ page, normalURL }) => {

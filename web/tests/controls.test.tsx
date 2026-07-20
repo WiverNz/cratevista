@@ -75,17 +75,39 @@ describe("graph controls", () => {
     expect(screen.queryByTestId("edge-rel:has_field_type:struct-enum")).not.toBeInTheDocument();
   });
 
-  it("Related only (focus mode) hides unrelated nodes", async () => {
+  it("Hide unrelated (hide focus) reduces to the anchor's neighbourhood", async () => {
     renderApp({});
     await ready();
     fireEvent.click(screen.getByTestId(`node-${PKG}`));
-    fireEvent.click(screen.getByRole("button", { name: /Related only/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Hide unrelated" }));
     // pkg + neighbors (ws, mod) visible; struct/enum hidden.
     expect(screen.getByTestId(`node-${PKG}`)).toBeInTheDocument();
     expect(screen.getByTestId(`node-${WS}`)).toBeInTheDocument();
     expect(screen.getByTestId(`node-${MOD}`)).toBeInTheDocument();
     expect(screen.queryByTestId(`node-${STRUCT}`)).not.toBeInTheDocument();
     expect(screen.queryByTestId(`node-${ENUM}`)).not.toBeInTheDocument();
+  });
+
+  it("Dim unrelated keeps the full projection (nothing removed)", async () => {
+    renderApp({});
+    await ready();
+    fireEvent.click(screen.getByTestId(`node-${PKG}`));
+    fireEvent.click(screen.getByRole("button", { name: "Dim unrelated" }));
+    // Every node stays present — dim de-emphasises, it never removes.
+    for (const id of [PKG, WS, MOD, STRUCT, ENUM]) {
+      expect(screen.getByTestId(`node-${id}`)).toBeInTheDocument();
+    }
+  });
+
+  it("Clear focus returns to the complete graph", async () => {
+    renderApp({});
+    await ready();
+    fireEvent.click(screen.getByTestId(`node-${PKG}`));
+    fireEvent.click(screen.getByRole("button", { name: "Hide unrelated" }));
+    expect(screen.queryByTestId(`node-${STRUCT}`)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Clear focus" }));
+    expect(await screen.findByTestId(`node-${STRUCT}`)).toBeInTheDocument();
+    expect(screen.getByTestId(`node-${ENUM}`)).toBeInTheDocument();
   });
 
   it("double-click focuses/expands around a node without blocking selection", async () => {

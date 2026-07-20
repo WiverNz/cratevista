@@ -2,7 +2,23 @@
 
 **Type:** enhancement (frontend visual-polish phase)
 **Raised:** 2026-07-19
-**Status:** PRD approved — ready for phased implementation
+**Status:** implemented and verified (2026-07-20)
+
+**Delivered (four capabilities):** (1) **routed relation paths** — edges follow the
+ELK orthogonal routes (bend points consumed) with a typed smooth-step fallback,
+deterministic geometry, non-degenerate self-loops and collision-safe parallel-edge
+separation; (2) **semantic active-flow animation** — only manual relations carrying
+`attributes.flow = "active"` animate (width-scaled dashes travelling source→target),
+with `prefers-reduced-motion` static fallback and a view-wide `EDGE_FLOW_MAX_ANIMATED
+= 60` fail-safe; (3) **node depth & elevation** — a restrained, token-derived
+gradient + bounded shadow that strengthens hierarchy with no card-dimension change,
+correct in dark/light and safe under forced-colors; (4) **context-preserving dim
+focus** — `focus=<id>&focusmode=dim` keeps the full projection and dims unrelated
+content (no relayout on anchor moves), alongside the unchanged legacy hide focus,
+with a shareable, Back/Forward-safe URL contract. Verified against the freshly-built
+embedded bundle: 529 component tests, 92 real-browser E2E tests, `check:dist` green,
+Rust gates green, and live FlightTrace showing the routed/depth/dim behaviour with
+zero falsely-animated edges.
 **PRD:** [`../PRD/issue_14_graph_motion_and_visual_depth.md`](../PRD/issue_14_graph_motion_and_visual_depth.md)
 **Primary area:** `web/` (explorer SPA); one deliberately-scoped, additive
 manual-flow presentation contract may touch `cratevista-config` / the schema

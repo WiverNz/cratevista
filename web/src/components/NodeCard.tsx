@@ -39,12 +39,18 @@ export function NodeCardView({
   selected,
   related,
   searchMatch,
+  dimmed = false,
 }: {
   card: NodeCard;
   zoom: number;
   selected: boolean;
   related: boolean;
   searchMatch: boolean;
+  /** Dim-focus de-emphasis. Orthogonal to `state`: it never suppresses the
+   *  selected/search/diagnostic emphasis (those still win) — it only quiets an
+   *  ordinary unrelated card. Purely presentational: no dimension/content change,
+   *  never `aria-hidden`, always keyboard-reachable and clickable. */
+  dimmed?: boolean;
 }) {
   const level = cardLevel({ zoom, selected });
   const state = nodeVisualState({
@@ -53,6 +59,9 @@ export function NodeCardView({
     related,
     diagnosticSeverity: card.diagnostic?.severity,
   });
+  // Dim is applied only to a card the dominant state does not already spotlight,
+  // so selection/search/diagnostic emphasis is never dimmed away.
+  const showDim = dimmed && state !== "selected" && state !== "search" && state !== "diagnostic-error" && state !== "diagnostic-warning";
 
   const showBody = level !== "compact";
   const metrics = card.metrics.filter((m) => metricVisible(m, level));
@@ -63,13 +72,14 @@ export function NodeCardView({
 
   return (
     <div
-      className={`cv-node cv-node--${card.category} cv-node--state-${state} cv-node--${level}`}
+      className={`cv-node cv-node--${card.category} cv-node--state-${state} cv-node--${level}${showDim ? " cv-node--dimmed" : ""}`}
       style={{ width: card.width, minHeight: card.height }}
       role="group"
       aria-label={accessibleLabel(card)}
       data-kind={card.kind}
       data-level={level}
       data-state={state}
+      data-dimmed={showDim ? "true" : undefined}
     >
       <div className="cv-node-head">
         <span className="cv-node-badge">{card.kindLabel}</span>

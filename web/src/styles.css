@@ -382,6 +382,35 @@ select:focus-visible,
   }
 }
 
+/* Dim focus (Issue 14, Phase 4): an UNRELATED card in dim mode. It is quieted, not
+   hidden — the full projection stays on screen. Bounded, token-based: the accent
+   softens, the tinted surface/elevation flatten (a non-colour texture cue that the
+   card has receded), and only NON-essential text (metrics, context, indicators)
+   dims. Title and kind badge stay fully legible; the box model is untouched; the
+   card is never aria-hidden, stays keyboard-reachable, and remains clickable. Dim
+   is never applied to a selected/search/diagnostic card (see NodeCardView), so
+   those emphases always survive. */
+.cv-node--dimmed {
+  --accent: color-mix(in srgb, var(--accent) 45%, var(--muted));
+  background-image: none;
+  background-color: color-mix(in srgb, var(--node-bg) 90%, var(--muted));
+  box-shadow: none;
+  border-color: color-mix(in srgb, var(--border) 65%, transparent);
+}
+.cv-node--dimmed .cv-node-metrics,
+.cv-node--dimmed .cv-node-context,
+.cv-node--dimmed .cv-node-indicators {
+  opacity: 0.5;
+}
+/* Forced colors: keep the dimmed card fully legible on the system palette; the
+   only surviving cue is the reduced non-essential-text opacity (allowed), so no
+   meaning is lost and nothing depends on colour. */
+@media (forced-colors: active) {
+  .cv-node--dimmed {
+    background-color: Canvas;
+  }
+}
+
 .cv-swatch {
   display: inline-block;
   width: 12px;
