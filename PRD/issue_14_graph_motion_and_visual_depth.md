@@ -11,23 +11,41 @@ animation (`attributes.flow = "active"`, width-scaled dashes, `prefers-reduced-m
 context-preserving dim focus (`focusmode=dim`) with URL/history compatibility. The
 six locked decisions were not reopened.
 
-**Verification (2026-07-20):** frontend `check:types`/`typecheck` (TS7 + TS6)/`lint`
-(0 errors) green; **529 component/unit tests** pass; the single official embedded
-rebuild produced `index.4d30a5fe.js` / `index.2445e87b.css` / `elk.worker.af90117a.js`,
-`check:dist` **green** (committed bundle matches a fresh production build) and
-`check:embed-rebuild` **pass**; **92 real-browser Playwright E2E tests** pass against
-the compiled `cargo cratevista serve` binary and the new embedded frontend
-(routed geometry, node depth, dim/hide focus, deterministic layout, static-export
-parity, security). Rust gates green (`fmt`/`clippy -D warnings`/`test --workspace`/
-`+1.97.1 check`/`docs_integrity`). FlightTrace regenerated twice byte-identically
-(2418 entities / 4264 relations / 25 records / 2119 occurrences / 1171 source
-locations / 0 animation-eligible relations); live FlightTrace in a real browser
-showed title `CV · FlightTrace`, routed edges, node depth, working dim/hide focus,
-and **zero** falsely-animated edges. Flow-animation motion mechanics (keyframe +
-reduced-motion rule) are present in the shipped stylesheet and exercised by the
-component suite rendering the real edge component; a served flow-eligible E2E
-snapshot was not added (see Deferred). This PRD performs **no** crates.io
-publication, GitHub release, or tag.
+**Verification (2026-07-20).** Gates: frontend `check:types`/`typecheck` (TS7 +
+TS6)/`lint` (0 errors) green; **529 component/unit tests** pass; the single official
+embedded rebuild (writing directly to `crates/cratevista-server/embedded/`) produced
+`index.4d30a5fe.js` / `index.2445e87b.css` / `elk.worker.af90117a.js`, with
+`check:dist` **green** (the committed embedded frontend matches a fresh production
+build) and `check:embed-rebuild` **pass**; **92 real-browser Playwright E2E tests**
+pass against the compiled `cargo cratevista serve` binary and the new embedded
+frontend. Rust gates green (`fmt`/`clippy -D warnings`/`test --workspace`/`+1.97.1
+check`/`docs_integrity`). FlightTrace regenerated twice byte-identically (2418
+entities / 4264 relations / 25 records / 2119 occurrences / 1171 source locations /
+0 animation-eligible relations); live FlightTrace in a real browser showed title
+`CV · FlightTrace`, routed edges, node depth, working dim/hide focus, and **zero**
+falsely-animated edges.
+
+Evidence type, stated precisely:
+
+- **Directly verified by real-browser E2E** (Playwright against the served binary +
+  final embedded bundle): routed ELK geometry (bends dominate diagonals),
+  source→target arrow markers, distinct parallel-edge paths, dim-vs-hide focus
+  behaviour, URL/history behaviour, node depth (computed gradient + bounded soft
+  elevation, no dimension change on selection), background-tab absence of
+  application busy-work, static/live behaviour (static-export parity + security),
+  and the final embedded bundle.
+- **Directly verified by component/CSS-contract tests** against the shipped source
+  and the final stylesheet (not by live served screenshots or a dedicated
+  embedded-browser fixture): the positive eligible-flow animation class + static
+  cues (component suite rendering the real edge component), the discovered-vs-manual
+  eligibility distinction, the 60-vs-61 view-wide suppression, reduced-motion
+  animation suppression, and forced-colors gradient/shadow removal with the
+  retained selected outline. A served flow-eligible E2E snapshot was **not** added,
+  so positive flow motion, threshold suppression and forced-colors were **not**
+  captured as live screenshots or embedded-browser fixture tests — they are covered
+  by these contract tests.
+
+This PRD performs **no** crates.io publication, GitHub release, or tag.
 
 ## Source issue
 
@@ -127,11 +145,13 @@ Recorded from the implemented repository so this PRD builds on fact:
   `edges` (`all | related | hidden`), `stage`. Unknown `edges` values are
   dropped. `web/src/state/store.ts` (`toUrlState`) writes it back; history is
   covered by `tests/history.test.tsx`.
-- **Embedded bundle workflow** — `web/dist` is committed and drift-guarded by
-  `scripts/check-dist.mjs` (`check:dist`) and `tests/dist-compare.test.ts`; CI
-  builds `dist` before the server binary that embeds it. No frontend change is
-  "done" until `dist` is rebuilt and matches source — but rebuilding `dist` is a
-  **separate, final** step, never bundled into an intermediate phase commit.
+- **Embedded bundle workflow** — the committed embedded frontend under
+  `crates/cratevista-server/embedded/` is drift-guarded by `scripts/check-dist.mjs`
+  (`check:dist`) and `tests/dist-compare.test.ts`; `npm run build` writes the vite
+  output directly there, and CI builds it before the server binary that embeds it.
+  No frontend change is "done" until the embedded bundle is rebuilt and matches
+  source — but rebuilding it is a **separate, final** step, never bundled into an
+  intermediate phase commit.
 
 This PRD must not introduce a second relation-style source, a second layout
 engine, a per-component gradient literal, or a parallel URL model.
@@ -709,14 +729,15 @@ evidence, not README assets, and add nothing to the release archive.
 - The static-site privacy contract is unchanged: no source snippets introduced,
   zero `/api/**` in static mode, no new network dependency.
 - Release archive contents are unchanged except for the rebuilt embedded asset
-  bytes (`web/dist`) once the frontend ships — and that rebuild is a single final
-  step, never a partial-phase commit.
+  bytes (under `crates/cratevista-server/embedded/`) once the frontend ships — and
+  that rebuild is a single final step, never a partial-phase commit.
 
 ## Implementation plan (phased; each phase independently green)
 
 The plan remains split into five independently-reviewable phases. Implementation
-phases **may edit source and tests**; `web/dist` is **rebuilt once, in the final
-phase**; **no partially-rebuilt bundle may be committed**; each phase keeps
+phases **may edit source and tests**; the committed embedded frontend under
+`crates/cratevista-server/embedded/` is **rebuilt once, in the final phase**; **no
+partially-rebuilt bundle may be committed**; each phase keeps
 `fmt`/`clippy`/type/lint/test green. Approving this PRD does **not** itself perform
 implementation, an asset rebuild, or publication — it authorizes these phases.
 
@@ -738,7 +759,8 @@ implementation, an asset rebuild, or publication — it authorizes these phases.
    reduction), and the URL round-trip/normalization. Rollback boundary: drop
    `focusmode`; hide remains exactly as today.
 5. **E2E, performance and final embedded-bundle rebuild.** Real-browser E2E,
-   benchmark budgets, then the single `web/dist` rebuild + `check:dist`.
+   benchmark budgets, then the single rebuild of the committed embedded frontend
+   under `crates/cratevista-server/embedded/` + `check:dist`.
 
 Each phase is independently reviewable and independently revertible at its stated
 rollback boundary.
@@ -789,8 +811,9 @@ rollback boundary.
       continuous or unnecessary relayout.
 - [x] Static and live modes render identically; the static-site privacy contract
       is unchanged.
-- [x] The committed `web/dist` matches frontend source (`check:dist` green) and is
-      rebuilt only once, in the final phase.
+- [x] The committed embedded frontend under `crates/cratevista-server/embedded/`
+      matches a fresh production build (`check:dist` green) and is rebuilt only
+      once, in the final phase.
 - [x] No external reference-project name, path, URL, screenshot, identifier, CSS
       literal or domain label appears anywhere in tracked content.
 
