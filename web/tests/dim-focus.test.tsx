@@ -75,7 +75,7 @@ describe("NodeCardView — dim treatment + state priority", () => {
     expect(el.getAttribute("aria-hidden")).toBeNull();
     expect(el).not.toHaveStyle({ display: "none" });
     expect(el.style.width).toBe("216px");
-    expect(el.style.minHeight).toBe("92px");
+    expect(el.style.height).toBe("92px");
     // Title + kind badge remain rendered (essential content, not hover-only).
     expect(within(el).getByText("Package")).toBeInTheDocument();
     expect(within(el).getByText("demo")).toBeInTheDocument();
@@ -102,17 +102,19 @@ describe("Focus controls", () => {
     expect(dim).toBeDisabled();
     expect(clear).toBeDisabled();
 
+    // Enabled/pressed state is driven by a store update → async re-render; await it
+    // rather than reading synchronously (which races under parallel-suite load).
     fireEvent.click(screen.getByTestId(`node-${PKG}`));
-    expect(hide).toBeEnabled();
+    await waitFor(() => expect(hide).toBeEnabled());
     expect(dim).toBeEnabled();
 
     fireEvent.click(dim);
-    expect(dim).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(dim).toHaveAttribute("aria-pressed", "true"));
     expect(hide).toHaveAttribute("aria-pressed", "false");
     expect(clear).toBeEnabled();
 
     fireEvent.click(hide);
-    expect(hide).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(hide).toHaveAttribute("aria-pressed", "true"));
     expect(dim).toHaveAttribute("aria-pressed", "false");
   });
 
@@ -142,10 +144,14 @@ describe("dim × edge-mode are independent axes", () => {
     renderApp({});
     await ready();
     fireEvent.change(screen.getByLabelText("Edge visibility"), { target: { value: "hidden" } });
-    fireEvent.click(screen.getByTestId(`node-${PKG}`));
+    // `findByTestId`: the graph node may render a commit after the Views tablist
+    // that `ready()` awaits (esp. under parallel-suite load).
+    fireEvent.click(await screen.findByTestId(`node-${PKG}`));
     fireEvent.click(screen.getByRole("button", { name: "Dim unrelated" }));
     // The edges axis is untouched by focus mode.
-    expect((screen.getByLabelText("Edge visibility") as HTMLSelectElement).value).toBe("hidden");
+    await waitFor(() =>
+      expect((screen.getByLabelText("Edge visibility") as HTMLSelectElement).value).toBe("hidden"),
+    );
   });
 
   it("dim + edges=related: full nodes, only anchor edges", async () => {
@@ -154,8 +160,13 @@ describe("dim × edge-mode are independent axes", () => {
     fireEvent.click(screen.getByTestId(`node-${PKG}`));
     fireEvent.click(screen.getByRole("button", { name: "Dim unrelated" }));
     fireEvent.change(screen.getByLabelText("Edge visibility"), { target: { value: "related" } });
-    expect(screen.getByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
-    expect(screen.queryByTestId("edge-rel:has_field_type:struct-enum")).not.toBeInTheDocument();
+    expect(await screen.findByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
+    // Edge-mode filtering re-renders asynchronously (React Flow); the graph-local
+    // edge control now lives in the workspace overlay, so its effect flushes with
+    // the graph. Wait for the unrelated edge to leave rather than racing it.
+    await waitFor(() =>
+      expect(screen.queryByTestId("edge-rel:has_field_type:struct-enum")).not.toBeInTheDocument(),
+    );
     // Unrelated nodes still on screen.
     expect(screen.getByTestId(`node-${STRUCT}`)).toBeInTheDocument();
   });

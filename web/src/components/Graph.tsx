@@ -1,5 +1,5 @@
 // React Flow graph canvas wired to the projection + LayoutClient positions.
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -21,6 +21,7 @@ import {
 import { useApp, useUi, type Projection, type LayoutState } from "../app/AppContext.tsx";
 import { mark } from "../app/perf.ts";
 import { Legend } from "./Panels.tsx";
+import { overlayFitPadding, toInsetRect } from "./overlayFit.ts";
 import type { GraphNode, GraphEdge } from "../adapter/adapter.ts";
 import {
   allRelationStyles,
@@ -242,13 +243,13 @@ export function EdgeMarkerDefs() {
 const NODE_TYPES = { entity: EntityNode };
 const EDGE_TYPES = { relation: RelationEdge };
 
-function CanvasControls() {
+function CanvasControls({ onFit }: { onFit: () => void }) {
   const { store } = useApp();
   const flow = useReactFlow();
   const { zoom } = useViewport();
   return (
     <div className="cv-canvas-controls" role="group" aria-label="Canvas controls">
-      <button type="button" onClick={() => flow.fitView()}>
+      <button type="button" onClick={onFit}>
         Fit
       </button>
       <button type="button" onClick={() => flow.zoomIn()}>
@@ -262,7 +263,7 @@ function CanvasControls() {
         onClick={() => {
           store.getState().resetView();
           flow.setViewport({ x: 0, y: 0, zoom: 1 });
-          flow.fitView();
+          onFit();
         }}
       >
         Reset
@@ -293,20 +294,19 @@ export function GraphCanvas(props: { projection: Projection; layoutState: Layout
  * precise trigger: selection and inspector changes do not touch it, and fitting
  * only moves the viewport — it never requests a layout.
  */
-function useFitOnLayout(layoutState: LayoutState) {
-  const flow = useReactFlow();
+function useFitOnLayout(layoutState: LayoutState, fit: () => void) {
   const { positions, status } = layoutState;
   useEffect(() => {
     if (status !== "ok" || positions.size === 0) return;
     // Fit after the browser has committed the new node positions.
     const frame = requestAnimationFrame(() => {
-      flow.fitView();
+      fit();
       // The graph is laid out, painted and fitted: the first point at which a
       // user can actually read and interact with it.
       mark("cv.firstUsableGraph");
     });
     return () => cancelAnimationFrame(frame);
-  }, [flow, status, positions]);
+  }, [fit, status, positions]);
 }
 
 /** Tracks the user's `prefers-reduced-motion` setting reactively. Used to withhold
@@ -338,7 +338,35 @@ function GraphInner({
   layoutState: LayoutState;
 }) {
   const { store, model } = useApp();
-  useFitOnLayout(layoutState);
+  const flow = useReactFlow();
+  // Overlay refs for overlay-safe fit: the graph container plus the three corner
+  // overlays. Rects are read ON DEMAND at fit time (never in a loop / observer),
+  // converted to asymmetric fit padding so a fit never parks content beneath a
+  // corner overlay. No coordinate is ever mutated.
+  const graphRef = useRef<HTMLDivElement | null>(null);
+  const overlayTlRef = useRef<HTMLDivElement | null>(null);
+  const overlayBlRef = useRef<HTMLDivElement | null>(null);
+  const fitWithInsets = useCallback(() => {
+    const container = toInsetRect(graphRef.current?.getBoundingClientRect());
+    if (!container) {
+      void flow.fitView();
+      return;
+    }
+    // The upper-right edge/focus overlay lives OUTSIDE React Flow (it needs the
+    // store, not the flow instance), so its rect is read here by selector at fit
+    // time — a bounded, on-demand read, never a loop.
+    const topRight =
+      typeof document !== "undefined"
+        ? document.querySelector<HTMLElement>(".cv-overlay-panel--tr")
+        : null;
+    const padding = overlayFitPadding(container, {
+      topLeft: toInsetRect(overlayTlRef.current?.getBoundingClientRect()),
+      topRight: toInsetRect(topRight?.getBoundingClientRect()),
+      bottomLeft: toInsetRect(overlayBlRef.current?.getBoundingClientRect()),
+    });
+    void flow.fitView({ padding });
+  }, [flow]);
+  useFitOnLayout(layoutState, fitWithInsets);
   const reducedMotion = usePrefersReducedMotion();
   const [hoveredEdge, setHoveredEdge] = useState<string | null>(null);
   const selection = useUi((s) => s.selection);
@@ -473,7 +501,7 @@ function GraphInner({
   });
 
   return (
-    <div className="cv-graph">
+    <div className="cv-graph" ref={graphRef}>
       <EdgeMarkerDefs />
       {layoutState.status === "loading" && (
         <div className="cv-graph-status" role="status">
@@ -508,19 +536,29 @@ function GraphInner({
       >
         <Background />
         <Controls />
+        {/* React-Flow-bound overlays: upper-left canvas controls (need the flow
+            instance) and lower-left legend. The upper-right edge/focus overlay is
+            rendered by the shell OUTSIDE React Flow (it needs only the store), so
+            it is not coupled to the graph's async render. All three share the
+            `cv-overlay-panel` primitive; panels are the only pointer-interactive
+            parts, so the graph stays pannable between them. */}
         <Panel position="top-left">
-          <CanvasControls />
+          <div ref={overlayTlRef} className="cv-overlay-panel cv-overlay-panel--tl">
+            <CanvasControls onFit={fitWithInsets} />
+          </div>
         </Panel>
         <Panel position="bottom-left">
-          <Legend
-            entries={projection.legend}
-            relations={projection.relationLegend}
-            flow={{
-              present: flowPolicy.present,
-              motionEnabled: flowMotionEnabled,
-              suppressedByCount: flowPolicy.suppressedByCount,
-            }}
-          />
+          <div ref={overlayBlRef} className="cv-overlay-panel cv-overlay-panel--bl">
+            <Legend
+              entries={projection.legend}
+              relations={projection.relationLegend}
+              flow={{
+                present: flowPolicy.present,
+                motionEnabled: flowMotionEnabled,
+                suppressedByCount: flowPolicy.suppressedByCount,
+              }}
+            />
+          </div>
         </Panel>
       </ReactFlow>
     </div>

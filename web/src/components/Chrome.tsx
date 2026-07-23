@@ -1,4 +1,11 @@
-// Toolbar, view tabs, search, kind filters, stage bar.
+// Global header, view tabs, workspace controls, search, kind filters, stage bar.
+//
+// Four-region shell (Issue 15, Phase 1): the global header carries only
+// project-level concerns (title + search + kind filters); graph-local edge/focus
+// controls live in the workspace, not the header. View selection lives only in
+// the dedicated view-navigation row (`ViewTabs`). The final overlay geometry of
+// the workspace controls is Phase 2 — Phase 1 only relocates them into a clearly
+// named workspace-control slot.
 import type { KeyboardEvent } from "react";
 import { useApp, useProjection, useUi } from "../app/AppContext.tsx";
 import { documentToGraph } from "../adapter/adapter.ts";
@@ -6,16 +13,56 @@ import { searchEntities } from "../state/selectors.ts";
 import { localized } from "../types/index.ts";
 import type { EdgeMode } from "../state/url.ts";
 
-export function Toolbar() {
+/**
+ * The global header: the project's identity and the two project-level controls
+ * (search + kind filters). It deliberately carries **no** graph-local controls
+ * (edge visibility, focus) and **no** view selection — those belong to the
+ * workspace and the view-navigation row respectively.
+ */
+export function GlobalHeader() {
+  return (
+    <div className="cv-header">
+      <ProjectTitle />
+      <div className="cv-header-controls">
+        <Search />
+        <KindFilters />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The visible project title, derived ONLY from the loaded document's authoritative
+ * project name (never the URL, path, hostname or repository metadata). Falls back
+ * to the plain product name when the project name is missing or whitespace-only,
+ * matching the browser-tab fallback. It is display text, never an editable field.
+ */
+export function ProjectTitle() {
+  const { model } = useApp();
+  const name = (model.document.project?.name ?? "").trim();
+  const title = name || "CrateVista";
+  return (
+    <h1 className="cv-project-title" title={title}>
+      {title}
+    </h1>
+  );
+}
+
+/**
+ * Graph-local controls (edge visibility + focus). Kept out of the global header so
+ * project-level and graph-local concerns are visually separate. Phase 1 places
+ * this in a temporary in-workspace slot; Phase 2 gives it the final overlay
+ * geometry. It keeps the "Graph controls" toolbar role its controls had before.
+ */
+export function WorkspaceControls() {
   const { store } = useApp();
   const edgeMode = useUi((s) => s.edgeMode);
   return (
-    <div className="cv-toolbar" role="toolbar" aria-label="Graph controls">
-      <Search />
-      <KindFilters />
-      <label className="cv-control">
+    <div className="cv-workspace-controls" role="toolbar" aria-label="Graph controls">
+      <label className="cv-field">
         <span className="cv-muted">Edges</span>
         <select
+          className="cv-select"
           aria-label="Edge visibility"
           value={edgeMode}
           onChange={(e) => store.getState().setEdgeMode(e.target.value as EdgeMode)}

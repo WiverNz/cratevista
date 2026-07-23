@@ -186,7 +186,7 @@ describe("dimensions are byte-for-byte identical across every visual state", () 
     for (const z of [0.3, 1, 2]) {
       for (const s of states) {
         render(<NodeCardView card={card({ diagnostic: { severity: "error", occurrences: 1, records: 1, label: "1 error" } })} zoom={z} {...s} />);
-        seen.add(`${box().style.width}|${box().style.minHeight}`);
+        seen.add(`${box().style.width}|${box().style.height}`);
         cleanup();
       }
     }

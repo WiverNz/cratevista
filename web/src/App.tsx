@@ -45,22 +45,20 @@ import {
 } from "./app/AppContext.tsx";
 import {
   GRAPH_PANEL_ID,
+  GlobalHeader,
   StageBar,
-  Toolbar,
   ViewTabs,
+  WorkspaceControls,
   viewTabId,
 } from "./components/Chrome.tsx";
 import { GraphCanvas } from "./components/Graph.tsx";
-import { ViewDocs } from "./components/ViewDocs.tsx";
+import { ResponsiveInspector } from "./components/ResponsiveInspector.tsx";
 import {
-  DiagnosticsPanel,
   EmptyState,
   ErrorState,
   GenerationFailedBanner,
   GenerationStatus,
-  GraphList,
   IncompatibilityState,
-  Inspector,
   LoadingState,
   PartialBanner,
   ReducedModeBanner,
@@ -316,6 +314,11 @@ function AppShell(props: { layout: LayoutEngine; watch: WatchState }) {
   const layoutState = useLayout(props.layout, projection);
   const partial = generation?.partial ?? false;
   const activeViewId = useUi((s) => s.activeViewId);
+  // Whether the active view defines stages — mirrors StageBar's own null-render
+  // predicate, so the compatibility slot appears ONLY when StageBar has content
+  // (a generated view with no stages renders no empty strip).
+  const activeView = activeViewId ? model.viewById.get(activeViewId) : undefined;
+  const hasStages = (activeView?.stages?.length ?? 0) > 0;
 
   const { regenerating, generationError, reloadError } = props.watch;
 
@@ -332,18 +335,15 @@ function AppShell(props: { layout: LayoutEngine; watch: WatchState }) {
       )}
       {reloadError && <ReloadErrorBanner message={reloadError} />}
       {partial && <PartialBanner />}
-      <header className="cv-region-toolbar">
-        <Toolbar />
+      <header className="cv-region-toolbar cv-region-header">
+        <GlobalHeader />
       </header>
       <nav className="cv-region-tabs" aria-label="Views">
         <ViewTabs />
       </nav>
-      <div className="cv-region-stage">
-        <StageBar />
-      </div>
       <main className="cv-region-body">
         <section
-          className="cv-canvas"
+          className="cv-canvas cv-region-workspace"
           id={GRAPH_PANEL_ID}
           role="tabpanel"
           tabIndex={-1}
@@ -352,20 +352,35 @@ function AppShell(props: { layout: LayoutEngine; watch: WatchState }) {
         >
           {!generationAvailable && <GenerationStatus />}
           {projection && <ReducedModeBanner projection={projection} />}
+          {/* StageBar compatibility slot: an authored flow's stage bar now lives
+              INSIDE the workspace (above the graph), not as a fifth top-level shell
+              region. Behaviour/state/URL/keyboard are unchanged; Issue 16 owns the
+              timeline redesign and may replace this slot without another shell
+              reorganization. Rendered only when the view has stages. */}
+          {hasStages && (
+            <div className="cv-workspace-stage-slot">
+              <StageBar />
+            </div>
+          )}
           {projection && projection.graph.nodes.length > 0 ? (
             <GraphCanvas projection={projection} layoutState={layoutState} />
           ) : (
             <EmptyState />
           )}
+          {/* Upper-right graph overlay: edge-visibility + focus controls. Rendered
+              in the shell (not inside React Flow) because it needs only the store —
+              which decouples it from the graph's async render — but positioned as
+              an overlay over the graph. Rendered unconditionally within the
+              workspace (as in Phase 1), so its presence never depends on the
+              graph-vs-empty branch. The overlay LAYER is click-through; only the
+              panel itself is interactive. */}
+          <div className="cv-overlay-layer">
+            <div className="cv-overlay-panel cv-overlay-panel--tr">
+              <WorkspaceControls />
+            </div>
+          </div>
         </section>
-        <aside className="cv-inspector" aria-label="Details inspector">
-          {/* Renders nothing unless the active view carries description/docs/
-              examples, so the eight generated views are unchanged. */}
-          <ViewDocs />
-          {projection && <GraphList projection={projection} />}
-          <Inspector />
-          <DiagnosticsPanel />
-        </aside>
+        <ResponsiveInspector projection={projection} />
       </main>
     </div>
   );

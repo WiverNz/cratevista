@@ -73,8 +73,10 @@ describe("history semantics", () => {
     fireEvent.change(box, { target: { value: "T" } });
     fireEvent.change(box, { target: { value: "Th" } });
     fireEvent.change(box, { target: { value: "Thi" } });
+    // The replaceState side effect runs via the store subscription (async under
+    // parallel-suite load); await the settled count rather than reading it raw.
+    await waitFor(() => expect(replaces.length).toBe(3));
     expect(pushes).toEqual([]); // typing never pushes
-    expect(replaces.length).toBe(3);
     expect(replaces[2]).toContain("q=Thi");
   });
 
@@ -111,7 +113,12 @@ describe("history semantics", () => {
     expect(
       await screen.findByRole("region", { name: "Entity inspector" }, { timeout: 4000 }),
     ).toHaveTextContent("Thing");
-    expect((screen.getByLabelText("Edge visibility") as HTMLSelectElement).value).toBe("related");
+    // The edge control now lives in the workspace overlay, rendered with the
+    // graph; wait for its restored value rather than reading it synchronously.
+    await waitFor(
+      () => expect((screen.getByLabelText("Edge visibility") as HTMLSelectElement).value).toBe("related"),
+      { timeout: 4000 },
+    );
     // Restoration must not create a duplicate history entry.
     expect(pushes).toEqual([]);
   });

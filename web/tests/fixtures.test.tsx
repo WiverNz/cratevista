@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020";
-import { screen, fireEvent, within } from "@testing-library/react";
+import { screen, fireEvent, within, waitFor } from "@testing-library/react";
 
 import allViews from "../src/fixtures/all_views.document.json" with { type: "json" };
 import schemaParity from "../src/fixtures/schema_parity.document.json" with { type: "json" };
@@ -104,10 +104,11 @@ describe("all eight views render in the application", () => {
     // None of the eight generated views define stages, so the only tablist is
     // "Views" with exactly eight tabs.
     expect(tabs.length).toBe(8);
-    // Switch to each view without crashing.
+    // Switch to each view without crashing. Tab activation re-renders asynchronously;
+    // await the selected state rather than reading it synchronously.
     for (const tab of tabs) {
       fireEvent.click(tab);
-      expect(tab).toHaveAttribute("aria-selected", "true");
+      await waitFor(() => expect(tab).toHaveAttribute("aria-selected", "true"));
     }
   });
 });

@@ -34,10 +34,14 @@ describe("graph controls", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
 
-    expect((screen.getByRole("searchbox", { name: "Search entities" }) as HTMLInputElement).value).toBe("");
-    expect(screen.queryByRole("region", { name: "Entity inspector" })).not.toBeInTheDocument();
-    expect((screen.getByRole("checkbox", { name: "struct" }) as HTMLInputElement).checked).toBe(false);
-    expect(screen.getByRole("tab", { name: "Workspace overview" })).toHaveAttribute("aria-selected", "true");
+    // Reset fans out several store updates → async re-renders; await the settled
+    // DOM rather than reading synchronously (races under parallel-suite load).
+    await waitFor(() => {
+      expect((screen.getByRole("searchbox", { name: "Search entities" }) as HTMLInputElement).value).toBe("");
+      expect(screen.queryByRole("region", { name: "Entity inspector" })).not.toBeInTheDocument();
+      expect((screen.getByRole("checkbox", { name: "struct" }) as HTMLInputElement).checked).toBe(false);
+      expect(screen.getByRole("tab", { name: "Workspace overview" })).toHaveAttribute("aria-selected", "true");
+    });
     expect(controlCalls).toContain("fitView");
   });
 
@@ -69,10 +73,13 @@ describe("graph controls", () => {
     await ready();
     fireEvent.click(screen.getByTestId(`node-${PKG}`));
     fireEvent.change(screen.getByLabelText("Edge visibility"), { target: { value: "related" } });
-    // pkg touches ws-pkg and pkg-mod; not struct-enum.
-    expect(screen.getByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
-    expect(screen.getByTestId("edge-rel:contains:pkg-mod")).toBeInTheDocument();
-    expect(screen.queryByTestId("edge-rel:has_field_type:struct-enum")).not.toBeInTheDocument();
+    // pkg touches ws-pkg and pkg-mod; not struct-enum. Edge re-render is async
+    // (React Flow); await the settled set rather than racing it under load.
+    await waitFor(() => {
+      expect(screen.getByTestId("edge-rel:contains:ws-pkg")).toBeInTheDocument();
+      expect(screen.getByTestId("edge-rel:contains:pkg-mod")).toBeInTheDocument();
+      expect(screen.queryByTestId("edge-rel:has_field_type:struct-enum")).not.toBeInTheDocument();
+    });
   });
 
   it("Hide unrelated (hide focus) reduces to the anchor's neighbourhood", async () => {
@@ -80,12 +87,15 @@ describe("graph controls", () => {
     await ready();
     fireEvent.click(screen.getByTestId(`node-${PKG}`));
     fireEvent.click(screen.getByRole("button", { name: "Hide unrelated" }));
-    // pkg + neighbors (ws, mod) visible; struct/enum hidden.
-    expect(screen.getByTestId(`node-${PKG}`)).toBeInTheDocument();
-    expect(screen.getByTestId(`node-${WS}`)).toBeInTheDocument();
-    expect(screen.getByTestId(`node-${MOD}`)).toBeInTheDocument();
-    expect(screen.queryByTestId(`node-${STRUCT}`)).not.toBeInTheDocument();
-    expect(screen.queryByTestId(`node-${ENUM}`)).not.toBeInTheDocument();
+    // pkg + neighbors (ws, mod) visible; struct/enum hidden. Hide-focus reduces the
+    // projection and relayouts (async); await the settled node set.
+    await waitFor(() => {
+      expect(screen.getByTestId(`node-${PKG}`)).toBeInTheDocument();
+      expect(screen.getByTestId(`node-${WS}`)).toBeInTheDocument();
+      expect(screen.getByTestId(`node-${MOD}`)).toBeInTheDocument();
+      expect(screen.queryByTestId(`node-${STRUCT}`)).not.toBeInTheDocument();
+      expect(screen.queryByTestId(`node-${ENUM}`)).not.toBeInTheDocument();
+    });
   });
 
   it("Dim unrelated keeps the full projection (nothing removed)", async () => {

@@ -62,6 +62,10 @@ export interface NodeCard {
   fullTitle: string;
   /** Short owning module/package context for code entities (never the full qn). */
   context?: string;
+  /** One bounded supporting line from the entity's own `description` — NEVER
+   *  synthesized from the name/qualified-name/id. `undefined` when the entity has
+   *  no description, so the card leaves no empty supporting block. */
+  description?: string;
   visibility?: string;
   /** Documentation state; `undefined` when the entity carries no doc block. */
   documented?: boolean;
@@ -266,21 +270,42 @@ function occurrenceOf(d: DocumentDiagnostic): number {
   return typeof n === "number" && Number.isInteger(n) && n >= 1 ? n : 1;
 }
 
-/** Bounded, deterministic layout box per visual category. Code entities are
- *  intentionally smaller than package/workspace overview cards. */
+/**
+ * Bounded, deterministic layout box per visual category (Issue 15, Phase 3).
+ *
+ * These are the single source of truth for card dimensions: ELK receives exactly
+ * these, and the rendered card root consumes exactly these. They are sized to hold
+ * the fullest (detailed) composition — header, title, one description line, and the
+ * metrics/indicator footer — so density levels only hide/show content WITHIN a
+ * fixed box; no interaction, zoom, or state ever changes the box. Values are locked
+ * within the PRD-approved per-category ranges (workspace/package 240–260 × 120–136;
+ * target 228–244 × 108–124; module/manual 216–232 × 100–116; code/default
+ * 208–224 × 96–112); leaving a range requires a PRD amendment.
+ */
 export function cardSize(kind: string, provenance = "discovered"): { width: number; height: number } {
   switch (nodeCategory(kind, provenance)) {
     case "workspace":
     case "package":
-      return { width: 216, height: 92 };
+      return { width: 252, height: 128 };
     case "target":
-      return { width: 208, height: 80 };
+      return { width: 236, height: 116 };
     case "module":
     case "manual":
-      return { width: 198, height: 68 };
+      return { width: 224, height: 108 };
     default:
-      return { width: 190, height: 62 };
+      return { width: 216, height: 104 };
   }
+}
+
+/** Max characters for the one bounded description line (CSS further clamps lines). */
+const DESCRIPTION_MAX = 140;
+
+/** The entity's own description, trimmed and length-bounded — or `undefined` when
+ *  it has none. Never derived from the name, qualified name or id. */
+function boundedDescription(entity: Entity): string | undefined {
+  const raw = entity.description ? localized(entity.description).trim() : "";
+  if (!raw) return undefined;
+  return raw.length > DESCRIPTION_MAX ? `${raw.slice(0, DESCRIPTION_MAX - 1).trimEnd()}…` : raw;
 }
 
 function childrenOfKind(model: DocumentModel, id: string, kind: string): number {
@@ -362,6 +387,7 @@ function buildOne(
     title: fullTitle,
     fullTitle,
     context: isCode ? contextFor(entity, model) : undefined,
+    description: boundedDescription(entity),
     visibility,
     documented,
     hasSource: !!entity.source,

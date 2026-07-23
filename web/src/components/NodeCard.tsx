@@ -66,6 +66,9 @@ export function NodeCardView({
   const showBody = level !== "compact";
   const metrics = card.metrics.filter((m) => metricVisible(m, level));
   const showContext = showBody && !!card.context;
+  // The one supporting description line: shown at normal+ when the entity genuinely
+  // has a description. Absent → nothing renders (no empty block).
+  const showDescription = showBody && !!card.description;
   const showIndicators =
     level === "detailed" &&
     (card.visibility !== undefined || card.documented !== undefined || card.hasSource);
@@ -73,7 +76,9 @@ export function NodeCardView({
   return (
     <div
       className={`cv-node cv-node--${card.category} cv-node--state-${state} cv-node--${level}${showDim ? " cv-node--dimmed" : ""}`}
-      style={{ width: card.width, minHeight: card.height }}
+      // A FIXED box — exactly the deterministic `cardSize()` ELK received — so
+      // density/zoom/state never change dimensions; content flows within it.
+      style={{ width: card.width, height: card.height }}
       role="group"
       aria-label={accessibleLabel(card)}
       data-kind={card.kind}
@@ -111,6 +116,12 @@ export function NodeCardView({
       {showContext && (
         <div className="cv-node-context" title={card.context}>
           {card.context}
+        </div>
+      )}
+
+      {showDescription && (
+        <div className="cv-node-desc" title={card.description}>
+          {card.description}
         </div>
       )}
 

@@ -21,6 +21,9 @@ interface ReactFlowProps {
 }
 
 export const controlCalls: string[] = [];
+/** Captures the options each `fitView` call received, so tests can assert the
+ *  overlay-safe per-side padding contract. */
+export const fitViewCalls: Array<unknown> = [];
 
 export function ReactFlow(props: ReactFlowProps) {
   return (
@@ -128,7 +131,11 @@ export function getSmoothStepPath(params: {
 }
 
 const flow = {
-  fitView: () => controlCalls.push("fitView"),
+  fitView: (options?: unknown) => {
+    controlCalls.push("fitView");
+    fitViewCalls.push(options);
+    return Promise.resolve(true);
+  },
   zoomIn: () => controlCalls.push("zoomIn"),
   zoomOut: () => controlCalls.push("zoomOut"),
   setViewport: () => controlCalls.push("setViewport"),

@@ -133,9 +133,9 @@ describe("cardSize (bounded, deterministic)", () => {
     for (const kind of ["workspace", "package", "target", "module", "struct", "trait", "function", "impl", "weird"]) {
       const s = cardSize(kind);
       expect(s.width).toBeGreaterThan(0);
-      expect(s.width).toBeLessThanOrEqual(220);
+      expect(s.width).toBeLessThanOrEqual(260);
       expect(s.height).toBeGreaterThan(0);
-      expect(s.height).toBeLessThanOrEqual(96);
+      expect(s.height).toBeLessThanOrEqual(136);
     }
   });
   it("code-entity cards are smaller than package overview cards", () => {
@@ -292,8 +292,8 @@ describe("500-node performance / projection", () => {
     expect(elapsed).toBeLessThan(500); // generous bound; typically a few ms
     // Every card has a bounded, deterministic box.
     for (const c of cards.values()) {
-      expect(c.width).toBeLessThanOrEqual(220);
-      expect(c.height).toBeLessThanOrEqual(96);
+      expect(c.width).toBeLessThanOrEqual(260);
+      expect(c.height).toBeLessThanOrEqual(136);
     }
     // Memoized: no rebuild on repeated access.
     expect(getNodeCards(m)).toBe(getNodeCards(m));

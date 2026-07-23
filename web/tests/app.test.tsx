@@ -90,7 +90,9 @@ describe("initial view + URL", () => {
     renderApp({});
     await ready();
     fireEvent.click(screen.getByRole("tab", { name: "Types" }));
-    expect(screen.getByRole("tab", { name: "Types" })).toHaveAttribute("aria-selected", "true");
+    await waitFor(() =>
+      expect(screen.getByRole("tab", { name: "Types" })).toHaveAttribute("aria-selected", "true"),
+    );
   });
 
   it("restores view on popstate", async () => {
@@ -234,7 +236,7 @@ describe("empty + stage seam", () => {
     const stages = await screen.findByRole("tablist", { name: "Stages" });
     const stageA = within(stages).getByRole("tab", { name: "Stage A" });
     fireEvent.click(stageA);
-    expect(stageA).toHaveAttribute("aria-selected", "true");
+    await waitFor(() => expect(stageA).toHaveAttribute("aria-selected", "true"));
   });
 });
 

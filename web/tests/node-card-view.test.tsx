@@ -188,12 +188,12 @@ describe("stable, deterministic dimensions", () => {
     render(<NodeCardView card={card()} zoom={0.3} selected={false} related={false} searchMatch={false} />);
     const compact = box();
     expect(compact.style.width).toBe("216px");
-    expect(compact.style.minHeight).toBe("92px");
+    expect(compact.style.height).toBe("92px");
     cleanup();
     render(<NodeCardView card={card()} zoom={2} selected={true} related={false} searchMatch={false} />);
     const detailed = box();
     expect(detailed.style.width).toBe("216px"); // unchanged by zoom/selection
-    expect(detailed.style.minHeight).toBe("92px");
+    expect(detailed.style.height).toBe("92px");
   });
 });
 
