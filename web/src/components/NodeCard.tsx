@@ -5,6 +5,8 @@
 // and a single dominant visual state, then renders the already-computed content.
 // It performs no aggregation.
 
+import { type CSSProperties } from "react";
+
 import {
   cardLevel,
   nodeVisualState,
@@ -26,6 +28,9 @@ function metricVisible(metric: CardMetric, level: CardLevel): boolean {
 function accessibleLabel(card: NodeCard): string {
   const parts: string[] = [`${card.kindLabel}: ${card.fullTitle}`];
   if (!card.known) parts.push("unknown kind");
+  // Authored architectural role, when present. For an unknown role the label IS the
+  // complete authored value, so the full value is in the accessible name.
+  if (card.role) parts.push(`architectural role: ${card.role.label}`);
   if (card.context) parts.push(`in ${card.context}`);
   if (card.visibility) parts.push(card.visibility);
   if (card.documented !== undefined) parts.push(card.documented ? "documented" : "undocumented");
@@ -77,17 +82,38 @@ export function NodeCardView({
     <div
       className={`cv-node cv-node--${card.category} cv-node--state-${state} cv-node--${level}${showDim ? " cv-node--dimmed" : ""}`}
       // A FIXED box — exactly the deterministic `cardSize()` ELK received — so
-      // density/zoom/state never change dimensions; content flows within it.
-      style={{ width: card.width, height: card.height }}
+      // density/zoom/state never change dimensions; content flows within it. Role
+      // is an additive layer: it sets a colour token the badge/cue read, but never
+      // touches width/height/padding/handles.
+      style={
+        card.role
+          ? ({ width: card.width, height: card.height, "--role-color": `var(${card.role.token})` } as CSSProperties)
+          : { width: card.width, height: card.height }
+      }
       role="group"
       aria-label={accessibleLabel(card)}
       data-kind={card.kind}
+      data-role={card.role ? card.role.known ? card.role.authoredValue : "unknown" : undefined}
       data-level={level}
       data-state={state}
       data-dimmed={showDim ? "true" : undefined}
     >
+      {/* Decorative, non-colour role cue: an absolutely-positioned child that never
+          intercepts pointer events, never changes the box, and is one redundant
+          channel alongside the role badge text and colour. */}
+      {card.role && (
+        <span className="cv-node-role-cue" data-cue={card.role.cue} aria-hidden="true" />
+      )}
       <div className="cv-node-head">
         <span className="cv-node-badge">{card.kindLabel}</span>
+        {card.role && (
+          <span
+            className={`cv-node-role${card.role.known ? "" : " cv-node-role--unknown"}`}
+            title={card.role.authoredValue}
+          >
+            {card.role.label}
+          </span>
+        )}
         {!card.known && <span className="cv-node-unknown"> (unknown)</span>}
         {card.diagnostic && (
           <span

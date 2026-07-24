@@ -14,6 +14,23 @@ import type { DocumentModel } from "./model.ts";
 import type { Entity, DocumentDiagnostic } from "../types/index.ts";
 import { localized } from "../types/index.ts";
 import { entityStyle } from "../adapter/kindStyle.ts";
+import { authoredRole, roleStyleFor, type RoleCue } from "../adapter/roleStyle.ts";
+
+/** The card's resolved architectural-role presentation, or absent when the entity
+ *  carries no authored role. Projected once here from the shared parser+registry;
+ *  components never re-parse `attributes.category`. */
+export interface CardRole {
+  /** The trimmed authored value verbatim (for the accessible label + title). */
+  authoredValue: string;
+  /** User-facing label (concise for known roles; the authored value for unknown). */
+  label: string;
+  /** CSS custom-property name for the role colour. */
+  token: string;
+  /** The deterministic non-colour decorative cue. */
+  cue: RoleCue;
+  /** Whether the authored value matched the locked vocabulary. */
+  known: boolean;
+}
 
 /** Progressive-disclosure density level. */
 export type CardLevel = "compact" | "normal" | "detailed";
@@ -66,6 +83,9 @@ export interface NodeCard {
    *  synthesized from the name/qualified-name/id. `undefined` when the entity has
    *  no description, so the card leaves no empty supporting block. */
   description?: string;
+  /** Authored architectural role presentation, or `undefined` when none is
+   *  authored (missing role → the plain polished kind-based card, no blank slot). */
+  role?: CardRole;
   visibility?: string;
   /** Documentation state; `undefined` when the entity carries no doc block. */
   documented?: boolean;
@@ -308,6 +328,21 @@ function boundedDescription(entity: Entity): string | undefined {
   return raw.length > DESCRIPTION_MAX ? `${raw.slice(0, DESCRIPTION_MAX - 1).trimEnd()}…` : raw;
 }
 
+/** The entity's authored architectural role, projected via the shared parser +
+ *  registry — or `undefined` when none is authored. */
+function buildRole(entity: Entity): CardRole | undefined {
+  const authored = authoredRole(entity.attributes);
+  const style = roleStyleFor(authored);
+  if (!style || authored === undefined) return undefined;
+  return {
+    authoredValue: authored,
+    label: style.label,
+    token: style.token,
+    cue: style.cue,
+    known: style.known,
+  };
+}
+
 function childrenOfKind(model: DocumentModel, id: string, kind: string): number {
   let n = 0;
   for (const childId of model.childrenByParent.get(id) ?? []) {
@@ -388,6 +423,7 @@ function buildOne(
     fullTitle,
     context: isCode ? contextFor(entity, model) : undefined,
     description: boundedDescription(entity),
+    role: buildRole(entity),
     visibility,
     documented,
     hasSource: !!entity.source,

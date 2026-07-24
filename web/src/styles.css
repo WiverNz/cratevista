@@ -1378,3 +1378,196 @@ select:focus-visible,
     color: ButtonText;
   }
 }
+
+/* ===================================================================== */
+/* Issue 15 Phase 4: authored architectural-role presentation.           */
+/* Additive layer over the kind-based card — role NEVER changes the box,  */
+/* padding, border width or handles. Three redundant channels: a text     */
+/* badge, a colour token, and a non-colour decorative cue.                */
+/* ===================================================================== */
+
+/* Role colour tokens (dark). Chosen distinct from the diagnostic error/warning
+   and focus colours so a role is never confused with a severity state. */
+:root {
+  --role-service: #4a9bd8;
+  --role-client: #57bd85;
+  --role-database: #c1904a;
+  --role-cache: #d47f66;
+  --role-observability: #a07ce0;
+  --role-external: #8894a4;
+  --role-infra: #6488b4;
+  --role-shared: #46b0a2;
+  --role-domain: #cf7aa8;
+  --role-unknown: #9aa4b2;
+}
+/* Maintained light theme: darker, higher-contrast role colours on a light card. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --role-service: #2f6fa8;
+    --role-client: #2f8f57;
+    --role-database: #8a6320;
+    --role-cache: #a85436;
+    --role-observability: #6a45c0;
+    --role-external: #566472;
+    --role-infra: #3f6390;
+    --role-shared: #1f7f74;
+    --role-domain: #a34a7c;
+    --role-unknown: #5a6472;
+  }
+}
+:root[data-theme="light"] {
+  --role-service: #2f6fa8;
+  --role-client: #2f8f57;
+  --role-database: #8a6320;
+  --role-cache: #a85436;
+  --role-observability: #6a45c0;
+  --role-external: #566472;
+  --role-infra: #3f6390;
+  --role-shared: #1f7f74;
+  --role-domain: #a34a7c;
+  --role-unknown: #5a6472;
+}
+
+/* Positioning context for the decorative cue, and a header that wraps rather than
+   clipping when a kind badge + role badge + diagnostic share the top row. */
+.cv-node {
+  position: relative;
+}
+.cv-node-head {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+
+/* Role badge (the primary, always-visible role channel). Reads the per-card
+   `--role-color` set inline from the role token — no per-node hardcoded colour. */
+.cv-node-role {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--role-color);
+  border: 1px solid color-mix(in srgb, var(--role-color) 45%, transparent);
+  background: color-mix(in srgb, var(--role-color) 12%, transparent);
+  border-radius: 4px;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+/* Unknown authored values are bounded so an arbitrarily long string never widens
+   or overflows the fixed card; the full value stays in `title` + the aria-label. */
+.cv-node-role--unknown {
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Decorative, non-colour cue. Absolutely positioned inside the card's PADDING
+   zones (top strip / top-left corner / inner frame / mid-right), so it never
+   overlaps the header, title, description, metrics or the diagnostic marker, never
+   changes the box, and never intercepts clicks. */
+.cv-node-role-cue {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Top-strip family (in the top padding, above the header). */
+.cv-node-role-cue[data-cue="band"] {
+  top: 3px;
+  left: 11px;
+  right: 11px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--role-color);
+}
+.cv-node-role-cue[data-cue="dashed-band"] {
+  top: 3px;
+  left: 11px;
+  right: 11px;
+  height: 0;
+  border-top: 2px dashed var(--role-color);
+}
+.cv-node-role-cue[data-cue="top-rule"] {
+  top: 2px;
+  left: 11px;
+  right: 11px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--role-color);
+}
+/* Top-left corner family (in the top-left padding corner, before the badge). */
+.cv-node-role-cue[data-cue="corner-tab"] {
+  top: 3px;
+  left: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 0 0 9px 0;
+  background: var(--role-color);
+  opacity: 0.85;
+}
+.cv-node-role-cue[data-cue="corner-bracket"] {
+  top: 3px;
+  left: 3px;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--role-color);
+  border-left: 2px solid var(--role-color);
+  border-top-left-radius: 3px;
+}
+/* Inner-frame family (thin lines inside the padding, clear of the content). */
+.cv-node-role-cue[data-cue="dashed-border"] {
+  inset: 3px;
+  border: 1.5px dashed var(--role-color);
+  border-radius: 7px;
+}
+.cv-node-role-cue[data-cue="double-border"] {
+  inset: 3px;
+  border: 1.5px double var(--role-color);
+  border-radius: 7px;
+}
+/* Mid-right glyph family (in the right padding, vertically centred). */
+.cv-node-role-cue[data-cue="stacked-bars"] {
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 2px;
+  background: var(--role-color);
+  box-shadow: 0 -4px 0 var(--role-color), 0 4px 0 var(--role-color);
+}
+.cv-node-role-cue[data-cue="stacked-lines"] {
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 2.5px;
+  border-radius: 999px;
+  background: var(--role-color);
+  box-shadow: 0 -5px 0 var(--role-color), 0 5px 0 var(--role-color);
+}
+.cv-node-role-cue[data-cue="neutral"] {
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 0;
+  border-top: 2px dotted var(--role-color);
+}
+
+/* Dim subdues the role decoration but keeps the badge text readable. */
+.cv-node--dimmed .cv-node-role-cue {
+  opacity: 0.4;
+}
+.cv-node--dimmed .cv-node-role {
+  opacity: 0.75;
+}
+
+/* Forced colors: drop custom role colours (system palette takes over via
+   forced-color-adjust), keep the role badge legible, and let each cue stay
+   distinguishable by its PATTERN (dashed / double / dotted / bars / bracket) —
+   role is therefore never communicated by colour alone. */
+@media (forced-colors: active) {
+  .cv-node-role {
+    border: 1px solid ButtonBorder;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}

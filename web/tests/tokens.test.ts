@@ -138,6 +138,42 @@ describe("Phase-2 overlay + responsive-inspector CSS contract", () => {
   });
 });
 
+describe("Phase-4 role tokens + CSS contract", () => {
+  const roles = ["service", "client", "database", "cache", "observability", "external", "infra", "shared", "domain", "unknown"];
+
+  it("defines every role colour token in dark and maintained-light themes", () => {
+    for (const r of roles) {
+      // At least the dark :root plus one light block (media / data-theme).
+      expect((css.match(new RegExp(`--role-${r}:`, "g")) ?? []).length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("carries the role badge + all ten decorative cues, with no clip-path or blur", () => {
+    expect(css).toContain(".cv-node-role");
+    for (const cue of ["band", "corner-tab", "stacked-lines", "stacked-bars", "double-border", "dashed-border", "corner-bracket", "dashed-band", "top-rule", "neutral"]) {
+      expect(css).toContain(`[data-cue="${cue}"]`);
+    }
+    // Bans on the real (comment-free) role rules — cues must not carve the hit area
+    // or add blur.
+    const roleCss = cssNoComments.slice(cssNoComments.indexOf(".cv-node-role"));
+    expect(roleCss).not.toMatch(/clip-path/i);
+    expect(cssNoComments).not.toMatch(/backdrop-filter/i);
+  });
+
+  it("keeps a forced-colors fallback for the role badge (text stays legible)", () => {
+    const fc = css.slice(css.lastIndexOf("forced-colors"));
+    expect(fc.length).toBeGreaterThan(0);
+    // The role badge appears in a forced-colors block somewhere in the sheet.
+    expect(css).toMatch(/forced-colors:\s*active\)[\s\S]*\.cv-node-role\b/);
+  });
+
+  it("uses no per-node hardcoded role colour (role badge/cue read a token var)", () => {
+    const roleCss = cssNoComments.slice(cssNoComments.indexOf(".cv-node-role"));
+    // Colours in the role rules are var(--role-color)/token-derived, not literals.
+    expect(roleCss).toMatch(/var\(--role-color\)/);
+  });
+});
+
 describe("Phase-3 node-card dimensions (locked, within approved ranges)", () => {
   it("returns the exact locked per-category boxes", () => {
     expect(cardSize("workspace")).toEqual({ width: 252, height: 128 });

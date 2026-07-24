@@ -9,6 +9,7 @@ import type { View } from "../types/index.ts";
 import { localized } from "../types/index.ts";
 import { entityStyle, relationStyle, type KindStyle } from "./kindStyle.ts";
 import { isAnimationEligible } from "./relationStyle.ts";
+import { authoredRole } from "./roleStyle.ts";
 
 export interface GraphNode {
   id: string;
@@ -18,6 +19,10 @@ export interface GraphNode {
   style: KindStyle;
   parent?: string;
   stage?: string;
+  /** The authored architectural role value (`attributes.category`), trimmed, or
+   *  undefined when absent — parsed once here via the shared `authoredRole`, never
+   *  re-read from raw attributes in components. */
+  category?: string;
 }
 
 export interface GraphEdge {
@@ -117,6 +122,7 @@ export function documentToGraph(
       style: entityStyle(e.kind),
       parent: typeof e.parent === "string" ? e.parent : undefined,
       stage: typeof stageAttr === "string" ? stageAttr : undefined,
+      category: authoredRole(e.attributes),
     });
   }
 
