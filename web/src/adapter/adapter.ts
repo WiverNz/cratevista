@@ -9,7 +9,6 @@ import type { View } from "../types/index.ts";
 import { localized } from "../types/index.ts";
 import { entityStyle, relationStyle, type KindStyle } from "./kindStyle.ts";
 import { isAnimationEligible } from "./relationStyle.ts";
-import { authoredRole } from "./roleStyle.ts";
 
 export interface GraphNode {
   id: string;
@@ -122,7 +121,9 @@ export function documentToGraph(
       style: entityStyle(e.kind),
       parent: typeof e.parent === "string" ? e.parent : undefined,
       stage: typeof stageAttr === "string" ? stageAttr : undefined,
-      category: authoredRole(e.attributes),
+      // Already trimmed at the document boundary (`model.categoryById`); never
+      // re-parsed here.
+      category: model.categoryById.get(e.id),
     });
   }
 

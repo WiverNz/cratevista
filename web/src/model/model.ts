@@ -8,6 +8,7 @@ import type {
   DocumentDiagnostic,
   DiagnosticsReport,
 } from "../types/index.ts";
+import { authoredRole } from "../adapter/roleStyle.ts";
 
 export interface DocumentModel {
   readonly document: ExplorerDocument;
@@ -27,6 +28,11 @@ export interface DocumentModel {
   readonly diagnosticsByEntity: ReadonlyMap<string, readonly DocumentDiagnostic[]>;
   /** Diagnostics referencing a given relation id. */
   readonly diagnosticsByRelation: ReadonlyMap<string, readonly DocumentDiagnostic[]>;
+  /** The trimmed authored architectural-role value (`attributes.category`) per
+   *  entity id, parsed ONCE here at the raw-document boundary via the shared
+   *  `authoredRole`. Absent when no usable value is authored. The adapter and the
+   *  card model both consume this — neither re-reads raw `attributes` for the role. */
+  readonly categoryById: ReadonlyMap<string, string>;
   /** A stable content identity for layout caching. */
   readonly identity: string;
 }
@@ -43,9 +49,13 @@ export function buildModel(
 ): DocumentModel {
   const entityById = new Map<string, Entity>();
   const entitiesByKind = new Map<string, string[]>();
+  const categoryById = new Map<string, string>();
   for (const entity of document.entities) {
     entityById.set(entity.id, entity);
     pushInto(entitiesByKind, entity.kind, entity.id);
+    // The single role parse: raw `attributes.category` → trimmed value (or nothing).
+    const category = authoredRole(entity.attributes);
+    if (category !== undefined) categoryById.set(entity.id, category);
   }
 
   const relationById = new Map<string, Relation>();
@@ -88,6 +98,7 @@ export function buildModel(
     entitiesByKind,
     diagnosticsByEntity,
     diagnosticsByRelation,
+    categoryById,
     identity,
   };
 }

@@ -14,7 +14,7 @@ import type { DocumentModel } from "./model.ts";
 import type { Entity, DocumentDiagnostic } from "../types/index.ts";
 import { localized } from "../types/index.ts";
 import { entityStyle } from "../adapter/kindStyle.ts";
-import { authoredRole, roleStyleFor, type RoleCue } from "../adapter/roleStyle.ts";
+import { roleStyleFor, type RoleCue } from "../adapter/roleStyle.ts";
 
 /** The card's resolved architectural-role presentation, or absent when the entity
  *  carries no authored role. Projected once here from the shared parser+registry;
@@ -328,14 +328,15 @@ function boundedDescription(entity: Entity): string | undefined {
   return raw.length > DESCRIPTION_MAX ? `${raw.slice(0, DESCRIPTION_MAX - 1).trimEnd()}…` : raw;
 }
 
-/** The entity's authored architectural role, projected via the shared parser +
- *  registry — or `undefined` when none is authored. */
-function buildRole(entity: Entity): CardRole | undefined {
-  const authored = authoredRole(entity.attributes);
-  const style = roleStyleFor(authored);
-  if (!style || authored === undefined) return undefined;
+/** Resolves the card's role presentation from the ALREADY-TRIMMED authored value
+ *  (`model.categoryById`, parsed once at the document boundary). The card model
+ *  never re-reads or re-trims raw `attributes.category`. */
+function buildRole(category: string | undefined): CardRole | undefined {
+  if (category === undefined) return undefined;
+  const style = roleStyleFor(category);
+  if (!style) return undefined;
   return {
-    authoredValue: authored,
+    authoredValue: category,
     label: style.label,
     token: style.token,
     cue: style.cue,
@@ -423,7 +424,7 @@ function buildOne(
     fullTitle,
     context: isCode ? contextFor(entity, model) : undefined,
     description: boundedDescription(entity),
-    role: buildRole(entity),
+    role: buildRole(model.categoryById.get(entity.id)),
     visibility,
     documented,
     hasSource: !!entity.source,

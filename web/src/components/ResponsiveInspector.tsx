@@ -14,6 +14,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useUi, type Projection } from "../app/AppContext.tsx";
+import { pushEscape } from "../app/escapeStack.ts";
 import { GRAPH_PANEL_ID } from "./Chrome.tsx";
 import { ViewDocs } from "./ViewDocs.tsx";
 import { DiagnosticsPanel, GraphList, Inspector } from "./Panels.tsx";
@@ -46,13 +47,15 @@ export function useViewportClass(): ViewportClass {
   return cls;
 }
 
-/** The inspector body — identical in every shell, built only from existing data. */
-function InspectorBody({ projection }: { projection: Projection | null }) {
+/** The inspector body — identical in every shell, built only from existing data.
+ *  `modal` tells the Inspector whether it is inside the dialog (so it yields the
+ *  Escape key to the dialog and never clears selection on close). */
+function InspectorBody({ projection, modal }: { projection: Projection | null; modal: boolean }) {
   return (
     <>
       <ViewDocs />
       {projection && <GraphList projection={projection} />}
-      <Inspector />
+      <Inspector modal={modal} />
       <DiagnosticsPanel />
     </>
   );
@@ -125,20 +128,12 @@ export function ResponsiveInspector({ projection }: { projection: Projection | n
 
   const dialogOpen = modal && open;
 
-  // Escape closes the modal inspector. Captured on `document` so it preempts the
-  // inspector's own Escape-clears-selection handler: closing the drawer must keep
-  // the selection, not clear it.
+  // Escape closes the modal inspector — via the shared escape stack, so a source
+  // viewer opened INSIDE the drawer (pushed later) takes Escape first, and only
+  // once it has popped does Escape close the drawer (keeping the selection).
   useEffect(() => {
     if (!dialogOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        e.preventDefault();
-        close();
-      }
-    };
-    document.addEventListener("keydown", onKey, true);
-    return () => document.removeEventListener("keydown", onKey, true);
+    return pushEscape(close);
   }, [dialogOpen, close]);
 
   // Focus moves into the dialog on open; background regions are made inert so no
@@ -181,7 +176,7 @@ export function ResponsiveInspector({ projection }: { projection: Projection | n
   if (!modal) {
     return (
       <aside className="cv-inspector cv-inspector--wide" aria-label="Details inspector">
-        <InspectorBody projection={projection} />
+        <InspectorBody projection={projection} modal={false} />
       </aside>
     );
   }
@@ -230,7 +225,7 @@ export function ResponsiveInspector({ projection }: { projection: Projection | n
               </button>
             </div>
             <div className="cv-inspector-dialog-body">
-              <InspectorBody projection={projection} />
+              <InspectorBody projection={projection} modal={true} />
             </div>
           </div>
         </div>

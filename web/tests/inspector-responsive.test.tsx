@@ -6,7 +6,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 vi.mock("@xyflow/react", () => import("./support/xyflow.tsx"));
 
 import { screen, within, fireEvent, waitFor } from "@testing-library/react";
-import { renderApp } from "./support/harness.tsx";
+import { renderApp, STRUCT } from "./support/harness.tsx";
+import type { SourceClient } from "../src/api/source.ts";
 
 const PKG = "package:demo";
 
@@ -112,6 +113,50 @@ describe("medium — modal drawer", () => {
     await screen.findByRole("dialog");
     expect(window.location.search).toBe(urlOpen); // reopen adds no URL state
     expect(layout.calls.length).toBe(layoutBefore); // no relayout from any of it
+  });
+});
+
+describe("nested source viewer focus (Escape precedence)", () => {
+  const okClient: SourceClient = {
+    fetchSource: () => Promise.resolve({ status: "ok", text: "pub struct Thing;" }),
+  };
+
+  it("Escape closes the source viewer first, then the drawer; selection/URL survive", async () => {
+    setViewport("medium");
+    const { layout } = renderApp({ sourceClient: okClient });
+    await ready();
+    await waitFor(() => expect(layout.calls.length).toBeGreaterThan(0));
+    const layoutBefore = layout.calls.length;
+
+    // Select an entity WITH a source location → drawer opens.
+    fireEvent.click(screen.getByTestId(`node-${STRUCT}`));
+    const dialog = await screen.findByRole("dialog", { name: "Details inspector" });
+    await waitFor(() => expect(window.location.search).toMatch(/entity=/));
+    const url = window.location.search;
+
+    // Open the source viewer inside the drawer.
+    fireEvent.click(within(dialog).getByRole("button", { name: "Show source" }));
+    const viewer = await within(dialog).findByRole("group", { name: "Source contents viewer" });
+    expect(viewer).toBeInTheDocument();
+
+    // First Escape → the SOURCE viewer closes; the drawer stays open.
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() =>
+      expect(within(dialog).queryByRole("group", { name: "Source contents viewer" })).not.toBeInTheDocument(),
+    );
+    expect(screen.getByRole("dialog", { name: "Details inspector" })).toBeInTheDocument();
+    // Focus returned to the "Show source" button.
+    expect(within(dialog).getByRole("button", { name: "Show source" })).toHaveFocus();
+
+    // Second Escape → the DRAWER closes.
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    // Selection + URL survived the whole sequence; no relayout occurred.
+    expect(window.location.search).toBe(url);
+    expect(layout.calls.length).toBe(layoutBefore);
+    fireEvent.click(screen.getByRole("button", { name: "Details" }));
+    expect(await screen.findByRole("dialog")).toHaveTextContent("Thing");
   });
 });
 

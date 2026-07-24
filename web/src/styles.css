@@ -1571,3 +1571,162 @@ select:focus-visible,
     color: ButtonText;
   }
 }
+
+/* ===================================================================== */
+/* Issue 15 Phase 5: redesigned inspector content.                       */
+/* Sectioned, accessible, bounded — real buttons, semantic lists, no      */
+/* backdrop-filter, no external asset, no horizontal page overflow.       */
+/* ===================================================================== */
+
+.cv-insp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+.cv-insp-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.cv-insp .cv-inspector-title {
+  margin: 0;
+  font-size: var(--fs-inspector-heading);
+  font-weight: var(--fw-title);
+  line-height: var(--lh-tight);
+  overflow-wrap: anywhere;
+}
+.cv-insp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-2);
+}
+.cv-insp-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-control);
+  color: var(--fg);
+  font-size: 10.5px;
+  font-weight: var(--fw-strong);
+  white-space: nowrap;
+  max-width: 18ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cv-insp-chip--kind { text-transform: uppercase; letter-spacing: var(--ls-badge); }
+.cv-insp-chip--role { color: var(--fg); border-color: color-mix(in srgb, var(--fg) 30%, var(--border)); }
+.cv-insp-chip--role-unknown { font-style: italic; }
+.cv-insp-chip--provenance { color: var(--muted); }
+
+.cv-insp-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.cv-insp-heading {
+  margin: 0;
+  font-size: var(--fs-inspector-body);
+  font-weight: var(--fw-strong);
+  color: var(--fg);
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border);
+}
+.cv-insp-subheading {
+  margin: 0;
+  font-size: 11px;
+  font-weight: var(--fw-strong);
+  color: var(--muted);
+}
+
+.cv-insp-rows { display: grid; gap: 3px; min-width: 0; }
+.cv-insp-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 34%) minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: baseline;
+  font-size: var(--fs-inspector-body);
+}
+.cv-insp-row-key { color: var(--muted); }
+.cv-insp-row-val { min-width: 0; overflow-wrap: anywhere; }
+.cv-insp-code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  overflow-wrap: anywhere;
+}
+
+/* Selectable link-style button (no click-only div). */
+.cv-insp-link {
+  font: inherit;
+  color: var(--focus);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline dotted;
+  overflow-wrap: anywhere;
+}
+.cv-insp-link:hover { text-decoration-style: solid; }
+
+.cv-insp-empty { margin: 0; font-size: var(--fs-inspector-body); }
+
+/* Relation groups: direction-labelled, bounded, with a disclosure. */
+.cv-insp-rel-groups,
+.cv-insp-rel-rows,
+.cv-insp-list { list-style: none; margin: 0; padding: 0; min-width: 0; }
+.cv-insp-rel-group { padding: 3px 0; }
+.cv-insp-rel-grouphead { display: flex; align-items: center; gap: var(--sp-2); }
+.cv-insp-rel-swatch { flex: 0 0 auto; }
+.cv-insp-rel-label { font-size: 11px; color: var(--muted); }
+.cv-insp-rel-rows { margin-top: 2px; padding-left: 26px; display: grid; gap: 2px; }
+.cv-insp-rel-row { display: flex; align-items: baseline; gap: var(--sp-2); min-width: 0; }
+.cv-insp-rel-row .cv-insp-link { flex: 1 1 auto; min-width: 0; }
+.cv-insp-rel-open {
+  flex: 0 0 auto;
+  font: inherit;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 0 6px;
+  cursor: pointer;
+}
+.cv-insp-rel-open:hover { color: var(--fg); }
+.cv-insp-showmore {
+  margin-top: 3px;
+  margin-left: 26px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--focus);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 1px 9px;
+  cursor: pointer;
+}
+.cv-insp-sublist { display: grid; gap: 2px; }
+.cv-insp-list { display: grid; gap: 2px; padding-left: 4px; }
+
+/* Source viewer: a Close control and a scrollable body (own scroll, never page). */
+.cv-source-view { display: grid; gap: var(--sp-2); }
+.cv-source-close { justify-self: start; }
+.cv-source .cv-code:focus-visible { outline: 2px solid var(--ring-focus); outline-offset: 2px; }
+
+/* Forced colors: keep section boundaries, chip borders and link affordance. */
+@media (forced-colors: active) {
+  .cv-insp-chip,
+  .cv-insp-rel-open,
+  .cv-insp-showmore {
+    border: 1px solid ButtonBorder;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+  .cv-insp-heading { border-bottom: 1px solid ButtonBorder; }
+  .cv-insp-link { color: LinkText; }
+}

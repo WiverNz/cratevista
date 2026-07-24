@@ -172,7 +172,10 @@ describe("selection + inspector", () => {
     await ready();
     fireEvent.click(screen.getByTestId("edge-rel:contains:mod-struct"));
     const inspector = await screen.findByRole("region", { name: "Relation inspector" });
-    expect(within(inspector).getByText("contains")).toBeInTheDocument();
+    // The redesigned relation inspector shows the kind as the title, a kind chip and
+    // an identity row, and exposes both endpoints as selectable buttons.
+    expect(within(inspector).getAllByText("contains").length).toBeGreaterThan(0);
+    expect(within(inspector).getByRole("region", { name: "Direction" })).toBeInTheDocument();
   });
 
   it("Escape clears the selection", async () => {

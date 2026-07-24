@@ -1,5 +1,5 @@
 // Legend, inspector (entity + relation), status panels, and blocking/empty states.
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useApp, useUi, type Projection } from "../app/AppContext.tsx";
 import { DiagnosticsExplorer } from "./DiagnosticsExplorer.tsx";
 import { SafeMarkdown } from "../markdown/SafeMarkdown.tsx";
@@ -8,6 +8,14 @@ import type { LegendEntry, RelationLegendEntry } from "../state/selectors.ts";
 import { dashArrayFor, flowDash, type RelationStyle } from "../adapter/relationStyle.ts";
 import type { Entity, Relation, DocumentDiagnostic } from "../types/index.ts";
 import type { DocumentModel } from "../model/model.ts";
+import { entityInspection, relationInspection } from "../model/inspectorProjection.ts";
+import {
+  Chip,
+  IdentityRow,
+  InspectorSection,
+  RelationGroups as RelationGroupsView,
+} from "./InspectorSections.tsx";
+import { pushEscape } from "../app/escapeStack.ts";
 import {
   repositoryLinks,
   type RepositoryLinks as RepositoryLinkSet,
@@ -289,132 +297,237 @@ export function DiagnosticsPanel() {
   return <DiagnosticsExplorer diagnostics={list} />;
 }
 
-function diagnosticsFor(
-  model: DocumentModel,
-  kind: "entity" | "relation",
-  id: string,
-): DocumentDiagnostic[] {
-  const map = kind === "entity" ? model.diagnosticsByEntity : model.diagnosticsByRelation;
-  return [...(map.get(id) ?? [])];
-}
-
-export function Inspector() {
+/**
+ * The details inspector. `modal` is true when it is inside the drawer/full-screen
+ * dialog (medium/narrow): there, Escape is owned by the dialog (via the escape
+ * stack) and closing keeps the selection, so the inspector does NOT register a
+ * selection-clearing Escape. On wide it registers one — yielding to any inner
+ * dismissable (e.g. an open source viewer) because it sits BENEATH it on the stack.
+ */
+export function Inspector({ modal = false }: { modal?: boolean }) {
   const { store, model } = useApp();
   const selection = useUi((s) => s.selection);
 
   useEffect(() => {
-    if (selection.kind === "none") return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") store.getState().clearSelection();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [selection.kind, store]);
+    if (modal || selection.kind === "none") return;
+    return pushEscape(() => store.getState().clearSelection());
+  }, [modal, selection.kind, store]);
+
+  const selectEntity = useCallback((id: string) => store.getState().selectEntity(id), [store]);
+  const selectRelation = useCallback((id: string) => store.getState().selectRelation(id), [store]);
 
   if (selection.kind === "none") {
     return (
-      <div className="cv-inspector-empty cv-muted">Select a node or edge to inspect.</div>
+      <div className="cv-inspector-empty cv-muted" role="note">
+        Select a node or edge to inspect.
+      </div>
     );
   }
   if (selection.kind === "entity") {
     const entity = model.entityById.get(selection.id);
     if (!entity) return <div className="cv-inspector-empty cv-muted">Entity not found.</div>;
-    return <EntityInspector entity={entity} model={model} />;
+    return (
+      <EntityInspector
+        entity={entity}
+        model={model}
+        onSelectEntity={selectEntity}
+        onSelectRelation={selectRelation}
+      />
+    );
   }
   const relation = model.relationById.get(selection.id);
   if (!relation) return <div className="cv-inspector-empty cv-muted">Relation not found.</div>;
-  return <RelationInspector relation={relation} model={model} />;
+  return (
+    <RelationInspector relation={relation} model={model} onSelectEntity={selectEntity} />
+  );
 }
 
-function EntityInspector({ entity, model }: { entity: Entity; model: DocumentModel }) {
-  const outgoing = model.outgoing.get(entity.id) ?? [];
-  const incoming = model.incoming.get(entity.id) ?? [];
-  const children = model.childrenByParent.get(entity.id) ?? [];
-  const diags = diagnosticsFor(model, "entity", entity.id);
-  const docs = entity.docs;
+/** The header shared by both inspector projections: title + kind/role/provenance
+ *  chips. Role and kind stay separate concepts. */
+function InspectorHeader({
+  title,
+  kindLabel,
+  roleLabel,
+  roleKnown,
+  provenance,
+}: {
+  title: string;
+  kindLabel: string;
+  roleLabel?: string;
+  roleKnown?: boolean;
+  provenance: string;
+}) {
   return (
-    <section className="cv-inspector" aria-label="Entity inspector">
-      <h2 tabIndex={-1} className="cv-inspector-title">
-        {localized(entity.label)}
+    <header className="cv-insp-header">
+      <h2 tabIndex={-1} className="cv-inspector-title" title={title}>
+        {title}
       </h2>
-      <dl className="cv-fields">
-        <dt>Kind</dt>
-        <dd>
-          <span className="cv-kind-badge">{entity.kind}</span>
-        </dd>
-        <dt>Qualified name</dt>
-        <dd>
-          <code>{entity.qualified_name}</code>
-        </dd>
-        <dt>Id</dt>
-        <dd>
-          <code>{entity.id}</code>
-        </dd>
-        <dt>Provenance</dt>
-        <dd>{entity.provenance}</dd>
-        {entity.tags && entity.tags.length > 0 && (
-          <>
-            <dt>Tags</dt>
-            <dd>{entity.tags.join(", ")}</dd>
-          </>
+      <div className="cv-insp-chips">
+        <Chip variant="kind">{kindLabel}</Chip>
+        {roleLabel !== undefined && (
+          <Chip variant={roleKnown ? "role" : "role-unknown"} title={roleLabel}>
+            {roleLabel}
+          </Chip>
         )}
-        {docs && (
-          <>
-            <dt>Documentation</dt>
-            <dd>{docs.documented ? "documented" : "undocumented"}</dd>
-          </>
-        )}
-        {entity.parent && (
-          <>
-            <dt>Parent</dt>
-            <dd>
-              <code>{entity.parent}</code>
-            </dd>
-          </>
-        )}
-        {entity.source && (
-          <>
-            <dt>Source</dt>
-            <dd>
-              <code>{entity.source.path}</code>
+        <Chip variant="provenance">{provenance}</Chip>
+      </div>
+    </header>
+  );
+}
+
+function EntityInspector({
+  entity,
+  model,
+  onSelectEntity,
+  onSelectRelation,
+}: {
+  entity: Entity;
+  model: DocumentModel;
+  onSelectEntity: (id: string) => void;
+  onSelectRelation: (id: string) => void;
+}) {
+  const lang = useUi((s) => s.language);
+  const insp = useMemo(() => entityInspection(model, entity, lang), [model, entity, lang]);
+  const docs = entity.docs;
+  const parent = typeof entity.parent === "string" ? entity.parent : undefined;
+  const parentEntity = parent ? model.entityById.get(parent) : undefined;
+
+  return (
+    <section className="cv-inspector cv-insp" aria-label="Entity inspector">
+      <InspectorHeader
+        title={localized(entity.label, lang)}
+        kindLabel={entity.kind}
+        roleLabel={insp.roleLabel}
+        roleKnown={insp.roleKnown}
+        provenance={entity.provenance}
+      />
+
+      <InspectorSection title="Identity">
+        <div className="cv-insp-rows">
+          <IdentityRow label="Qualified name">
+            <code className="cv-insp-code">{entity.qualified_name}</code>
+          </IdentityRow>
+          <IdentityRow label="Id">
+            <code className="cv-insp-code">{entity.id}</code>
+          </IdentityRow>
+          {docs && (
+            <IdentityRow label="Documentation">
+              {docs.documented ? "documented" : "undocumented"}
+            </IdentityRow>
+          )}
+          {entity.tags && entity.tags.length > 0 && (
+            <IdentityRow label="Tags">{entity.tags.join(", ")}</IdentityRow>
+          )}
+          {entity.source && (
+            <IdentityRow label="Source location">
+              <code className="cv-insp-code">{entity.source.path}</code>
               {entity.source.span &&
                 ` :${entity.source.span.start_line}-${entity.source.span.end_line}`}
-            </dd>
-          </>
+            </IdentityRow>
+          )}
+        </div>
+        {docs?.markdown && (
+          <div className="cv-docs">
+            <SafeMarkdown>{docs.markdown}</SafeMarkdown>
+          </div>
         )}
-      </dl>
+      </InspectorSection>
 
-      {docs?.markdown && (
-        <div className="cv-docs">
-          <SafeMarkdown>{docs.markdown}</SafeMarkdown>
+      <ActionsSection entity={entity} model={model} />
+
+      <InspectorSection title="Hierarchy">
+        <div className="cv-insp-rows">
+          <IdentityRow label="Parent">
+            {parent ? (
+              <button type="button" className="cv-insp-link" onClick={() => onSelectEntity(parent)}>
+                {parentEntity ? localized(parentEntity.label, lang) : parent}
+              </button>
+            ) : (
+              <span className="cv-muted">none</span>
+            )}
+          </IdentityRow>
         </div>
+        <BoundedEntityList title="Children" items={insp.children} onSelect={onSelectEntity} />
+      </InspectorSection>
+
+      <RelationGroupsView
+        groups={insp.outgoing}
+        total={insp.outgoingTotal}
+        direction="outgoing"
+        onSelectEntity={onSelectEntity}
+        onSelectRelation={onSelectRelation}
+      />
+      <RelationGroupsView
+        groups={insp.incoming}
+        total={insp.incomingTotal}
+        direction="incoming"
+        onSelectEntity={onSelectEntity}
+        onSelectRelation={onSelectRelation}
+      />
+
+      {insp.diagnostics.length > 0 && (
+        <InspectorSection title="Diagnostics">
+          <DiagnosticsList diags={insp.diagnostics} />
+        </InspectorSection>
       )}
-
-      <RepositoryLinksSection entity={entity} model={model} />
-
-      <EntitySource entity={entity} />
-
-      {children.length > 0 && (
-        <RelatedList title="Children" ids={children} model={model} />
-      )}
-      <RelationGroups title="Outgoing" relations={outgoing} model={model} outgoing />
-      <RelationGroups title="Incoming" relations={incoming} model={model} outgoing={false} />
-
-      {Object.keys(entity.attributes ?? {}).length > 0 && (
-        <div className="cv-attrs">
-          <h3 className="cv-panel-title">Attributes</h3>
-          <ul>
-            {Object.entries(entity.attributes ?? {}).map(([k, v]) => (
-              <li key={k}>
-                <code>{k}</code>: {JSON.stringify(v)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {diags.length > 0 && <DiagnosticsList diags={diags} />}
     </section>
+  );
+}
+
+/** A bounded, selectable entity list (children / endpoints) with a Show more. */
+function BoundedEntityList({
+  title,
+  items,
+  onSelect,
+  limit = 6,
+}: {
+  title: string;
+  items: { id: string; label: string }[];
+  onSelect: (id: string) => void;
+  limit?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  if (items.length === 0) {
+    return (
+      <div className="cv-insp-rows">
+        <IdentityRow label={title}>
+          <span className="cv-muted">none</span>
+        </IdentityRow>
+      </div>
+    );
+  }
+  const shown = open ? items : items.slice(0, limit);
+  const hidden = items.length - shown.length;
+  return (
+    <div className="cv-insp-sublist">
+      <span className="cv-insp-row-key">
+        {title} · {items.length}
+      </span>
+      <ul className="cv-insp-list">
+        {shown.map((c) => (
+          <li key={c.id}>
+            <button type="button" className="cv-insp-link" onClick={() => onSelect(c.id)} title={c.label}>
+              {c.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {items.length > limit && (
+        <button type="button" className="cv-insp-showmore" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          {open ? "Show less" : `Show ${hidden} more`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** Repository + local-source actions (both already privacy-safe). */
+function ActionsSection({ entity, model }: { entity: Entity; model: DocumentModel }) {
+  return (
+    <InspectorSection title="Source & repository">
+      <RepositoryLinksSection entity={entity} model={model} />
+      <EntitySource entity={entity} />
+    </InspectorSection>
   );
 }
 
@@ -438,7 +551,7 @@ function RepositoryLinksSection({ entity, model }: { entity: Entity; model: Docu
 
   return (
     <div className="cv-repo-links" aria-label="Repository links">
-      <h3 className="cv-panel-title">Repository</h3>
+      <h4 className="cv-insp-subheading">Repository</h4>
       <ul className="cv-repo-link-list">
         {links.source && (
           <li>
@@ -501,11 +614,29 @@ export function SourceSection({ path, client }: { path: string; client: SourceCl
   const [state, setState] = useState<SourceState>({ k: "idle" });
   const controller = useRef<AbortController | null>(null);
   const token = useRef(0);
+  const showBtnRef = useRef<HTMLButtonElement | null>(null);
+  const preRef = useRef<HTMLPreElement | null>(null);
+  const isOpen = state.k === "ok";
+  const close = useCallback(() => setState({ k: "idle" }), []);
 
   useEffect(() => {
     const current = controller;
     return () => current.current?.abort();
   }, []);
+
+  // When the source viewer is showing it is the TOPMOST dismissable: it takes
+  // Escape first (via the shared stack, above any inspector drawer), moves focus
+  // into itself, and on close returns focus to the "Show source" button. The
+  // inspector drawer's own Escape only fires once this has popped.
+  useEffect(() => {
+    if (!isOpen) return;
+    preRef.current?.focus();
+    const dispose = pushEscape(close);
+    return () => {
+      dispose();
+      showBtnRef.current?.focus();
+    };
+  }, [isOpen, close]);
 
   const load = useCallback(() => {
     controller.current?.abort();
@@ -528,13 +659,13 @@ export function SourceSection({ path, client }: { path: string; client: SourceCl
   }, [sourceClient, path]);
 
   return (
-    <div className="cv-source" aria-label="Source contents">
-      <h3 className="cv-panel-title">Source</h3>
+    <div className="cv-source" aria-label="Source contents" data-source-open={isOpen ? "true" : undefined}>
+      <h4 className="cv-insp-subheading">Source</h4>
       <p className="cv-muted">
-        <code>{path}</code>
+        <code className="cv-insp-code">{path}</code>
       </p>
       {state.k === "idle" && (
-        <button type="button" onClick={load}>
+        <button ref={showBtnRef} type="button" className="cv-control" onClick={load}>
           Show source
         </button>
       )}
@@ -544,9 +675,14 @@ export function SourceSection({ path, client }: { path: string; client: SourceCl
         </p>
       )}
       {state.k === "ok" && (
-        <pre className="cv-code">
-          <code>{state.text}</code>
-        </pre>
+        <div className="cv-source-view" role="group" aria-label="Source contents viewer">
+          <button type="button" className="cv-control cv-source-close" aria-label="Close source" onClick={close}>
+            Close source
+          </button>
+          <pre ref={preRef} tabIndex={-1} className="cv-code">
+            <code>{state.text}</code>
+          </pre>
+        </div>
       )}
       {state.k === "disabled" && (
         <p role="status" className="cv-muted">
@@ -570,129 +706,93 @@ export function SourceSection({ path, client }: { path: string; client: SourceCl
   );
 }
 
-function RelationGroups({
-  title,
-  relations,
+function RelationInspector({
+  relation,
   model,
-  outgoing,
+  onSelectEntity,
 }: {
-  title: string;
-  relations: readonly Relation[];
+  relation: Relation;
   model: DocumentModel;
-  outgoing: boolean;
+  onSelectEntity: (id: string) => void;
 }) {
-  if (relations.length === 0) return null;
-  const byKind = new Map<string, Relation[]>();
-  for (const r of relations) {
-    const list = byKind.get(r.kind);
-    if (list) list.push(r);
-    else byKind.set(r.kind, [r]);
-  }
-  return (
-    <div className="cv-related">
-      <h3 className="cv-panel-title">{title}</h3>
-      {[...byKind.entries()].sort().map(([kind, rs]) => (
-        <div key={kind} className="cv-related-group">
-          <h4>{kind}</h4>
-          <ul>
-            {rs.map((r) => {
-              const otherId = outgoing ? r.to : r.from;
-              const other = model.entityById.get(otherId);
-              return (
-                <li key={r.id}>{other ? localized(other.label) : otherId}</li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
-}
+  const lang = useUi((s) => s.language);
+  const insp = useMemo(() => relationInspection(model, relation, lang), [model, relation, lang]);
 
-function RelatedList({
-  title,
-  ids,
-  model,
-}: {
-  title: string;
-  ids: readonly string[];
-  model: DocumentModel;
-}) {
   return (
-    <div className="cv-related">
-      <h3 className="cv-panel-title">{title}</h3>
-      <ul>
-        {ids.map((id) => {
-          const e = model.entityById.get(id);
-          return <li key={id}>{e ? localized(e.label) : id}</li>;
-        })}
-      </ul>
-    </div>
-  );
-}
+    <section className="cv-inspector cv-insp" aria-label="Relation inspector">
+      <InspectorHeader
+        title={insp.relLabel}
+        kindLabel={relation.kind}
+        provenance={relation.provenance}
+      />
 
-function RelationInspector({ relation, model }: { relation: Relation; model: DocumentModel }) {
-  const from = model.entityById.get(relation.from);
-  const to = model.entityById.get(relation.to);
-  const diags = diagnosticsFor(model, "relation", relation.id);
-  return (
-    <section className="cv-inspector" aria-label="Relation inspector">
-      <h2 tabIndex={-1} className="cv-inspector-title">
-        <span className="cv-kind-badge">{relation.kind}</span>
-      </h2>
-      <dl className="cv-fields">
-        <dt>Id</dt>
-        <dd>
-          <code>{relation.id}</code>
-        </dd>
-        <dt>From</dt>
-        <dd>{from ? localized(from.label) : relation.from}</dd>
-        <dt>To</dt>
-        <dd>{to ? localized(to.label) : relation.to}</dd>
-        {relation.role && (
-          <>
-            <dt>Role</dt>
-            <dd>{relation.role}</dd>
-          </>
-        )}
-        {relation.label && (
-          <>
-            <dt>Label</dt>
-            <dd>{localized(relation.label)}</dd>
-          </>
-        )}
-        <dt>Provenance</dt>
-        <dd>{relation.provenance}</dd>
-      </dl>
-      {Object.keys(relation.attributes ?? {}).length > 0 && (
-        <div className="cv-attrs">
-          <h3 className="cv-panel-title">Attributes</h3>
-          <ul>
-            {Object.entries(relation.attributes ?? {}).map(([k, v]) => (
-              <li key={k}>
-                <code>{k}</code>: {JSON.stringify(v)}
-              </li>
-            ))}
-          </ul>
+      <InspectorSection title="Direction">
+        <div className="cv-insp-rows">
+          <IdentityRow label="From">
+            <button type="button" className="cv-insp-link" onClick={() => onSelectEntity(insp.fromId)} title={insp.fromLabel}>
+              {insp.fromLabel}
+            </button>
+          </IdentityRow>
+          <IdentityRow label="To">
+            <button type="button" className="cv-insp-link" onClick={() => onSelectEntity(insp.toId)} title={insp.toLabel}>
+              {insp.toLabel}
+            </button>
+          </IdentityRow>
+          <IdentityRow label="Direction">
+            <span className="cv-muted">from → to</span>
+          </IdentityRow>
         </div>
+      </InspectorSection>
+
+      <InspectorSection title="Identity">
+        <div className="cv-insp-rows">
+          <IdentityRow label="Kind">
+            {insp.known ? insp.style.label : `${relation.kind} (unknown)`}
+          </IdentityRow>
+          <IdentityRow label="Id">
+            <code className="cv-insp-code">{relation.id}</code>
+          </IdentityRow>
+          {relation.role && <IdentityRow label="Role">{relation.role}</IdentityRow>}
+          {relation.label && (
+            <IdentityRow label="Label">{localized(relation.label, lang)}</IdentityRow>
+          )}
+        </div>
+      </InspectorSection>
+
+      {insp.diagnostics.length > 0 && (
+        <InspectorSection title="Diagnostics">
+          <DiagnosticsList diags={insp.diagnostics} />
+        </InspectorSection>
       )}
-      {diags.length > 0 && <DiagnosticsList diags={diags} />}
     </section>
   );
 }
 
+/** Represented occurrences for a diagnostic (missing/invalid → 1), never lost. */
+function occurrencesOf(d: DocumentDiagnostic): number {
+  const n = (d as { occurrence_count?: unknown }).occurrence_count;
+  return typeof n === "number" && Number.isInteger(n) && n >= 1 ? n : 1;
+}
+
+/** The inspector diagnostics list. Severity is text (not colour-only), and the
+ *  represented occurrence count is always shown so no diagnostic count is lost.
+ *  Rendered inside an `InspectorSection` "Diagnostics", so it carries no heading. */
 function DiagnosticsList({ diags }: { diags: DocumentDiagnostic[] }) {
   return (
-    <div className="cv-related">
-      <h3 className="cv-panel-title">Diagnostics</h3>
-      <ul>
-        {diags.map((d, i) => (
+    <ul className="cv-insp-diags">
+      {diags.map((d, i) => {
+        const n = occurrencesOf(d);
+        return (
           <li key={i} className={`cv-diag cv-diag-${d.severity}`}>
-            <strong>{d.severity}</strong> <code>{d.code}</code> {d.message}
+            <strong className="cv-diag-sevtag">{d.severity}</strong> <code>{d.code}</code>{" "}
+            <span className="cv-diag-occ cv-muted">
+              {n} occurrence{n === 1 ? "" : "s"}
+            </span>{" "}
+            {d.message}
           </li>
-        ))}
-      </ul>
-    </div>
+        );
+      })}
+    </ul>
   );
 }
 
